@@ -1,0 +1,37 @@
+[build-system]
+build-backend = "setuptools.build_meta"
+requires = ["setuptools>=42"]
+
+[project]
+name = "pytrunc"
+version = "0.1.0"
+description = """"""
+authors = [
+    {name = "Mustapha Moulana", email = "mm@hygeos.com"},
+]
+
+requires-python = ">= 3.10"
+dependencies = [
+    "numpy", 
+    "scipy", 
+    "matplotlib", 
+    "notebook",
+    "xarray",
+]
+
+
+[tool.setuptools]
+packages = ["pytrunc"]
+
+# **** pixi configuration ****
+[tool.pixi.workspace]
+channels = ["conda-forge"]
+platforms = ["linux-64"]
+
+[tool.pixi.pypi-dependencies]
+pytrunc = { path = ".", editable = true }
+
+[tool.pixi.dependencies]
+
+[tool.pixi.environments]
+default = { solve-group = "default" }

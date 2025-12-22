@@ -212,3 +212,21 @@ def bessel_jn(x, n, acc=1e-8, max_iter=50):
             break
 
     return jn
+
+
+def bessel_j1_derivative(x):
+    """
+    Compute the Bessel first kind derivative of order 1 d(J1(x))
+
+    Parameters
+    ----------
+    x : 1-D ndarray
+        The variable x of d(J1(x))
+    
+    Returns
+    -------
+    dj1 : 1-D ndarray
+        The values of the Bessel function derivative d(J1(x))
+    """
+
+    return 0.5 * ( bessel_jn(x,0) - bessel_jn(x,2) )

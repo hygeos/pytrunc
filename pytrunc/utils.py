@@ -173,9 +173,42 @@ def bessel_j1(x, acc=1e-8, max_iter=50):
 
     j1 = np.zeros_like(x, dtype=np.float64)
     for m in range(max_iter):
-        j1m = ( (-1)**m / ( (math.factorial(m) * math.gamma(m + 2)) ) ) * (x / 2.)**(2.*m + 1.) 
+        j1m = ( (-1)**m / ( (math.factorial(m) * math.factorial(m + 1)) ) ) * (x / 2.)**(2.*m + 1.) 
         j1 += j1m
         if np.max(np.abs(j1m)) < acc:
             break
 
     return j1
+
+
+def bessel_jn(x, n, acc=1e-8, max_iter=50):
+    """
+    The Bessel first kind function Jn(x) of order n
+    
+    Parameters
+    ----------
+    x : 1-D ndarray
+        The variable x of Jn(x)
+    n : float
+        The Bessel first kind function order
+    acc : float, optional
+        The tolerance for numerical errors. Default is 1e-8.
+    
+    Returns
+    -------
+    Jn : 1-D ndarray
+        The values of the Bessel function Jn(x)
+
+    Notes
+    -----
+    scipy equivalent -> scipy.special.jn(n,x)
+    """
+
+    jn = np.zeros_like(x, dtype=np.float64)
+    for m in range(max_iter):
+        jnm = ( (-1)**m / ( (math.factorial(m) * math.gamma(m + n + 1)) ) ) * (x / 2.)**(2.*m + n) 
+        jn += jnm
+        if np.max(np.abs(jnm)) < acc:
+            break
+
+    return jn

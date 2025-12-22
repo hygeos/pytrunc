@@ -1,4 +1,5 @@
 import numpy as np
+import math
 
 
 def legendre_polynomials(n, x):
@@ -18,6 +19,10 @@ def legendre_polynomials(n, x):
     -------
     P : 1-D ndarray
         The Legendre series
+
+    Notes
+    -----
+    The numpy equivalent -> numpy.polynomial.legendre.Legendre.basis(n)(x)
     
     References
     ----------
@@ -27,6 +32,7 @@ def legendre_polynomials(n, x):
     
     - [2] Wiscombe, W. J. (1977). The delta-M method: Rapid yet accurate radiative flux calculations 
           for strongly asymmetric phase functions. Journal of Atmospheric Sciences, 34(9), 1408-1422.
+
 
     """
     x = np.asarray(x)
@@ -63,6 +69,10 @@ def legendre_polynomials_derivative(n, x):
     -------
     P : 1-D ndarray
         The derivative Legendre series
+    
+    Notes
+    -----
+    The numpy equivalent -> numpy.polynomial.legendre.Legendre.basis(n).deriv(1)(x)
     
     References
     ----------
@@ -109,6 +119,10 @@ def legendre_polynomials_second_derivative(n, x):
     P : 1-D ndarray
         The second derivative Legendre series
     
+    Notes
+    -----
+    The numpy equivalent -> numpy.polynomial.legendre.Legendre.basis(n).deriv(2)(x)
+    
     References
     ----------
 
@@ -134,3 +148,30 @@ def legendre_polynomials_second_derivative(n, x):
         Pnm1_pp, Pn_pp = Pn_pp, Pnp1_pp
 
     return Pnp1_pp
+
+
+def bessel_j1(x, acc=1e-8, max_iter=50):
+    """
+    The Bessel first kind function J1(x) of order 1
+    
+    Parameters
+    ----------
+    x : 1-D ndarray
+        The variable x of J1(x)
+    acc : float, optional
+        The tolerance for numerical errors. Default is 1e-8.
+    
+    Returns
+    -------
+    J1 : 1-D ndarray
+        The values of the Bessel function J1(x)
+    """
+
+    j1 = np.zeros_like(x, dtype=np.float64)
+    for m in range(max_iter):
+        j1m = ( (-1)**m / ( (math.factorial(m) * math.gamma(m + 2)) ) ) * (x / 2.)**(2.*m + 1.) 
+        j1 += j1m
+        if np.max(np.abs(j1m)) < acc:
+            break
+
+    return j1

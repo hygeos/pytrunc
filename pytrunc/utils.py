@@ -165,6 +165,10 @@ def bessel_j1(x, acc=1e-8, max_iter=50):
     -------
     J1 : 1-D ndarray
         The values of the Bessel function J1(x)
+
+    Notes
+    -----
+    scipy equivalent -> scipy.special.j1(x)
     """
 
     j1 = np.zeros_like(x, dtype=np.float64)

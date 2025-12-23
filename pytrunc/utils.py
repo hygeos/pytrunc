@@ -1,7 +1,7 @@
 import numpy as np
 import math
 from scipy.special import gammaln
-
+from scipy.special import j1, jvp
 
 def legendre_polynomials(n, x):
     """
@@ -292,3 +292,56 @@ def bessel_j1_derivative(x, acc=1e-8, max_iter=50):
     j2 = bessel_jn(x,2, acc=acc, max_iter=max_iter)
 
     return 0.5 * ( j0 - j2 )
+
+
+def bessel_j1_roots(nb_roots, acc=1e-8, max_iter=50):
+    """
+    Find roots of Bessel first kind function j1(x) using Newton-Raphson iteration
+    
+    - First k approximations equation ji_roots ~ π * ( k + π/2 + π/4 ). See ref[1]
+
+    Parameters
+    ----------
+    nb_roots : int
+        The number of j1(x)=0 to find
+    acc : float, optional
+        The tolerance for numerical errors. Default is 1e-8.
+    max_iter : float, optional
+        The maximun number of iteration trying to improve the error accuracy
+
+    Returns
+    -------
+    roots : 1-D ndarray
+        The roots of the function f(x)
+
+    Notes
+    -----
+    The scipy equivalent -> scipy.special.jn_zeros(1,x)
+        
+    References
+    ----------
+
+    - [1] Baricz, Á., Kumar, P., & Ponnusamy, S. (2025). Asymptotic behavior of zeros 
+          of Bessel function derivatives. arXiv preprint arXiv:2510.12353.
+
+    """
+
+    if nb_roots < 1:
+        raise ValueError("nb_roots must be >= 1")
+
+    
+    roots = np.zeros(nb_roots, dtype=np.float64)
+
+    for k in range (1, nb_roots+1):
+        x0 = (k + 0.25) * math.pi
+        x = x0
+        for i in range (max_iter):
+            f = j1(x)
+            df = jvp(1,x)
+            dx = f / df
+            x -= dx
+            if abs(dx) < acc:
+                break
+        roots[k-1] = x
+
+    return roots

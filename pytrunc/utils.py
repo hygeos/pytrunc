@@ -1,5 +1,6 @@
 import numpy as np
 import math
+from scipy.special import gammaln
 
 
 def legendre_polynomials(n, x):
@@ -160,6 +161,8 @@ def bessel_j1(x, acc=1e-8, max_iter=50):
         The variable x of J1(x)
     acc : float, optional
         The tolerance for numerical errors. Default is 1e-8.
+    max_iter : float, optional
+        The maximun number of iteration trying to improve the error accuracy
     
     Returns
     -------
@@ -168,15 +171,38 @@ def bessel_j1(x, acc=1e-8, max_iter=50):
 
     Notes
     -----
-    scipy equivalent -> scipy.special.j1(x)
+    The scipy equivalent -> scipy.special.j1(x)
     """
+    
+    x = np.asarray(x, dtype=np.float64)
+    j1 = np.zeros_like(x)
 
-    j1 = np.zeros_like(x, dtype=np.float64)
-    for m in range(max_iter):
-        j1m = ( (-1)**m / ( (math.factorial(m) * math.factorial(m + 1)) ) ) * (x / 2.)**(2.*m + 1.) 
-        j1 += j1m
-        if np.max(np.abs(j1m)) < acc:
-            break
+    x_small = x <= 35
+    xs = x[x_small]
+    if np.any(x_small):
+        for m in range(max_iter):
+            with np.errstate(divide='ignore'):
+                j1m = ( (-1)**m / ( (math.factorial(m) * math.factorial(m + 1)) ) ) * (xs / 2.)**(2*m + 1.)
+
+            j1m = np.where(x == 0, 0.0, j1m)
+            j1[x_small] += j1m
+
+            if np.max(np.abs(j1m)) < acc:
+                break
+
+    x_large = x > 35
+    xl = x[x_large]
+    if np.any(x_large):
+        for m in range(max_iter):
+            with np.errstate(divide='ignore'):
+                exp_term = - (gammaln(m + 1) + gammaln(m + 2)) + (2*m + 1) * np.log(xl / 2)
+            j1m = (-1)**m * np.exp(exp_term)
+
+            j1m = np.where(x == 0, 0.0, j1m)
+            j1[x_small] += j1m
+
+            if np.max(np.abs(j1m)) < acc:
+                break
 
     return j1
 
@@ -193,6 +219,8 @@ def bessel_jn(x, n, acc=1e-8, max_iter=50):
         The Bessel first kind function order
     acc : float, optional
         The tolerance for numerical errors. Default is 1e-8.
+    max_iter : float, optional
+        The maximun number of iteration trying to improve the error accuracy
     
     Returns
     -------
@@ -201,20 +229,43 @@ def bessel_jn(x, n, acc=1e-8, max_iter=50):
 
     Notes
     -----
-    scipy equivalent -> scipy.special.jn(n,x)
+    The scipy equivalent -> scipy.special.jn(n,x)
     """
 
-    jn = np.zeros_like(x, dtype=np.float64)
+
+    x = np.asarray(x, dtype=np.float64)
+
+    if np.any(x < 0):
+        raise ValueError("The values of x must be >= 1")
+    
+    if n < 0:
+        raise ValueError('The order n must be >= 0')
+
+    jn = np.zeros_like(x)
+
     for m in range(max_iter):
-        jnm = ( (-1)**m / ( (math.factorial(m) * math.gamma(m + n + 1)) ) ) * (x / 2.)**(2.*m + n) 
+
+        with np.errstate(divide='ignore'):
+            exp_term = - (gammaln(m + 1) + gammaln(m + n + 1)) + (2*m + n) * np.log(np.abs(x / 2))
+
+        jnm = (-1)**m * np.exp(exp_term)
+        #jnm = ( (-1)**m / ( (math.factorial(m) * math.gamma(m + n + 1)) ) ) * (x / 2.)**(2*m + n) 
+
+        if n == 0:
+            jnm = np.where((x == 0) & (m == 0), 1.0, jnm)
+            jnm = np.where((x == 0) & (m > 0), 0.0, jnm)
+        else:
+            jnm = np.where(x == 0, 0.0, jnm)
+
         jn += jnm
+
         if np.max(np.abs(jnm)) < acc:
             break
 
     return jn
 
 
-def bessel_j1_derivative(x):
+def bessel_j1_derivative(x, acc=1e-8, max_iter=50):
     """
     Compute the Bessel first kind derivative of order 1 d(J1(x))
 
@@ -222,11 +273,22 @@ def bessel_j1_derivative(x):
     ----------
     x : 1-D ndarray
         The variable x of d(J1(x))
+    acc : float, optional
+        The tolerance for numerical errors. Default is 1e-8.
+    max_iter : float, optional
+        The maximun number of iteration trying to improve the error accuracy
     
     Returns
     -------
     dj1 : 1-D ndarray
         The values of the Bessel function derivative d(J1(x))
+
+    Notes
+    -----
+    The scipy equivalent -> scipy.special.jvp(1,x)
     """
 
-    return 0.5 * ( bessel_jn(x,0) - bessel_jn(x,2) )
+    j0 = bessel_jn(x,0, acc=acc, max_iter=max_iter)
+    j2 = bessel_jn(x,2, acc=acc, max_iter=max_iter)
+
+    return 0.5 * ( j0 - j2 )

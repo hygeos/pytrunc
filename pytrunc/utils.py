@@ -3,6 +3,7 @@ import math
 from scipy.special import gammaln
 from scipy.special import j1, jvp
 
+
 def legendre_polynomials(n, x):
     """
     Use the recursion formulas to compute the Legendre polynomials Pn(x)
@@ -87,8 +88,8 @@ def legendre_polynomials_derivative(n, x):
     """
     x = np.asarray(x)
 
-    if n == 0: return np.ones_like(x)
-    if n == 1: return x
+    if n == 0: return np.zeros_like(x)
+    if n == 1: return np.ones_like(x)
 
     P0_p = np.zeros_like(x)
     P1_p = np.ones_like(x)
@@ -136,8 +137,9 @@ def legendre_polynomials_second_derivative(n, x):
     """
     x = np.asarray(x)
 
-    if n == 0: return np.ones_like(x)
-    if n == 1: return x
+    if n == 0: return np.zeros_like(x)
+    if n == 1: return np.zeros_like(x)
+    if n == 2: return np.full_like(x,3)
 
     P1_pp = np.zeros_like(x)
     P2_pp = np.full_like(x,3)
@@ -145,7 +147,7 @@ def legendre_polynomials_second_derivative(n, x):
     Pnm1_pp = P1_pp.copy()
     Pn_pp = P2_pp.copy()
     for k in range(2, n):
-        Pnp1_pp = (1. / (k - 1)) * ( ((2*k + 1)*x*Pn_pp - (n + 2)*Pnm1_pp) )
+        Pnp1_pp = (1. / (k - 1)) * ( ((2*k + 1)*x*Pn_pp - (k + 2)*Pnm1_pp) )
         Pnm1_pp, Pn_pp = Pn_pp, Pnp1_pp
 
     return Pnp1_pp
@@ -345,3 +347,4 @@ def bessel_j1_roots(nb_roots, acc=1e-8, max_iter=50):
         roots[k-1] = x
 
     return roots
+

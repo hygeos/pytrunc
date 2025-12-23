@@ -34,8 +34,6 @@ def legendre_polynomials(n, x):
     
     - [2] Wiscombe, W. J. (1977). The delta-M method: Rapid yet accurate radiative flux calculations 
           for strongly asymmetric phase functions. Journal of Atmospheric Sciences, 34(9), 1408-1422.
-
-
     """
     x = np.asarray(x)
 
@@ -84,7 +82,6 @@ def legendre_polynomials_derivative(n, x):
     
     - [2] Wiscombe, W. J. (1977). The delta-M method: Rapid yet accurate radiative flux calculations 
           for strongly asymmetric phase functions. Journal of Atmospheric Sciences, 34(9), 1408-1422.
-
     """
     x = np.asarray(x)
 
@@ -133,7 +130,6 @@ def legendre_polynomials_second_derivative(n, x):
     
     - [2] Wiscombe, W. J. (1977). The delta-M method: Rapid yet accurate radiative flux calculations 
           for strongly asymmetric phase functions. Journal of Atmospheric Sciences, 34(9), 1408-1422.
-
     """
     x = np.asarray(x)
 
@@ -325,7 +321,6 @@ def bessel_j1_roots(nb_roots, acc=1e-8, max_iter=50):
 
     - [1] Baricz, Á., Kumar, P., & Ponnusamy, S. (2025). Asymptotic behavior of zeros 
           of Bessel function derivatives. arXiv preprint arXiv:2510.12353.
-
     """
 
     if nb_roots < 1:
@@ -393,3 +388,57 @@ def legendre_polynomials_derivative_roots(n, acc=1e-8, max_iter=50):
             break
 
     return x
+
+
+def quadrature_lobatto(abscissa_min=-1, abscissa_max=1, n=100):
+    """
+    Compute the abscissas (sample points) and weigths for Lobatto quadrature.
+
+    Parameters
+    ----------
+    abscissa_min : float
+        The min fixed abscissa
+    abscissa_max : float
+        The max fixed abscissa
+    n : int, optional
+        The number of abscissas / weights
+
+    Returns
+    -------
+    abscissas : 1-D ndarray
+        The Lobatto quadrature abscissas
+    weights : 1-D ndarray
+        The Lobatto quadrature weights
+
+    References
+    ----------
+
+    - [1] Michels, H. (1963). Abscissas and weight coefficients for Lobatto quadrature. 
+          Mathematics of Computation, 17(83), 237-244.
+    
+    - [2] Wiscombe, W. J. (1977). The delta-M method: Rapid yet accurate radiative flux calculations 
+          for strongly asymmetric phase functions. Journal of Atmospheric Sciences, 34(9), 1408-1422.
+    """
+
+    if n < 2:
+        raise ValueError("the legendre polynomial order must be >= 2 for Lobatto quadrature")
+
+    if abscissa_max <= abscissa_min:
+        raise ValueError("abscissa_max must be > to abscissa_min")
+
+    # Get lobatto abcissa
+    abscissas_int = legendre_polynomials_derivative_roots(n-1)
+    abscissas = np.concatenate(([-1.0], abscissas_int, [1.0]))
+
+    weights = np.zeros_like(abscissas)
+    weights[0] = weights[-1] = 2. / (n * (n - 1.))
+    Pnm1 = legendre_polynomials(n-1, abscissas[1:-1])
+    weights[1:-1] = weights[0] / (Pnm1 ** 2)
+
+    # rescale if min and max values different to -1 and 1
+    if abscissa_min != -1 or abscissa_max != 1:
+        alpha = (abscissa_max - abscissa_min) / 2.
+        abscissas = (abscissas + 1) * alpha + abscissa_min
+        alpha = (abscissa_max - abscissa_min) / 2.
+
+    return abscissas, weights

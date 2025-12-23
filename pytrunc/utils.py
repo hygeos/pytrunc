@@ -1,7 +1,7 @@
 import numpy as np
 import math
 from scipy.special import gammaln
-from scipy.special import j1, jvp
+from scipy.special import j1, jvp, jn_zeros
 
 
 def legendre_polynomials(n, x):
@@ -348,3 +348,48 @@ def bessel_j1_roots(nb_roots, acc=1e-8, max_iter=50):
 
     return roots
 
+
+def legendre_polynomials_derivative_roots(n, acc=1e-8, max_iter=50):
+    """
+    Find roots of legendre polynomial derivative d(Pn(x)), for x > -1 and x < 1
+
+    - Use of Newton-raphson iteration as [1], see Eq.7 and 8.
+
+    Parameters
+    ----------
+    n : int
+        The Legendre polynomial order
+    acc : float, optional
+        The tolerance for numerical errors. Default is 1e-8.
+    max_iter : float, optional
+        The maximun number of iteration trying to improve the error accuracy
+    
+    Returns
+    -------
+    roots : 1-D ndarray
+        The roots of legendre polynomial derivative d(Pn(x))
+
+    Notes
+    -----
+    
+    - The numpy equivalent -> Legendre.basis(n).deriv().roots()
+    - Faster than the numpy equivalent!
+
+    References
+    ----------
+
+    - [1] Michels, H. (1963). Abscissas and weight coefficients for Lobatto quadrature. 
+          Mathematics of Computation, 17(83), 237-244.
+    """
+
+    x0 = np.sort(np.cos(jn_zeros(1, n-1) / ( (n+1-0.5)**2 + ((math.pi**2-4)/(4*math.pi**2)) )**0.5))
+    x = np.asarray(x0)
+    for i in range (max_iter):
+        dp = legendre_polynomials_derivative(n,x)
+        d2p = legendre_polynomials_second_derivative(n,x)
+        dx = dp / d2p
+        x -= dx
+        if np.max(np.abs(dx)) < acc:
+            break
+
+    return x

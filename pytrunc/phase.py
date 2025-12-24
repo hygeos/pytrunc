@@ -221,3 +221,36 @@ def calc_hg_moments(g, m_max):
     """
 
     return np.array([g**n for n in range(m_max+1)])
+
+
+def calc_tthg_moments(g1, g2, f, m_max):
+    """ 
+    Compute exact Two-term Henyey-Greenstein phase moments
+
+    - see Eq.11 in [1]
+
+    Parameters
+    ----------
+    g1 : float
+        The first H-G term parameter g (forward part)
+    g2 : float
+        The second H-G term parameter g (backward part)
+    f : float
+        The fraction parameter between the two H-G terms
+    m_max : int
+        The maximum moment number to compute, i.e., compute m[0], ..., m[m_max]
+    
+    Returns
+    -------
+    m : 1-D ndarray
+        The phase moment of size m_max + 1
+
+    References
+    ----------
+
+    - [1] Kattawar, G. W. (1975). A three-parameter analytic phase function for multiple 
+          scattering calculations. Journal of Quantitative Spectroscopy and Radiative Transfer, 
+          15(9), 839-849.
+    """
+
+    return np.array([( f*g1**n + (1-f)*g2**n ) for n in range(m_max+1)])

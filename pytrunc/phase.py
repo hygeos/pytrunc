@@ -192,3 +192,32 @@ def calc_moments(phase, theta, m_max, method='lobatto', theta_unit='deg', normal
     if normalize: chi /= chi[0]
 
     return chi
+
+
+def calc_hg_moments(g, m_max):
+    """ 
+    Compute exact Henyey-Greenstein phase moments
+
+    - see Eq.8 in [1]
+
+    Parameters
+    ----------
+    g : float
+        The Henyey-Greenstein parameter g (measures the asymmetry of the phase matrix)
+    m_max : int
+        The maximum moment number to compute, i.e., compute m[0], ..., m[m_max]
+
+    Returns
+    -------
+    m : 1-D ndarray
+        The phase moment of size m_max + 1
+
+    References
+    ----------
+
+    - [1] Kattawar, G. W. (1975). A three-parameter analytic phase function for multiple 
+          scattering calculations. Journal of Quantitative Spectroscopy and Radiative Transfer, 
+          15(9), 839-849.
+    """
+
+    return np.array([g**n for n in range(m_max+1)])

@@ -55,7 +55,7 @@ def delta_m_phase_approx(phase, theta, m_max, theta_unit='deg', phase_moments=No
                              f", but only {len(phase_moments)} given")
         chi = phase_moments
     else:
-        chi = calc_moments(phase, theta, m_max=m_max, theta_unit='rad')
+        chi = calc_moments(phase, theta, m_max=m_max, theta_unit='rad', normalize=True)
 
     f = chi[m_max]
 

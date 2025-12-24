@@ -1,6 +1,7 @@
 import math
 import numpy as np
 from scipy.integrate import simpson
+from pytrunc.utils import legendre_polynomials, quadrature_lobatto
 
 
 def henyey_greenstein(theta, g, theta_unit='deg', normalize=None):
@@ -103,3 +104,91 @@ def two_term_henyey_greenstein(theta, g1, g2, f, theta_unit='deg', normalize=Non
     phase = f*F_HG1 + (1-f)*F_HG2
     
     return phase
+
+
+def calc_moments(phase, theta, m_max, method='lobatto', theta_unit='deg', normalize=False):
+    """ 
+    Calculate the phase matrix moments until m_max moment
+
+    Parameters
+    ----------
+    phase : 1-D ndarray
+        The phase matrix
+    theta : 1-D ndarray
+        The phase matrix angles. See parameter `theta_unit`
+    m_max : int
+        The maximum moment number to compute, i.e., compute m[0], ..., m[m_max]
+    method : str, optional
+        The method used to calculate the moments, choices:
+        - 'lobatto' -> Default value, very effcient if "gauss kind" theta distribution
+        - 'simpson' -> efficient if regular theta distribution (use scipy.integrate.simpson)
+    theta_unit : str, optional
+        The unit for theta angles: 
+        - 'deg' (default value)
+        - 'rad'
+    normalize : bool, optional
+        If normalize = True -> normalize such that first moment exactly = 1
+    
+    Returns
+    -------
+    m : 1-D ndarray
+        The computed phase moment of size m_max + 1
+
+    Notes
+    -----
+    
+    - See Eq.A2 in ref[2] for moment computation using Lobatto quadrature in [0,π] 
+    - For Lobatto quadrature abcissas and weights calculation see ref[2]
+
+    References
+    ----------
+
+    - [1] Michels, H. (1963). Abscissas and weight coefficients for Lobatto quadrature. 
+          Mathematics of Computation, 17(83), 237-244.
+    
+    - [2] Wiscombe, W. J. (1977). The delta-M method: Rapid yet accurate radiative flux calculations 
+          for strongly asymmetric phase functions. Journal of Atmospheric Sciences, 34(9), 1408-1422.
+    """
+
+    methods_ok = ['lobatto', 'simpson']
+
+    if method not in methods_ok:
+        raise ValueError(f"Only available methods are: {methods_ok}")
+    
+    if theta_unit == 'deg':
+            theta = (np.deg2rad(theta))
+    elif ( theta_unit != 'rad' ):
+        raise ValueError("The accepted values for parameter theta_unit are: 'deg' or 'rad'")
+
+    if theta[0] < 0 or theta[-1] > np.pi:
+        print("The range of theta must be [0, π] (rad unit) or [0,180] (deg unit)")
+
+    # initialize moments
+    chi = np.zeros(m_max + 1)
+
+    if method == 'lobatto':
+        nth = len(phase)
+        if nth < 2:
+            raise ValueError("The phase size must be >= 2 for Lobatto quadrature")
+        
+        xk, wk = quadrature_lobatto(abscissa_min=0., abscissa_max=math.pi, n=nth)
+
+        cos_xk = np.cos(xk)
+        sin_xk = np.sin(xk)
+        pha = np.interp(xk, theta, phase)
+
+        for l in range (m_max + 1):
+            pl_cosxk = legendre_polynomials(l, cos_xk)
+            chi[l] = 0.5 * np.sum(wk * pha * pl_cosxk * sin_xk)
+
+    if method == 'simpson':
+        mu = np.cos(theta)
+        idmu = np.argsort(mu)
+        for l in range(m_max+1):
+            pl_mu = legendre_polynomials(l, mu[idmu])
+            chi[l]= 0.5 * simpson(phase[idmu] * pl_mu, mu[idmu]) 
+
+    # normalization
+    if normalize: chi /= chi[0]
+
+    return chi

@@ -440,5 +440,6 @@ def quadrature_lobatto(abscissa_min=-1, abscissa_max=1, n=100):
         alpha = (abscissa_max - abscissa_min) / 2.
         abscissas = (abscissas + 1) * alpha + abscissa_min
         alpha = (abscissa_max - abscissa_min) / 2.
+        weights *= alpha
 
     return abscissas, weights

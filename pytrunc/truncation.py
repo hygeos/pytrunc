@@ -1,7 +1,7 @@
 import numpy as np
 from pytrunc.phase import calc_moments
 from pytrunc.utils import legendre_polynomials
-from scipy.signal import unit_impulse
+from scipy.integrate import trapezoid
 
 
 def delta_m_phase_approx(phase, theta, m_max, theta_unit='deg', phase_moments=None):
@@ -71,11 +71,14 @@ def delta_m_phase_approx(phase, theta, m_max, theta_unit='deg', phase_moments=No
     # phase_star = (1-f) * Σ [ (2n+1) * chi[n]* * pn(cosθ) ]
     for n in range(m_max):
         pn_costh = legendre_polynomials(n, cos_th)
-        phase_star += (1 - f) * (2*n + 1) * chi_star[n] * pn_costh
+        phase_star += (2*n + 1) * chi_star[n] * pn_costh
 
-    phase_approx = phase_star.copy()
+    phase_approx = phase_star.copy() * (1 - f)
     if f > 0:
-        delta_part = unit_impulse(len(theta), 0)
+        idmu = np.argsort(cos_th)
+        delta_part = np.zeros_like(theta)
+        delta_part[0] = 1. / np.abs(cos_th[1] - cos_th[0])
+        delta_part[0] = delta_part[0] / trapezoid(delta_part[idmu], cos_th[idmu]) # normalize dirac to 1
         delta_part = (2*f) * delta_part
         phase_approx += delta_part
     

@@ -443,3 +443,34 @@ def quadrature_lobatto(abscissa_min=-1, abscissa_max=1, n=100):
         weights *= alpha
 
     return abscissas, weights
+
+
+def integrate_lobatto(f, x, lp=100):
+    """
+    Integrate using lobatto quadrature
+
+    Parameters
+    ----------
+    f : 1-D ndarray
+        The ordinates of the function (array to be integrated).
+    x : 1-D ndarray
+        The abscissas
+    lp : float, optional
+        The number of lobatto points for the integration
+    
+    Return
+    ------
+    int : float
+        The estimated integral calculated using the Lobatto quadrature 
+    """
+    # sort x and modify f consequently
+    id_sorted = np.argsort(x)
+    x_sorted = x[id_sorted]
+    f_sorted = f[id_sorted]
+
+    # lobatto distribution and interpolation
+    xk, wk = quadrature_lobatto(abscissa_min=x_sorted[0], abscissa_max=x_sorted[-1], n=lp)
+    f_ = np.interp(xk, x_sorted, f_sorted)
+
+    # return integral
+    return np.sum(wk * f_)

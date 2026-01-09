@@ -183,13 +183,11 @@ def gt_phase_approx(phase, theta, trunc_frac, theta_unit='deg',
         if (theta[id] >= 0.5*np.pi): break
 
         pha_approx = pha_star.copy() * (1-f)
-        #delta_part = unit_impulse(len(theta), 0)
-        delta_part = np.zeros_like(pha_exact)
+        delta_part = np.zeros_like(mu)
         delta_part[0] = 1. / np.abs(mu[1] - mu[0])
-        #normalize to 1
-        delta_part[0] = delta_part[0] / trapezoid(delta_part[idmu], mu[idmu])
+        delta_part[0] = delta_part[0] / trapezoid(delta_part[idmu], mu[idmu]) # normalize dirac to 1
         delta_part = (2*f) * delta_part
         pha_approx += delta_part
 
-    return pha_approx, pha_star, f
+    return pha_approx, f, pha_star
 

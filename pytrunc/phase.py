@@ -1,6 +1,6 @@
 import math
 import numpy as np
-from scipy.integrate import simpson
+from scipy.integrate import simpson, trapezoid
 from pytrunc.utils import legendre_polynomials, quadrature_lobatto
 
 
@@ -51,9 +51,10 @@ def henyey_greenstein(theta, g, theta_unit='deg', normalize=None):
     else:
         raise ValueError("The accepted values for parameter theta_unit are: 'deg' or 'rad'")
     
- 
     phase = (1./(4*math.pi)) * (  (1-g*g) / (1 + g*g - (2*g*mu))**(1.5)  )
-    if normalize is not None: phase = (normalize * phase) / simpson(phase, np.sort(mu))
+    if normalize is not None:
+        idmu = np.argsort(mu)
+        phase = (normalize * phase) / simpson(phase[idmu], mu[idmu])
     
     return phase
 
@@ -150,7 +151,7 @@ def calc_moments(phase, theta, m_max, method='lobatto', theta_unit='deg', normal
           for strongly asymmetric phase functions. Journal of Atmospheric Sciences, 34(9), 1408-1422.
     """
 
-    methods_ok = ['lobatto', 'simpson']
+    methods_ok = ['lobatto', 'simpson', 'trapezoid']
 
     if method not in methods_ok:
         raise ValueError(f"Only available methods are: {methods_ok}")
@@ -181,12 +182,15 @@ def calc_moments(phase, theta, m_max, method='lobatto', theta_unit='deg', normal
             pl_cosxk = legendre_polynomials(l, cos_xk)
             chi[l] = 0.5 * np.sum(wk * pha * pl_cosxk * sin_xk)
 
-    if method == 'simpson':
+    else:
         mu = np.cos(theta)
         idmu = np.argsort(mu)
         for l in range(m_max+1):
             pl_mu = legendre_polynomials(l, mu[idmu])
-            chi[l]= 0.5 * simpson(phase[idmu] * pl_mu, mu[idmu]) 
+            if method == 'simpson':
+                chi[l]= 0.5 * simpson(phase[idmu] * pl_mu, mu[idmu])
+            elif method == 'trapezoid':
+                chi[l]= 0.5 * trapezoid(phase[idmu] * pl_mu, mu[idmu]) 
 
     # normalization
     if normalize: chi /= chi[0]

@@ -1,10 +1,12 @@
 import numpy as np
 from pytrunc.phase import calc_moments
-from pytrunc.utils import legendre_polynomials
-from scipy.integrate import trapezoid
+from pytrunc.utils import legendre_polynomials, integrate_lobatto
+from scipy.integrate import trapezoid, simpson
+import math
 
 
-def delta_m_phase_approx(phase, theta, m_max, theta_unit='deg', phase_moments=None):
+def delta_m_phase_approx(phase, theta, m_max, theta_unit='deg', phase_moments=None,
+                         method='trapezoid'):
     """
     Caculate the aproximation of the exact phase matrix using the delta-m method
 
@@ -25,6 +27,9 @@ def delta_m_phase_approx(phase, theta, m_max, theta_unit='deg', phase_moments=No
         If this parameter is not None circumvent the calculation of phase matrix moments.  
         This parameter can be useful in case we have the exact moment values like for H-G 
         phase function
+    method : str, optional
+        The method parameter of function calc_moments. Default use 'trapezoid'.
+        Also the integral method for the dirac normalization.
 
     Returns
     -------
@@ -57,6 +62,13 @@ def delta_m_phase_approx(phase, theta, m_max, theta_unit='deg', phase_moments=No
     else:
         chi = calc_moments(phase, theta, m_max=m_max, theta_unit='rad', normalize=True)
 
+    INTEGRATORS = {
+    "simpson": simpson,
+    "trapezoid": trapezoid,
+    "lobatto": integrate_lobatto
+    }
+    integrate_m = INTEGRATORS[method]
+
     f = chi[m_max]
 
     # here m_max = 2M (wiscombe 77)
@@ -77,8 +89,12 @@ def delta_m_phase_approx(phase, theta, m_max, theta_unit='deg', phase_moments=No
     if f > 0:
         idmu = np.argsort(cos_th)
         delta_part = np.zeros_like(theta)
-        delta_part[0] = 1. / np.abs(cos_th[1] - cos_th[0])
-        delta_part[0] = delta_part[0] / trapezoid(delta_part[idmu], cos_th[idmu]) # normalize dirac to 1
+        delta_part[0] = 1. 
+        if method == "lobatto":
+            delta_part[1] = 1. # because sin(pi) = 0
+            delta_part = delta_part / integrate_m(delta_part*np.sin(theta), theta) # normalize dirac to 1
+        else:
+            delta_part[0] = delta_part[0] / integrate_m(delta_part[idmu], cos_th[idmu]) # normalize dirac to 1
         delta_part = (2*f) * delta_part
         phase_approx += delta_part
     
@@ -86,7 +102,8 @@ def delta_m_phase_approx(phase, theta, m_max, theta_unit='deg', phase_moments=No
 
 
 def gt_phase_approx(phase, theta, trunc_frac, theta_unit='deg', 
-                    method='trapezoid', phase_moments_1=None, th_f=None):
+                    method='trapezoid', phase_moments_1=None, 
+                    th_tol = None, th_f=None):
     """
     Compute the aproximation of the exact phase matrix using the Iwabuchi GT method
 
@@ -104,11 +121,15 @@ def gt_phase_approx(phase, theta, trunc_frac, theta_unit='deg',
         - 'rad'
     method : str, optional
         The method parameter of function calc_moments. Default use 'trapezoid'.
+        Also the integral method for the dirac normalization.
     phase_moments : None | 1-D ndarray, optional
         The moments of the phase matrix. the size of phase_moments must be >= m_max+1.  
         If this parameter is not None circumvent the calculation of phase matrix moments.  
         This parameter can be useful in case we have the exact moment values like for H-G 
         phase function
+    th_tol : None | float, optional
+        While finding matching moments for Pf we look between 0 and th_tol. 
+        The unit is depending on the parameter theta_unit. Default th_tol = π/2
     th_f : None | float, optional
         Still in dev...
 
@@ -122,10 +143,12 @@ def gt_phase_approx(phase, theta, trunc_frac, theta_unit='deg',
         The truncated scattering phase matrix
     """
     if theta_unit == 'deg':
-            theta = (np.deg2rad(theta))
+            theta = np.deg2rad(theta)
+            if th_tol is not None: th_tol = np.deg2rad(th_tol)
     elif ( theta_unit != 'rad' ):
         raise ValueError("The accepted values for parameter theta_unit are: 'deg' or 'rad'")
-
+    
+    if th_tol is None: th_tol = 0.5*math.pi
     mu = np.cos(theta)
     idmu = np.argsort(mu)
 
@@ -134,58 +157,98 @@ def gt_phase_approx(phase, theta, trunc_frac, theta_unit='deg',
     else:
         chi_1 = calc_moments(phase, theta, m_max=1, theta_unit='rad', method=method, normalize=True)[1]
     
+    INTEGRATORS = {
+    "simpson": simpson,
+    "trapezoid": trapezoid,
+    "lobatto": integrate_lobatto
+    }
+    integrate_m = INTEGRATORS[method]
+
     f = trunc_frac
     chi_star_1 = (chi_1 - f) / (1 - f)
 
     # Find th_f and PF
     pha_star = np.zeros_like(phase, dtype=np.float64)
     mu1 = mu[0:2]
-    idmu1 = np.argsort(mu1)
-    mu2 = mu[1:]
-    idmu2 = np.argsort(mu2)
-    Pf = (2 - (1./(1-f))*trapezoid(phase[1:][idmu2], mu2[idmu2]) ) / \
-            ((1./(1-f)) * trapezoid(np.ones_like(mu1), mu1[idmu1]))
+    if method == "lobatto":
+        sin_th = np.sin(theta)
+        th1 = theta[0:2]
+        th2 = theta[1:]
+        Pf = (2 - (1./(1-f))*integrate_m(phase[1:]*sin_th[1:], th2) ) / \
+            ((1./(1-f)) * (np.max(mu1) - np.min(mu1))) #integrate_m(sin_th[0:2], th1))
+    else:
+        idmu1 = np.argsort(mu1)
+        mu2 = mu[1:]
+        idmu2 = np.argsort(mu2)
+        Pf = (2 - (1./(1-f))*integrate_m(phase[1:][idmu2], mu2[idmu2]) ) / \
+                ((1./(1-f)) *(np.max(mu1) - np.min(mu1))) #integrate_m(np.ones_like(mu1), mu1[idmu1]))
     pha_star[1:] = phase[1:]
     pha_star[0:1] = Pf
     pha_star *= 1./(1-f)
-    pha_star = (2 * pha_star) / trapezoid(pha_star[idmu], mu[idmu])
+
+    if method == "lobatto":
+        pha_star = (2 * pha_star) / integrate_m(pha_star*sin_th, theta)
+    else:
+        pha_star = (2 * pha_star) / integrate_m(pha_star[idmu], mu[idmu])
+
     chi_star_1_approx = calc_moments(pha_star, theta, m_max=1, theta_unit='rad', method=method, normalize=True)[1]
     err1 = abs(chi_star_1 - chi_star_1_approx)
     id_approx = 1
-    for id in range (0, len(phase)-2):     
+    for id in range (1, len(phase)-2):     
+        if (theta[id] >= th_tol):
+            break
+
         th_f = theta[id]
 
         # Find Pf:
         # normalization condition between 0 and π ->  ∫ P*(θ) sin(θ) dθ = 2
         mu1 = mu[0:id+1]
-        idmu1 = np.argsort(mu1)
-        mu2 = mu[id:]
-        idmu2 = np.argsort(mu2)
-        Pf_tmp = (2 - (1./(1-f))*trapezoid(phase[id:][idmu2], mu2[idmu2]) ) / \
-            ((1./(1-f)) * trapezoid(np.ones_like(mu1), mu1[idmu1]))
+        if method == "lobatto":
+            sin_th = np.sin(theta)
+            #th1 = theta[0:id+1]
+            th2 = theta[id:]
+            Pf_tmp = (2 - (1./(1-f))*integrate_m(phase[id:]*sin_th[id:], th2) ) / \
+                ((1./(1-f)) * (np.max(mu1) - np.min(mu1)))#integrate_m(sin_th[0:id+1], th1))
+        else:
+            #idmu1 = np.argsort(mu1)
+            mu2 = mu[id:]
+            idmu2 = np.argsort(mu2)
+            Pf_tmp = (2 - (1./(1-f))*integrate_m(phase[id:][idmu2], mu2[idmu2]) ) / \
+                    ((1./(1-f)) * (np.max(mu1) - np.min(mu1)))#integrate_m(np.ones_like(mu1), mu1[idmu1]))
+        
+        if np.isnan(Pf_tmp) or np.isinf(Pf_tmp):
+            continue
         
         pha_star_tmp = np.zeros_like(phase, dtype=np.float64)
         pha_star_tmp[id:] = phase[id:]
         pha_star_tmp[0:id] = Pf_tmp
         pha_star_tmp *= 1./(1-f)
-        pha_star_tmp = (2 * pha_star_tmp) / trapezoid(pha_star_tmp[idmu], mu[idmu])
+
+        if method == "lobatto":
+            pha_star_tmp = (2 * pha_star_tmp) / integrate_m(pha_star_tmp*sin_th, theta)
+        else:
+            pha_star_tmp = (2 * pha_star_tmp) / integrate_m(pha_star_tmp[idmu], mu[idmu])
 
         chi_star_1_approx_tmp = calc_moments(pha_star_tmp, theta, m_max=1, theta_unit='rad', method=method, normalize=True)[1]
         err2 = abs(chi_star_1 - chi_star_1_approx_tmp)
+        print(chi_star_1, chi_star_1_approx, err2, np.rad2deg(th_f))
 
-        if (err2 < err1 and theta[id] < 0.5*np.pi):
+        if (err2 < err1 and theta[id] < th_tol):
             id_approx = id
-            pha_star = pha_star_tmp
+            pha_star = pha_star_tmp.copy()
             chi_star_1_approx = chi_star_1_approx_tmp
-        err1 = err2
-
-        #print(theta[id], chi_star_1_approx_tmp)
-        if (theta[id] >= 0.5*np.pi): break
+            err1 = err2
 
         pha_approx = pha_star.copy() * (1-f)
         delta_part = np.zeros_like(mu)
-        delta_part[0] = 1. / np.abs(mu[1] - mu[0])
-        delta_part[0] = delta_part[0] / trapezoid(delta_part[idmu], mu[idmu]) # normalize dirac to 1
+        delta_part[0] = 1.
+        if method == "lobatto":
+            delta_part[1] = 1. # because sin(pi) = 0
+            delta_part = delta_part / integrate_m(delta_part*sin_th, theta) # normalize dirac to 1
+            
+        else:
+            delta_part[0] = delta_part[0] / integrate_m(delta_part[idmu], mu[idmu]) # normalize dirac to 1
+
         delta_part = (2*f) * delta_part
         pha_approx += delta_part
 

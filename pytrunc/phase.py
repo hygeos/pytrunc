@@ -1,7 +1,7 @@
 import math
 import numpy as np
 from scipy.integrate import simpson, trapezoid
-from pytrunc.utils import legendre_polynomials, quadrature_lobatto
+from pytrunc.utils import legendre_polynomials, quadrature_lobatto, integrate_lobatto
 
 
 def henyey_greenstein(theta, g, theta_unit='deg', normalize=None):
@@ -172,15 +172,21 @@ def calc_moments(phase, theta, m_max, method='lobatto', theta_unit='deg', normal
         if nth < 2:
             raise ValueError("The phase size must be >= 2 for Lobatto quadrature")
         
-        xk, wk = quadrature_lobatto(abscissa_min=0., abscissa_max=math.pi, n=nth)
+        #xk, wk = quadrature_lobatto(abscissa_min=0., abscissa_max=math.pi, n=nth)
 
-        cos_xk = np.cos(xk)
-        sin_xk = np.sin(xk)
-        pha = np.interp(xk, theta, phase)
+
+        #cos_xk = np.cos(xk)
+        mu = np.cos(theta)
+        # idmu = np.argsort(mu)
+        sin_th = np.sin(theta)
+        
 
         for l in range (m_max + 1):
-            pl_cosxk = legendre_polynomials(l, cos_xk)
-            chi[l] = 0.5 * np.sum(wk * pha * pl_cosxk * sin_xk)
+            pl_mu = legendre_polynomials(l, mu)
+            #pl_mu = legendre_polynomials(l, mu[idmu])
+            #chi[l] = 0.5 * np.sum(wk * pha * pl_cosxk * sin_xk)
+            chi[l]= 0.5 * integrate_lobatto(phase*sin_th*pl_mu, theta)
+
 
     else:
         mu = np.cos(theta)

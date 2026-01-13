@@ -445,7 +445,7 @@ def quadrature_lobatto(abscissa_min=-1, abscissa_max=1, n=100):
     return abscissas, weights
 
 
-def integrate_lobatto(f, x, lp=100):
+def integrate_lobatto(f, x, lp=None):
     """
     Integrate using lobatto quadrature
 
@@ -455,14 +455,17 @@ def integrate_lobatto(f, x, lp=100):
         The ordinates of the function (array to be integrated).
     x : 1-D ndarray
         The abscissas
-    lp : float, optional
-        The number of lobatto points for the integration
+    lp : None | int, optional
+        The number of lobatto points for the integration. If None lp = len(x).
     
     Return
     ------
     int : float
         The estimated integral calculated using the Lobatto quadrature 
     """
+
+    if lp is None: lp = len(x)
+
     # sort x and modify f consequently
     id_sorted = np.argsort(x)
     x_sorted = x[id_sorted]

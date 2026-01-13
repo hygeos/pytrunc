@@ -445,7 +445,7 @@ def quadrature_lobatto(abscissa_min=-1, abscissa_max=1, n=100):
     return abscissas, weights
 
 
-def integrate_lobatto(f, x, lp=None):
+def integrate_lobatto(f, x, lp=None, xk=None, wk=None):
     """
     Integrate using lobatto quadrature
 
@@ -457,7 +457,10 @@ def integrate_lobatto(f, x, lp=None):
         The abscissas
     lp : None | int, optional
         The number of lobatto points for the integration. If None lp = len(x).
-    
+    xk : None | 1-D ndarray
+        Force the Lobatto quadrature abscissas. Considered if wk is also provided.
+    wk : None | 1-D ndarray
+        Force the Lobatto weights. Considered if xk is also provided.
     Return
     ------
     int : float
@@ -472,7 +475,8 @@ def integrate_lobatto(f, x, lp=None):
     f_sorted = f[id_sorted]
 
     # lobatto distribution and interpolation
-    xk, wk = quadrature_lobatto(abscissa_min=x_sorted[0], abscissa_max=x_sorted[-1], n=lp)
+    if ((xk is None) or (wk is None)):
+        xk, wk = quadrature_lobatto(abscissa_min=x_sorted[0], abscissa_max=x_sorted[-1], n=lp)
     f_ = np.interp(xk, x_sorted, f_sorted)
 
     # return integral

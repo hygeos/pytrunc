@@ -1,6 +1,6 @@
 import numpy as np
 from pytrunc.phase import calc_moments
-from pytrunc.utils import legendre_polynomials, integrate_lobatto
+from pytrunc.utils import legendre_polynomials, integrate_lobatto, quadrature_lobatto
 from scipy.integrate import trapezoid, simpson
 import math
 
@@ -155,7 +155,12 @@ def gt_phase_approx(phase, theta, trunc_frac, theta_unit='deg',
     if phase_moments_1 is not None:
         chi_1 = phase_moments_1[1]
     else:
-        chi_1 = calc_moments(phase, theta, m_max=1, theta_unit='rad', method=method, normalize=True)[1]
+        if method == 'lobatto':
+            xk, wk = quadrature_lobatto(abscissa_min=theta[0], abscissa_max=theta[-1], n=len(theta))
+            chi_1 = calc_moments(phase, theta, m_max=1, theta_unit='rad', 
+                                 method=method, normalize=True, xk=xk, wk=wk)[1]
+        else:
+            chi_1 = calc_moments(phase, theta, m_max=1, theta_unit='rad', method=method, normalize=True)[1]
     
     INTEGRATORS = {
     "simpson": simpson,
@@ -172,12 +177,12 @@ def gt_phase_approx(phase, theta, trunc_frac, theta_unit='deg',
     mu1 = mu[0:2]
     if method == "lobatto":
         sin_th = np.sin(theta)
-        th1 = theta[0:2]
+        #th1 = theta[0:2]
         th2 = theta[1:]
         Pf = (2 - (1./(1-f))*integrate_m(phase[1:]*sin_th[1:], th2) ) / \
             ((1./(1-f)) * (np.max(mu1) - np.min(mu1))) #integrate_m(sin_th[0:2], th1))
     else:
-        idmu1 = np.argsort(mu1)
+        #idmu1 = np.argsort(mu1)
         mu2 = mu[1:]
         idmu2 = np.argsort(mu2)
         Pf = (2 - (1./(1-f))*integrate_m(phase[1:][idmu2], mu2[idmu2]) ) / \
@@ -187,18 +192,18 @@ def gt_phase_approx(phase, theta, trunc_frac, theta_unit='deg',
     pha_star *= 1./(1-f)
 
     if method == "lobatto":
-        pha_star = (2 * pha_star) / integrate_m(pha_star*sin_th, theta)
+        pha_star = (2 * pha_star) / integrate_m(pha_star*sin_th, theta, xk=xk, wk=wk)
     else:
         pha_star = (2 * pha_star) / integrate_m(pha_star[idmu], mu[idmu])
 
     chi_star_1_approx = calc_moments(pha_star, theta, m_max=1, theta_unit='rad', method=method, normalize=True)[1]
     err1 = abs(chi_star_1 - chi_star_1_approx)
-    id_approx = 1
+    #id_approx = 1
     for id in range (1, len(phase)-2):     
         if (theta[id] >= th_tol):
             break
 
-        th_f = theta[id]
+        #th_f = theta[id]
 
         # Find Pf:
         # normalization condition between 0 and π ->  ∫ P*(θ) sin(θ) dθ = 2
@@ -225,16 +230,19 @@ def gt_phase_approx(phase, theta, trunc_frac, theta_unit='deg',
         pha_star_tmp *= 1./(1-f)
 
         if method == "lobatto":
-            pha_star_tmp = (2 * pha_star_tmp) / integrate_m(pha_star_tmp*sin_th, theta)
+            pha_star_tmp = (2 * pha_star_tmp) / integrate_m(pha_star_tmp*sin_th, theta, xk=xk, wk=wk)
+            chi_star_1_approx_tmp = calc_moments(pha_star_tmp, theta, m_max=1, theta_unit='rad', 
+                                                 method=method, normalize=True, xk=xk, wk=wk)[1]
         else:
             pha_star_tmp = (2 * pha_star_tmp) / integrate_m(pha_star_tmp[idmu], mu[idmu])
-
-        chi_star_1_approx_tmp = calc_moments(pha_star_tmp, theta, m_max=1, theta_unit='rad', method=method, normalize=True)[1]
+            chi_star_1_approx_tmp = calc_moments(pha_star_tmp, theta, m_max=1, theta_unit='rad', 
+                                                 method=method, normalize=True)[1]
+            
         err2 = abs(chi_star_1 - chi_star_1_approx_tmp)
-        print(chi_star_1, chi_star_1_approx, err2, np.rad2deg(th_f))
+        #print(chi_star_1, chi_star_1_approx, err2, np.rad2deg(th_f))
 
         if (err2 < err1 and theta[id] < th_tol):
-            id_approx = id
+            #id_approx = id
             pha_star = pha_star_tmp.copy()
             chi_star_1_approx = chi_star_1_approx_tmp
             err1 = err2
@@ -244,7 +252,7 @@ def gt_phase_approx(phase, theta, trunc_frac, theta_unit='deg',
         delta_part[0] = 1.
         if method == "lobatto":
             delta_part[1] = 1. # because sin(pi) = 0
-            delta_part = delta_part / integrate_m(delta_part*sin_th, theta) # normalize dirac to 1
+            delta_part = delta_part / integrate_m(delta_part*sin_th, theta, xk=xk, wk=wk) # normalize dirac to 1
             
         else:
             delta_part[0] = delta_part[0] / integrate_m(delta_part[idmu], mu[idmu]) # normalize dirac to 1

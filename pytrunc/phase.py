@@ -107,7 +107,8 @@ def two_term_henyey_greenstein(theta, g1, g2, f, theta_unit='deg', normalize=Non
     return phase
 
 
-def calc_moments(phase, theta, m_max, method='lobatto', theta_unit='deg', normalize=False):
+def calc_moments(phase, theta, m_max, method='lobatto', theta_unit='deg',
+                 normalize=False, xk=None, wk=None):
     """ 
     Calculate the phase matrix moments until m_max moment
 
@@ -129,6 +130,10 @@ def calc_moments(phase, theta, m_max, method='lobatto', theta_unit='deg', normal
         - 'rad'
     normalize : bool, optional
         If normalize = True -> normalize such that first moment exactly = 1
+    xk : None | 1-D ndarray
+        Force the Lobatto quadrature abscissas. Considered if wk is also provided.
+    wk : None | 1-D ndarray
+        Force the Lobatto weights. Considered if xk is also provided.
     
     Returns
     -------
@@ -172,20 +177,15 @@ def calc_moments(phase, theta, m_max, method='lobatto', theta_unit='deg', normal
         if nth < 2:
             raise ValueError("The phase size must be >= 2 for Lobatto quadrature")
         
-        #xk, wk = quadrature_lobatto(abscissa_min=0., abscissa_max=math.pi, n=nth)
+        if ((xk is None) or (wk is None)):
+            xk, wk = quadrature_lobatto(abscissa_min=0., abscissa_max=math.pi, n=nth)
 
-
-        #cos_xk = np.cos(xk)
         mu = np.cos(theta)
-        # idmu = np.argsort(mu)
         sin_th = np.sin(theta)
-        
-
+    
         for l in range (m_max + 1):
             pl_mu = legendre_polynomials(l, mu)
-            #pl_mu = legendre_polynomials(l, mu[idmu])
-            #chi[l] = 0.5 * np.sum(wk * pha * pl_cosxk * sin_xk)
-            chi[l]= 0.5 * integrate_lobatto(phase*sin_th*pl_mu, theta)
+            chi[l]= 0.5 * integrate_lobatto(phase*sin_th*pl_mu, theta, xk=xk, wk=wk)
 
 
     else:

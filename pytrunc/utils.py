@@ -2,6 +2,7 @@ import numpy as np
 import math
 from scipy.special import gammaln
 from scipy.special import j1, jvp, jn_zeros
+from scipy.interpolate import interp1d
 
 
 def legendre_polynomials(n, x):
@@ -439,13 +440,13 @@ def quadrature_lobatto(abscissa_min=-1, abscissa_max=1, n=100):
     if abscissa_min != -1 or abscissa_max != 1:
         alpha = (abscissa_max - abscissa_min) / 2.
         abscissas = (abscissas + 1) * alpha + abscissa_min
-        alpha = (abscissa_max - abscissa_min) / 2.
         weights *= alpha
 
     return abscissas, weights
 
 
-def integrate_lobatto(f, x, lp=None, xk=None, wk=None):
+def integrate_lobatto(f, x, lp=None, xk=None, wk=None, 
+                      assume_sorted=False):
     """
     Integrate using lobatto quadrature
 
@@ -461,6 +462,8 @@ def integrate_lobatto(f, x, lp=None, xk=None, wk=None):
         Force the Lobatto quadrature abscissas. Considered if wk is also provided.
     wk : None | 1-D ndarray
         Force the Lobatto weights. Considered if xk is also provided.
+    assume_sorted : bool, optional
+        If True, the x array is assumed to be sorted in ascending order.
     Return
     ------
     int : float
@@ -470,14 +473,21 @@ def integrate_lobatto(f, x, lp=None, xk=None, wk=None):
     if lp is None: lp = len(x)
 
     # sort x and modify f consequently
-    id_sorted = np.argsort(x)
-    x_sorted = x[id_sorted]
-    f_sorted = f[id_sorted]
-
+    if assume_sorted:
+        x_sorted = x
+        f_sorted = f
+    else:
+        id_sorted = np.argsort(x)
+        x_sorted = x[id_sorted]
+        f_sorted = f[id_sorted]
     # lobatto distribution and interpolation
     if ((xk is None) or (wk is None)):
-        xk, wk = quadrature_lobatto(abscissa_min=x_sorted[0], abscissa_max=x_sorted[-1], n=lp)
-    f_ = np.interp(xk, x_sorted, f_sorted)
+        xk, wk = quadrature_lobatto(abscissa_min=x_sorted[0], 
+                                    abscissa_max=x_sorted[-1], n=lp)
+
+    interp_func = interp1d(x_sorted, f_sorted, kind='linear', 
+                           assume_sorted=assume_sorted)
+    f_ = interp_func(xk)
 
     # return integral
     return np.sum(wk * f_)

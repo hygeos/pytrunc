@@ -199,11 +199,22 @@ def gt_phase_approx(phase, theta, trunc_frac, theta_unit='deg',
     chi_star_1_approx = calc_moments(pha_star, theta, m_max=1, theta_unit='rad', method=method, normalize=True)[1]
     err1 = abs(chi_star_1 - chi_star_1_approx)
     #id_approx = 1
+
+    delta_part = np.zeros_like(mu)
+    delta_part[0] = 1.
+    if method == "lobatto":
+        delta_part[1] = 1. # because sin(pi) = 0
+        delta_part = delta_part / integrate_m(delta_part*sin_th, theta, xk=xk, wk=wk) # normalize dirac to 1
+        
+    else:
+        delta_part[0] = delta_part[0] / integrate_m(delta_part[idmu], mu[idmu]) # normalize dirac to 1
+    delta_part = (2*f) * delta_part
+
     for id in range (1, len(phase)-2):     
         if (theta[id] >= th_tol):
             break
 
-        #th_f = theta[id]
+        th_f = theta[id]
 
         # Find Pf:
         # normalization condition between 0 and π ->  ∫ P*(θ) sin(θ) dθ = 2
@@ -212,7 +223,7 @@ def gt_phase_approx(phase, theta, trunc_frac, theta_unit='deg',
             sin_th = np.sin(theta)
             #th1 = theta[0:id+1]
             th2 = theta[id:]
-            Pf_tmp = (2 - (1./(1-f))*integrate_m(phase[id:]*sin_th[id:], th2) ) / \
+            Pf_tmp = (2 - (1./(1-f))*integrate_m(phase[id:]*sin_th[id:], th2, lp=max(len(th2), 100)) ) / \
                 ((1./(1-f)) * (np.max(mu1) - np.min(mu1)))#integrate_m(sin_th[0:id+1], th1))
         else:
             #idmu1 = np.argsort(mu1)
@@ -239,7 +250,7 @@ def gt_phase_approx(phase, theta, trunc_frac, theta_unit='deg',
                                                  method=method, normalize=True)[1]
             
         err2 = abs(chi_star_1 - chi_star_1_approx_tmp)
-        #print(chi_star_1, chi_star_1_approx, err2, np.rad2deg(th_f))
+        print(chi_star_1, chi_star_1_approx, err2, np.rad2deg(th_f))
 
         if (err2 < err1 and theta[id] < th_tol):
             #id_approx = id
@@ -248,16 +259,6 @@ def gt_phase_approx(phase, theta, trunc_frac, theta_unit='deg',
             err1 = err2
 
         pha_approx = pha_star.copy() * (1-f)
-        delta_part = np.zeros_like(mu)
-        delta_part[0] = 1.
-        if method == "lobatto":
-            delta_part[1] = 1. # because sin(pi) = 0
-            delta_part = delta_part / integrate_m(delta_part*sin_th, theta, xk=xk, wk=wk) # normalize dirac to 1
-            
-        else:
-            delta_part[0] = delta_part[0] / integrate_m(delta_part[idmu], mu[idmu]) # normalize dirac to 1
-
-        delta_part = (2*f) * delta_part
         pha_approx += delta_part
 
     return pha_approx, f, pha_star

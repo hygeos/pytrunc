@@ -108,7 +108,7 @@ def two_term_henyey_greenstein(theta, g1, g2, f, theta_unit='deg', normalize=Non
 
 
 def calc_moments(phase, theta, m_max, method='lobatto', theta_unit='deg',
-                 normalize=False, xk=None, wk=None):
+                 normalize=False, xk=None, wk=None, pl_costh=None):
     """ 
     Calculate the phase matrix moments until m_max moment
 
@@ -130,11 +130,12 @@ def calc_moments(phase, theta, m_max, method='lobatto', theta_unit='deg',
         - 'rad'
     normalize : bool, optional
         If normalize = True -> normalize such that first moment exactly = 1
-    xk : None | 1-D ndarray
+    xk : None | 1-D ndarray, optional
         Force the Lobatto quadrature abscissas. Considered if wk is also provided.
-    wk : None | 1-D ndarray
+    wk : None | 1-D ndarray, optional
         Force the Lobatto weights. Considered if xk is also provided.
-    
+    pl_costh : None | 2-D ndarray, optional
+        Force the Legendre polynomials values of cos(theta). The shape must be (m_max+1, len(theta))
     Returns
     -------
     m : 1-D ndarray
@@ -180,11 +181,12 @@ def calc_moments(phase, theta, m_max, method='lobatto', theta_unit='deg',
         if ((xk is None) or (wk is None)):
             xk, wk = quadrature_lobatto(abscissa_min=0., abscissa_max=math.pi, n=nth)
 
-        mu = np.cos(theta)
+        if pl_costh is None : mu = np.cos(theta)
         sin_th = np.sin(theta)
     
         for l in range (m_max + 1):
-            pl_mu = legendre_polynomials(l, mu)
+            if pl_costh is None : pl_mu = legendre_polynomials(l, mu)
+            else: pl_mu = pl_costh[l]
             chi[l]= 0.5 * integrate_lobatto(phase*sin_th*pl_mu, theta, xk=xk, wk=wk)
 
 
@@ -192,7 +194,8 @@ def calc_moments(phase, theta, m_max, method='lobatto', theta_unit='deg',
         mu = np.cos(theta)
         idmu = np.argsort(mu)
         for l in range(m_max+1):
-            pl_mu = legendre_polynomials(l, mu[idmu])
+            if pl_costh is None : pl_mu = legendre_polynomials(l, mu[idmu])
+            else: pl_mu = pl_costh[l][idmu]
             if method == 'simpson':
                 chi[l]= 0.5 * simpson(phase[idmu] * pl_mu, mu[idmu])
             elif method == 'trapezoid':

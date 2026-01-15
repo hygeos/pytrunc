@@ -122,11 +122,8 @@ def gt_phase_approx(phase, theta, trunc_frac, theta_unit='deg',
     method : str, optional
         The method parameter of function calc_moments. Default use 'trapezoid'.
         Also the integral method for the dirac normalization.
-    phase_moments : None | 1-D ndarray, optional
-        The moments of the phase matrix. the size of phase_moments must be >= m_max+1.  
-        If this parameter is not None circumvent the calculation of phase matrix moments.  
-        This parameter can be useful in case we have the exact moment values like for H-G 
-        phase function
+    phase_moments_1 : None | 1-D ndarray, optional
+        The value of the first moment of the phase matrix.
     th_tol : None | float, optional
         While finding matching moments for Pf we look between 0 and th_tol. 
         The unit is depending on the parameter theta_unit. Default th_tol = π/2
@@ -156,10 +153,9 @@ def gt_phase_approx(phase, theta, trunc_frac, theta_unit='deg',
     idmu = np.argsort(mu)
 
     if phase_moments_1 is not None:
-        chi_1 = phase_moments_1[1]
+        chi_1 = phase_moments_1
     else:
         if method == 'lobatto':
-            sin_th = np.sin(theta)
             xk, wk = quadrature_lobatto(abscissa_min=theta[0], abscissa_max=theta[-1], n=len(theta))
             lp_costh = np.zeros((2, len(theta)))
             for l in range(2):
@@ -182,6 +178,7 @@ def gt_phase_approx(phase, theta, trunc_frac, theta_unit='deg',
     delta_part = np.zeros_like(mu)
     delta_part[0] = 1.
     if method == "lobatto":
+        sin_th = np.sin(theta)
         delta_part[1] = 1. # because sin(pi) = 0
         delta_part = delta_part / integrate_m(delta_part*sin_th, theta, xk=xk, wk=wk) # normalize dirac to 1
         
@@ -195,7 +192,6 @@ def gt_phase_approx(phase, theta, trunc_frac, theta_unit='deg',
 
         mu1 = mu[0:id_f+1]
         if method == "lobatto":
-            sin_th = np.sin(theta)
             th2 = theta[id_f:]
  
             Pf_tmp = (2 - (1./(1-f))*integrate_m(phase[id_f:]*sin_th[id_f:], th2, lp=len(th2), assume_sorted=True) ) / \

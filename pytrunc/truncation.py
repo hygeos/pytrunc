@@ -152,14 +152,17 @@ def gt_phase_approx(phase, theta, trunc_frac, theta_unit='deg',
     mu = np.cos(theta)
     idmu = np.argsort(mu)
 
+    if method == 'lobatto':
+        sin_th = np.sin(theta)
+        xk, wk = quadrature_lobatto(abscissa_min=theta[0], abscissa_max=theta[-1], n=len(theta))
+        lp_costh = np.zeros((2, len(theta)))
+        for l in range(2):
+            lp_costh[l] = legendre_polynomials(l, np.cos(theta))
+
     if phase_moments_1 is not None:
         chi_1 = phase_moments_1
     else:
         if method == 'lobatto':
-            xk, wk = quadrature_lobatto(abscissa_min=theta[0], abscissa_max=theta[-1], n=len(theta))
-            lp_costh = np.zeros((2, len(theta)))
-            for l in range(2):
-                lp_costh[l] = legendre_polynomials(l, np.cos(theta))
             chi_1 = calc_moments(phase, theta, m_max=1, theta_unit='rad', 
                                  method=method, normalize=True, xk=xk, wk=wk, pl_costh=lp_costh)[1]
         else:
@@ -178,7 +181,6 @@ def gt_phase_approx(phase, theta, trunc_frac, theta_unit='deg',
     delta_part = np.zeros_like(mu)
     delta_part[0] = 1.
     if method == "lobatto":
-        sin_th = np.sin(theta)
         delta_part[1] = 1. # because sin(pi) = 0
         delta_part = delta_part / integrate_m(delta_part*sin_th, theta, xk=xk, wk=wk) # normalize dirac to 1
         

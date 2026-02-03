@@ -5,7 +5,9 @@ requires = ["setuptools>=42"]
 [project]
 name = "pytrunc"
 version = "0.1.0"
-description = """"""
+description = """
+Scattering phase matrix truncation Python tool for radiative transfer applications.
+"""
 authors = [
     {name = "Mustapha Moulana", email = "mm@hygeos.com"},
 ]

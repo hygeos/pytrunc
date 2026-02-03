@@ -8,7 +8,7 @@ from datetime import datetime
 
 
 def delta_m_phase_approx(phase, theta, m_max, theta_unit='deg', phase_moments=None,
-                         method='trapezoid'):
+                         method='trapezoid', ds_output=True):
     """
     Caculate the aproximation of the exact phase matrix using the delta-m method
 
@@ -32,6 +32,8 @@ def delta_m_phase_approx(phase, theta, m_max, theta_unit='deg', phase_moments=No
     method : str, optional
         The method parameter of function calc_moments. Default use 'trapezoid'.
         Also the integral method for the dirac normalization.
+    ds_output : Bool, optional
+            If True the output is a dataset, else return a tuple.
 
     Returns
     -------
@@ -100,7 +102,27 @@ def delta_m_phase_approx(phase, theta, m_max, theta_unit='deg', phase_moments=No
         delta_part = (2*f) * delta_part
         phase_approx += delta_part
     
-    return phase_approx, f, phase_star, chi_star
+    if ds_output:
+        ds = xr.Dataset(coords={'theta': np.rad2deg(theta), 'exp_order': np.arange(m_max+1)})
+        ds.coords['theta'].attrs.update({ 'units': 'degrees', 'description': 'scattering angle'})
+        ds['phase_approx'] = xr.DataArray(phase_approx, dims=['theta'])
+        ds['phase_approx'].attrs.update({ 'units': 'none', 'description': 'the approximation of the exact phase matrix'})
+        ds['f'] = xr.DataArray(f)
+        ds['f'].attrs.update({ 'units': 'none', 'description': 'the truncation factor'})
+        ds['phase_tr'] = xr.DataArray(phase_star, dims=['theta'])
+        ds['phase_tr'].attrs.update({ 'units': 'none', 'description': 'the truncated phase matrix'})
+        ds['chi'] = xr.DataArray(chi[0:m_max+1], dims=['exp_order'])
+        ds['chi'].attrs.update({ 'units': 'none', 'description': 'the moments of the exact phase matrix'})
+        ds['chi_star'] = xr.DataArray(np.concatenate((chi_star, np.array([0.]))), dims=['exp_order'])
+        ds['chi_star'].attrs.update({ 'units': 'none', 'description': 'the moments of the truncated phase matrix'})
+        ds.attrs = {'truncation method': 'DM'}
+        date = datetime.now().strftime("%Y-%m-%d")  
+        ds.attrs.update({'date':date})
+        ds.attrs.update({'m_max': m_max})
+        ds.attrs.update({'integration method': method })
+        return ds
+    else:
+        return phase_approx, f, phase_star, chi_star
 
 
 def gt_phase_approx(phase, theta, trunc_frac, theta_unit='deg', 
@@ -326,7 +348,7 @@ def gt_phase_approx(phase, theta, trunc_frac, theta_unit='deg',
             pha_approx += delta_part
 
     if ds_output:
-        ds = xr.Dataset(coords={'theta': np.rad2deg(theta)})
+        ds = xr.Dataset(coords={'theta': np.rad2deg(theta), 'exp_order': np.arange(2)})
         ds.coords['theta'].attrs.update({ 'units': 'degrees', 'description': 'scattering angle'})
         ds['phase_approx'] = xr.DataArray(pha_approx, dims=['theta'])
         ds['phase_approx'].attrs.update({ 'units': 'none', 'description': 'the approximation of the exact phase matrix'})
@@ -334,10 +356,10 @@ def gt_phase_approx(phase, theta, trunc_frac, theta_unit='deg',
         ds['f'].attrs.update({ 'units': 'none', 'description': 'the truncation factor'})
         ds['phase_tr'] = xr.DataArray(pha_star, dims=['theta'])
         ds['phase_tr'].attrs.update({ 'units': 'none', 'description': 'the truncated phase matrix'})
-        ds['chi_star_1'] = xr.DataArray(chi_star_1)
-        ds['chi_star_1'].attrs.update({ 'units': 'none', 'description': 'the truncated phase matrix first moment if moment conservation'})
-        ds['chi_star_1_approx'] = xr.DataArray(chi_star_1_approx)
-        ds['chi_star_1_approx'].attrs.update({ 'units': 'none', 'description': 'the actual truncated phase matrix first moment'})
+        ds['chi_star_ideal'] = xr.DataArray(np.array([1., chi_star_1]))
+        ds['chi_star_ideal'].attrs.update({ 'units': 'none', 'description': 'the truncated phase matrix moments if moment conservation (ideal case)'})
+        ds['chi_star'] = xr.DataArray(np.array([1., chi_star_1_approx]))
+        ds['chi_star'].attrs.update({ 'units': 'none', 'description': 'the actual truncated phase matrix moments'})
         if th_f_bis is not None:
             ds['theta_f'] = xr.DataArray(np.rad2deg(th_f))
             ds['th_f'] = xr.DataArray(np.rad2deg(th_f))
@@ -345,7 +367,7 @@ def gt_phase_approx(phase, theta, trunc_frac, theta_unit='deg',
             ds['theta_f'] = xr.DataArray(np.rad2deg(theta[id_approx]))
             ds['th_f'] = xr.DataArray(None)
         ds['theta_f'].attrs.update({ 'units': 'degrees', 'description': 'the truncation angle'})
-        ds['th_f'].attrs.update({ 'units': 'degrees', 'description': 'the th_f parameter value'})
+        ds['th_f'].attrs.update({ 'units': 'degrees', 'description': 'the th_f parameter value (to force truncation angle)'})
         if th_tol_bis is not None:
             ds['th_tol'] = xr.DataArray(np.rad2deg(th_tol))
         else:
@@ -357,7 +379,7 @@ def gt_phase_approx(phase, theta, trunc_frac, theta_unit='deg',
         ds.attrs.update({'phase_moments_1': chi_1})
         ds.attrs.update({'integration method': method })
         if method == 'lobatto':
-            ds.attrs.update({'lobatto_optimized_integration': lobatto_optimization})
+            ds.attrs.update({'lobatto_optimization': lobatto_optimization})
         return ds        
     else:
         return pha_approx, f, pha_star

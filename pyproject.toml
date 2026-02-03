@@ -14,10 +14,15 @@ requires-python = ">= 3.10"
 dependencies = [
     "numpy", 
     "scipy", 
-    "matplotlib", 
-    "notebook",
     "netcdf4",
     "xarray",
+]
+
+[project.optional-dependencies]
+
+extra = [
+    "matplotlib",
+    "notebook"
 ]
 
 
@@ -35,4 +40,4 @@ pytrunc = { path = ".", editable = true }
 [tool.pixi.dependencies]
 
 [tool.pixi.environments]
-default = { solve-group = "default" }
+default = { features = ["extra"], solve-group = "default" }

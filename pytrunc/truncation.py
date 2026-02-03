@@ -5,6 +5,7 @@ from scipy.integrate import trapezoid, simpson
 import math
 import xarray as xr
 from datetime import datetime
+from pytrunc.constant import VERSION
 
 
 def delta_m_phase_approx(phase, theta, m_max, theta_unit='deg', phase_moments=None,
@@ -120,6 +121,7 @@ def delta_m_phase_approx(phase, theta, m_max, theta_unit='deg', phase_moments=No
         ds.attrs.update({'date':date})
         ds.attrs.update({'m_max': m_max})
         ds.attrs.update({'integration method': method })
+        ds.attrs.update({'pytrunc_version': VERSION })
         return ds
     else:
         return phase_approx, f, phase_star, chi_star
@@ -380,6 +382,7 @@ def gt_phase_approx(phase, theta, trunc_frac, theta_unit='deg',
         ds.attrs.update({'integration method': method })
         if method == 'lobatto':
             ds.attrs.update({'lobatto_optimization': lobatto_optimization})
+        ds.attrs.update({'pytrunc_version': VERSION })
         return ds        
     else:
         return pha_approx, f, pha_star

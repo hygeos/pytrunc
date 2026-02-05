@@ -31,10 +31,9 @@ def henyey_greenstein(theta, g, theta_unit='deg', normalize=None):
     The Henyey-Greenstein equation:
     
     - :math:`F_HG(θ) = (1/π) * [ (1 - g**2) / (1 + g**2 - (2*g*cos(θ)))**(3/2) ]`
-    
-    - By default the integral ∫F(θ)dcosθ = 1/2π.  
-    The integral value can be different due to a very low dicretization of θ and/or a high g value.  
-    The use of the parameter `normalize` can be useful to renormalize the phase function.
+    - By default the integral ∫F(θ)dcosθ = 1/2π.
+      The integral value can be different due to a very low dicretization of θ and/or a high g value.
+      The use of the parameter `normalize` can be useful to renormalize the phase function.
 
     References
     ----------
@@ -90,10 +89,9 @@ def two_term_henyey_greenstein(theta, g1, g2, f, theta_unit='deg', normalize=Non
     The two term Henyey-Greenstein equation:
     
     - :math:`F_TTHG(θ) = f*F_HG1(θ) + (1-f)*F_HG2(θ)`
-    
-    - By default the integral ∫F_TTHG(θ)dcosθ = 1/2π.  
-    The integral value can be different due to a very low dicretization of θ and/or a high g value.  
-    The use of the parameter `normalize` can be useful to renormalize the phase function.
+    - By default the integral ∫F_TTHG(θ)dcosθ = 1/2π.
+      The integral value can be different due to a very low dicretization of θ and/or a high g value.
+      The use of the parameter `normalize` can be useful to renormalize the phase function.
 
     References
     ----------

@@ -38,14 +38,16 @@ def delta_m_phase_approx(phase, theta, m_max, theta_unit='deg', phase_moments=No
 
     Returns
     -------
-    phase_approx : 1-D ndarray
-        The approximation of the exact phase matrix
-    f : float
-        The truncation factor
-    phase_star : 1-D ndarray
-        The truncated scattering phase matrix
-    chi_star : 1-D ndarray
-        The delta-m chi_star coefficients for moment conservation between 0 and m_max-1
+    out : xr.Dataset | tuple
+        Look-up table with truncation information if ds_output is True, else return a tuple.  
+        Form of the tuple:
+
+        * phase_approx : 1-D ndarray
+            -> The approximation of the exact phase matrix
+        * f : float
+            -> The truncation factor
+        * phase_star : 1-D ndarray
+            -> The truncated scattering phase matrix
 
     References
     ----------
@@ -124,7 +126,7 @@ def delta_m_phase_approx(phase, theta, m_max, theta_unit='deg', phase_moments=No
         ds.attrs.update({'pytrunc_version': VERSION })
         return ds
     else:
-        return phase_approx, f, phase_star, chi_star
+        return phase_approx, f, phase_star
 
 
 def gt_phase_approx(phase, theta, trunc_frac, theta_unit='deg', 

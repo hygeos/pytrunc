@@ -27,6 +27,15 @@ extra = [
     "notebook"
 ]
 
+docs = [
+    "sphinx",
+    "sphinx-rtd-theme",
+    "pydata-sphinx-theme",
+    "myst-parser",
+    "nbsphinx",
+    "numpydoc",
+]
+
 
 [tool.setuptools]
 packages = ["pytrunc"]
@@ -43,3 +52,4 @@ pytrunc = { path = ".", editable = true }
 
 [tool.pixi.environments]
 default = { features = ["extra"], solve-group = "default" }
+docs = { features = ["extra", "docs"], solve-group = "docs" }

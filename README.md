@@ -1,4 +1,9 @@
 # pytrunc
+
+[![image](https://img.shields.io/pypi/v/pytrunc.svg)](https://pypi.python.org/pypi/pytrunc)
+[![image](https://img.shields.io/github/v/tag/hygeos/pytrunc?label=github&color=blue)](https://github.com/hygeos/pytrunc)
+
+
 Scattering phase matrix truncation Python tool for radiative transfer applications.
 
 

@@ -4,4 +4,4 @@ Notebooks
 .. toctree::
    :maxdepth: 4
 
-   01_example
+   01_examples

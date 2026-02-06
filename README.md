@@ -2,6 +2,13 @@
 Scattering phase matrix truncation Python tool for radiative transfer applications.
 
 
+Mustapha Moulana  
+[HYGEOS website](https://hygeos.com/en/)  
+[Documentation](https://hygeos.github.io/pytrunc/)
+
+
+-----------------------------------------------
+
 ## Installation
 
 For an installation via pip, you can use the following command:

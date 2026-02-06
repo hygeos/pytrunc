@@ -34,6 +34,7 @@ docs = [
     "myst-parser",
     "nbsphinx",
     "numpydoc",
+    "jupytext",
 ]
 
 

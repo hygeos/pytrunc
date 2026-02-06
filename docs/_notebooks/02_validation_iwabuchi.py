@@ -13,7 +13,7 @@
 # ---
 
 # %% [markdown]
-# # Validation Notebook using Iwabuchi et al. 2009
+# # 02 Validation using Iwabuchi et al. 2009
 #
 # - see: Iwabuchi, H., & Suzuki, T. (2009). Fast and accurate radiance calculations using truncation approximation for anisotropic scattering phase functions. Journal of Quantitative Spectroscopy and Radiative Transfer, 110(17), 1926-1939.
 
@@ -32,6 +32,8 @@ from pytrunc.utils import integrate_lobatto
 import matplotlib.pyplot as plt
 import xarray as xr
 
+from pytrunc.constant import DIR_ROOT
+
 save_fig = False
 
 # %% [markdown]
@@ -41,17 +43,20 @@ save_fig = False
 # ### Get realistic water cloud phase function from mie calculation
 
 # %%
+# in the paper (Iwabuchi et al. 2009) water cloud at wl = 500 nm and reff = 8 um
+
 # wc available in smartg auxdata: https://github.com/hygeos/smartg
 # Follow smartg README to download auxdata, 
 # then create environemnt variable 'SMARTG_DIR_AUXDATA' where auxdata have been downloaded
-wc_path = Path(os.environ['SMARTG_DIR_AUXDATA']) / Path('clouds/wc_sol.nc')
-ds = xr.open_dataset(wc_path)
-# in the paper (Iwabuchi et al. 2009) wl = 500 nm and reff = 8 um
-iwav = 49 # iwabuchi
-ireff = 3 # iwabuchi
-print(f"wav={ds.wav.values[iwav]} nm ; reff={ds.reff.values[ireff]} um")
+# wc_path = Path(os.environ['SMARTG_DIR_AUXDATA']) / Path('clouds/wc_sol.nc')
+# ds = xr.open_dataset(wc_path)
+# pha_exact = ds['phase'].interp(reff=8, wav=500, method='linear').values[0, :]
+
+# wc at the correct wavelength and effective radius avaible in pytrunc/data
+ds = xr.open_dataset(DIR_ROOT / 'pytrunc' / 'data' / 'wc_wl500_reff8.nc')
+
 theta = ds['theta'].values
-pha_exact = ds["phase"][ireff,iwav,0,:].values
+pha_exact = ds["phase"].values[0,:]
 
 method = 'lobatto'
 # method = 'trapezoid'

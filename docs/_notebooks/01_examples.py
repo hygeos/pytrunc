@@ -13,7 +13,7 @@
 # ---
 
 # %% [markdown]
-# # pytrunc demo notebook
+# # 01 Examples
 
 # %%
 # %reload_ext autoreload

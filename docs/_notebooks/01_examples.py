@@ -30,6 +30,7 @@ from pytrunc.utils import integrate_lobatto, quadrature_lobatto
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator
 import xarray as xr
+from pytrunc.constant import DIR_ROOT
 
 # %% [markdown]
 # ## Compute all truncated phase matrix unique terms
@@ -42,17 +43,20 @@ import xarray as xr
 # #### Get realistic water cloud phase function from mie calculation
 
 # %%
+# in the paper (Iwabuchi et al. 2009) water cloud at wl = 500 nm and reff = 8 um
+
 # wc available in smartg auxdata: https://github.com/hygeos/smartg
 # Follow smartg README to download auxdata, 
 # then create environemnt variable 'SMARTG_DIR_AUXDATA' where auxdata have been downloaded
-wc_path = Path(os.environ['SMARTG_DIR_AUXDATA']) / Path('clouds/wc_sol.nc')
-ds = xr.open_dataset(wc_path)
-# in the paper (Iwabuchi et al. 2009) wl = 500 nm and reff = 8 um
-wav = 500 # iwabuchi
-reff = 8 # iwabuchi
-print(f"wav={wav} nm ; reff={reff} um")
+# wc_path = Path(os.environ['SMARTG_DIR_AUXDATA']) / Path('clouds/wc_sol.nc')
+# ds = xr.open_dataset(wc_path)
+# pha_exact = ds['phase'].interp(reff=8, wav=500, method='linear').values[0, :]
+
+# wc at the correct wavelength and effective radius avaible in pytrunc/data
+ds = xr.open_dataset(DIR_ROOT / 'pytrunc' / 'data' / 'wc_wl500_reff8.nc')
+
 theta = ds['theta'].values
-pha_ex = ds["phase"].interp(reff=reff, wav=wav).values
+pha_ex = ds["phase"].values
 
 method = 'lobatto'
 # method = 'trapezoid'

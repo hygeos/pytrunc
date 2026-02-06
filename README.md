@@ -45,14 +45,14 @@ Example using the Geometric Truncation:
 
 ```python
 >>> ...
->>> from pytrunc.truncation import delta_m_phase_approx
+>>> from pytrunc.truncation import gt_phase_approx
 >>> from pytrunc.phase import calc_moments
 >>> m_max = 20 # stream / term number
 >>> # phase_exact -> P11 of a liquid cloud at 500nm and an effective radius of 8 mirometers
 >>> # theta -> the phase angles in degrees
 >>> chi = calc_moments(phase_exact, theta, m_max=m_max, normalize=True) # the phase moments
 >>> f = chi[m_max] # The truncation factor
->>> ds = delta_m_phase_approx(phase_exact, theta, f) # return an xarray dataset
+>>> ds = gt_phase_approx(phase_exact, theta, f) # return an xarray dataset
 >>> ...
 ```
 

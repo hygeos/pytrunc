@@ -13,7 +13,7 @@
 # ---
 
 # %% [markdown]
-# # 02 Validation using Iwabuchi et al. 2009
+# # 02 Validation Iwabuchi
 #
 # - see: Iwabuchi, H., & Suzuki, T. (2009). Fast and accurate radiance calculations using truncation approximation for anisotropic scattering phase functions. Journal of Quantitative Spectroscopy and Radiative Transfer, 110(17), 1926-1939.
 

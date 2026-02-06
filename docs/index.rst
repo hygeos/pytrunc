@@ -6,6 +6,15 @@
 Pytrunc documentation
 =====================
 
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Notebooks
+   :hidden:
+
+   notebooks
+   
+
 .. toctree::
    :maxdepth: 2
    :caption: Functions and classes

@@ -37,8 +37,11 @@ jobs:
       - name: Convert percent script to notebook and execute it
         run: |
           jupytext --to notebook docs/_notebooks/01_examples.py
+          jupytext --to notebook docs/_notebooks/02_validation_iwabuchi.py
           mv docs/_notebooks/01_examples.ipynb docs/01_examples.ipynb
+          mv docs/_notebooks/02_validation_iwabuchi.ipynb docs/02_validation_iwabuchi.ipynb
           jupyter nbconvert --to notebook --execute --inplace docs/01_examples.ipynb
+          jupyter nbconvert --to notebook --execute --inplace docs/02_validation_iwabuchi.ipynb
 
       - name: Generate the docs
         run: |

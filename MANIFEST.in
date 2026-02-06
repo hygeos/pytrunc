@@ -1,1 +1,2 @@
 recursive-include pytrunc/img *
+recursive-include pytrunc/data *

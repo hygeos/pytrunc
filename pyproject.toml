@@ -35,6 +35,7 @@ docs = [
     "nbsphinx",
     "numpydoc",
     "jupytext",
+    "pandoc",
 ]
 
 
@@ -50,6 +51,7 @@ platforms = ["linux-64"]
 pytrunc = { path = ".", editable = true }
 
 [tool.pixi.dependencies]
+pandoc = ">=3.9,<4"
 
 [tool.pixi.environments]
 default = { features = ["extra"], solve-group = "default" }

@@ -1,7 +1,9 @@
 # pytrunc
 
 [![image](https://img.shields.io/pypi/v/pytrunc.svg)](https://pypi.python.org/pypi/pytrunc)
+[![image](https://img.shields.io/conda/vn/conda-forge/pytrunc.svg)](https://anaconda.org/conda-forge/pytrunc)
 [![image](https://img.shields.io/github/v/tag/hygeos/pytrunc?label=github&color=blue)](https://github.com/hygeos/pytrunc)
+[![image](https://pepy.tech/badge/pytrunc)](https://pepy.tech/project/pytrunc)
 
 
 Scattering phase matrix truncation Python tool for radiative transfer applications.
@@ -16,9 +18,18 @@ Mustapha Moulana
 
 ## Installation
 
-For an installation via pip, you can use the following command:
+You can use oe of the following commands:
 
 ```bash
+conda install -c conda-forge pytrunc
+```
+
+```bash
+pip install pytrunc
+```
+
+```bash
+# directly from github
 pip install git+https://github.com/hygeos/pytrunc.git
 ```
 

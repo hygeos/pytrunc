@@ -16,13 +16,13 @@ def legendre_polynomials(n: int, x: ArrayLike) -> NDArray[np.float64]:
     ----------
     n : int
         The Legendre polynomial order
-    x : 1-D ndarray
-        The x values of Pn(x)
+    x : ndarray
+        The 1-D array with the x values of Pn(x)
 
     Returns
     -------
-    P : 1-D ndarray
-        The Legendre series
+    P : ndarray
+        The 1-D array (same shape as x) with the Legendre series
 
     Notes
     -----
@@ -72,13 +72,14 @@ def legendre_polynomials_derivative(
     ----------
     n : int
         The Legendre polynomial order
-    x : 1-D ndarray
-        The x values of d(Pn(x))
+    x : ndarray
+        The 1-D array with the x values of d(Pn(x))
 
     Returns
     -------
-    P : 1-D ndarray
-        The derivative Legendre series
+    P : ndarray
+        The 1-D array (same shape as x) with the derivative Legendre
+        series
 
     Notes
     -----
@@ -129,13 +130,14 @@ def legendre_polynomials_second_derivative(
     ----------
     n : int
         The Legendre polynomial order
-    x : 1-D ndarray
-        The x values of d²(Pn(x))
+    x : ndarray
+        The 1-D array with the x values of d²(Pn(x))
 
     Returns
     -------
-    P : 1-D ndarray
-        The second derivative Legendre series
+    P : ndarray
+        The 1-D array (same shape as x) with the second derivative
+        Legendre series
 
     Notes
     -----
@@ -185,18 +187,19 @@ def bessel_j1(
 
     Parameters
     ----------
-    x : 1-D ndarray
-        The variable x of J1(x)
+    x : ndarray
+        The 1-D array with the variable x of J1(x)
     acc : float, optional
         The tolerance for numerical errors. Default is 1e-8.
-    max_iter : float, optional
-        The maximun number of iteration trying to improve the error
+    max_iter : int, optional
+        The maximum number of iterations trying to improve the error
         accuracy
 
     Returns
     -------
-    J1 : 1-D ndarray
-        The values of the Bessel function J1(x)
+    J1 : ndarray
+        The 1-D array (same shape as x) with the values of the Bessel
+        function J1(x)
 
     Notes
     -----
@@ -248,20 +251,21 @@ def bessel_jn(
 
     Parameters
     ----------
-    x : 1-D ndarray
-        The variable x of Jn(x)
-    n : float
+    x : ndarray
+        The 1-D array with the variable x of Jn(x)
+    n : int
         The Bessel first kind function order
     acc : float, optional
         The tolerance for numerical errors. Default is 1e-8.
-    max_iter : float, optional
-        The maximun number of iteration trying to improve the error
+    max_iter : int, optional
+        The maximum number of iterations trying to improve the error
         accuracy
 
     Returns
     -------
-    Jn : 1-D ndarray
-        The values of the Bessel function Jn(x)
+    Jn : ndarray
+        The 1-D array (same shape as x) with the values of the Bessel
+        function Jn(x)
 
     Notes
     -----
@@ -308,18 +312,19 @@ def bessel_j1_derivative(
 
     Parameters
     ----------
-    x : 1-D ndarray
-        The variable x of d(J1(x))
+    x : ndarray
+        The 1-D array with the variable x of d(J1(x))
     acc : float, optional
         The tolerance for numerical errors. Default is 1e-8.
-    max_iter : float, optional
-        The maximun number of iteration trying to improve the error
+    max_iter : int, optional
+        The maximum number of iterations trying to improve the error
         accuracy
 
     Returns
     -------
-    dj1 : 1-D ndarray
-        The values of the Bessel function derivative d(J1(x))
+    dj1 : ndarray
+        The 1-D array (same shape as x) with the values of the Bessel
+        function derivative d(J1(x))
 
     Notes
     -----
@@ -348,14 +353,14 @@ def bessel_j1_roots(
         The number of j1(x)=0 to find
     acc : float, optional
         The tolerance for numerical errors. Default is 1e-8.
-    max_iter : float, optional
-        The maximun number of iteration trying to improve the error
+    max_iter : int, optional
+        The maximum number of iterations trying to improve the error
         accuracy
 
     Returns
     -------
-    roots : 1-D ndarray
-        The roots of the function f(x)
+    roots : ndarray
+        The 1-D array of size nb_roots with the roots of j1(x)
 
     Notes
     -----
@@ -404,14 +409,15 @@ def legendre_polynomials_derivative_roots(
         The Legendre polynomial order
     acc : float, optional
         The tolerance for numerical errors. Default is 1e-8.
-    max_iter : float, optional
-        The maximun number of iteration trying to improve the error
+    max_iter : int, optional
+        The maximum number of iterations trying to improve the error
         accuracy
 
     Returns
     -------
-    roots : 1-D ndarray
-        The roots of legendre polynomial derivative d(Pn(x))
+    roots : ndarray
+        The 1-D array of size n-1 with the roots of legendre polynomial
+        derivative d(Pn(x))
 
     Notes
     -----
@@ -450,7 +456,7 @@ def quadrature_lobatto(
     abscissa_min: float = -1, abscissa_max: float = 1, n: int = 100
 ) -> tuple[NDArray[np.float64], NDArray[np.float64]]:
     """
-    Compute the abscissas (sample points) and weigths for Lobatto
+    Compute the abscissas (sample points) and weights for Lobatto
     quadrature.
 
     Parameters
@@ -464,10 +470,10 @@ def quadrature_lobatto(
 
     Returns
     -------
-    abscissas : 1-D ndarray
-        The Lobatto quadrature abscissas
-    weights : 1-D ndarray
-        The Lobatto quadrature weights
+    abscissas : ndarray
+        The 1-D array of size n with the Lobatto quadrature abscissas
+    weights : ndarray
+        The 1-D array of size n with the Lobatto quadrature weights
 
     References
     ----------
@@ -544,23 +550,26 @@ def integrate_lobatto(
 
     Parameters
     ----------
-    f : 1-D ndarray
-        The ordinates of the function (array to be integrated).
-    x : 1-D ndarray
-        The abscissas
-    lp : None | int, optional
+    f : ndarray
+        The 1-D array with the ordinates of the function (array to be
+        integrated).
+    x : ndarray
+        The 1-D array with the abscissas
+    lp : int or None, optional
         The number of lobatto points for the integration. If None lp =
         len(x).
-    xk : None | 1-D ndarray
-        Force the Lobatto quadrature abscissas. Considered if wk is also
-        provided.
-    wk : None | 1-D ndarray
-        Force the Lobatto weights. Considered if xk is also provided.
+    xk : ndarray or None, optional
+        Force the Lobatto quadrature abscissas (1-D array of size lp).
+        Considered if wk is also provided.
+    wk : ndarray or None, optional
+        Force the Lobatto weights (1-D array of size lp). Considered if
+        xk is also provided.
     assume_sorted : bool, optional
         If True, the x array is assumed to be sorted in ascending order.
-    Return
-    ------
-    int : float
+
+    Returns
+    -------
+    res : float
         The estimated integral calculated using the Lobatto quadrature
     """
 

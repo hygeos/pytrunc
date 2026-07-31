@@ -22,8 +22,9 @@ def henyey_greenstein(
 
     Parameters
     ----------
-    theta : 1-D ndarray
-        The phase matrix angles. See parameter `theta_unit`
+    theta : ndarray
+        The 1-D array with the phase matrix angles. See parameter
+        `theta_unit`
     g : float
         The Henyey-Greenstein parameter g (measures the asymmetry of the
         phase matrix)
@@ -31,14 +32,15 @@ def henyey_greenstein(
         The unit for theta angles:
         - 'deg' (default value)
         - 'rad'
-    normalize : None | float, optional
+    normalize : float or None, optional
         The normalization value of the integral ∫F_HG(θ)dcosθ, where
         F_HG(θ) is the phase matrix. The scipy simpson function is used
         for the normalization.
-    Return
-    ------
-    F_HG : 1-D ndarray
-        The phase matrix.
+
+    Returns
+    -------
+    F_HG : ndarray
+        The 1-D array (same shape as theta) with the phase matrix.
 
     Notes
     -----
@@ -47,7 +49,7 @@ def henyey_greenstein(
     - :math:`F_HG(θ) = (1/π)*[(1-g**2) / (1+g**2-(2*g*cos(θ)))**(3/2)]`
     - By default the integral ∫F(θ)dcosθ = 1/2π.
       The integral value can be different due to a very low
-      dicretization of θ and/or a high g value. The use of the parameter
+      discretization of θ and/or a high g value. The use of the parameter
       `normalize` can be useful to renormalize the phase function.
 
     References
@@ -91,8 +93,9 @@ def two_term_henyey_greenstein(
 
     Parameters
     ----------
-    theta : 1-D ndarray
-        The phase matrix angles. See parameter `theta_unit`
+    theta : ndarray
+        The 1-D array with the phase matrix angles. See parameter
+        `theta_unit`
     g1 : float
         The first H-G term parameter g (forward part)
     g2 : float
@@ -103,14 +106,15 @@ def two_term_henyey_greenstein(
         The unit for theta angles:
         - 'deg' (default value)
         - 'rad'
-    normalize : None | float, optional
+    normalize : float or None, optional
         The normalization value of the integral ∫F(θ)dcosθ, where F(θ)
         is the phase matrix. The scipy simpson function is used for the
         normalization.
-    Return
-    ------
-    F_TTHG : 1-D ndarray
-        The phase matrix.
+
+    Returns
+    -------
+    F_TTHG : ndarray
+        The 1-D array (same shape as theta) with the phase matrix.
 
     Notes
     -----
@@ -119,7 +123,7 @@ def two_term_henyey_greenstein(
     - :math:`F_TTHG(θ) = f*F_HG1(θ) + (1-f)*F_HG2(θ)`
     - By default the integral ∫F_TTHG(θ)dcosθ = 1/2π.
       The integral value can be different due to a very low
-      dicretization of θ and/or a high g value. The use of the parameter
+      discretization of θ and/or a high g value. The use of the parameter
       `normalize` can be useful to renormalize the phase function.
 
     References
@@ -155,16 +159,17 @@ def calc_moments(
 
     Parameters
     ----------
-    phase : 1-D ndarray
-        The phase matrix
-    theta : 1-D ndarray
-        The phase matrix angles. See parameter `theta_unit`
+    phase : ndarray
+        The 1-D array with the phase matrix
+    theta : ndarray
+        The 1-D array with the phase matrix angles. See parameter
+        `theta_unit`
     m_max : int
         The maximum moment number to compute, i.e., compute m[0], ...,
         m[m_max]
     method : str, optional
         The method used to calculate the moments, choices:
-        - 'lobatto' -> Default value, very effcient if "gauss kind"
+        - 'lobatto' -> Default value, very efficient if "gauss kind"
           theta distribution
         - 'simpson' -> efficient if regular theta distribution (use
           scipy.integrate.simpson)
@@ -175,25 +180,28 @@ def calc_moments(
     normalize : bool, optional
         If normalize = True -> normalize such that first moment exactly
         = 1
-    xk : None | 1-D ndarray, optional
-        Force the Lobatto quadrature abscissas. Considered if wk is also
+    xk : ndarray or None, optional
+        Force the Lobatto quadrature abscissas (1-D array). Considered
+        if wk is also provided.
+    wk : ndarray or None, optional
+        Force the Lobatto weights (1-D array). Considered if xk is also
         provided.
-    wk : None | 1-D ndarray, optional
-        Force the Lobatto weights. Considered if xk is also provided.
-    pl_costh : None | 2-D ndarray, optional
-        Force the Legendre polynomials values of cos(theta). The shape
-        must be (m_max+1, len(theta))
+    pl_costh : ndarray or None, optional
+        Force the Legendre polynomials values of cos(theta). The 2-D
+        array shape must be (m_max+1, len(theta))
+
     Returns
     -------
-    m : 1-D ndarray
-        The computed phase moment of size m_max + 1
+    m : ndarray
+        The 1-D array of size m_max + 1 with the computed phase moments
 
     Notes
     -----
 
     - See Eq.A2 in ref[2] for moment computation using Lobatto
       quadrature in [0,π]
-    - For Lobatto quadrature abcissas and weights calculation see ref[2]
+    - For Lobatto quadrature abscissas and weights calculation see
+      ref[2]
 
     References
     ----------
@@ -291,8 +299,8 @@ def calc_hg_moments(g: float, m_max: int) -> NDArray[np.float64]:
 
     Returns
     -------
-    m : 1-D ndarray
-        The phase moment of size m_max + 1
+    m : ndarray
+        The 1-D array of size m_max + 1 with the phase moments
 
     References
     ----------
@@ -328,8 +336,8 @@ def calc_tthg_moments(
 
     Returns
     -------
-    m : 1-D ndarray
-        The phase moment of size m_max + 1
+    m : ndarray
+        The 1-D array of size m_max + 1 with the phase moments
 
     References
     ----------

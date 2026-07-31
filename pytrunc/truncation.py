@@ -1,34 +1,50 @@
-import numpy as np
-from pytrunc.phase import calc_moments
-from pytrunc.utils import legendre_polynomials, integrate_lobatto, quadrature_lobatto
-from scipy.integrate import trapezoid, simpson
 import math
-import xarray as xr
+from collections.abc import Callable
 from datetime import datetime
+
+import numpy as np
+import xarray as xr
+from numpy.typing import NDArray
+from scipy.integrate import simpson, trapezoid
+
 from pytrunc.constant import VERSION
+from pytrunc.phase import calc_moments
+from pytrunc.utils import (
+    integrate_lobatto,
+    legendre_polynomials,
+    quadrature_lobatto,
+)
 
 
-# scipy >= 1.14 made the x argument of simpson keyword-only, so the dispatch
-# below cannot call the scipy integrators positionally
-def _simpson(y, x):
-    return simpson(y, x=x)
+# scipy >= 1.14 made the x argument of simpson keyword-only, so the
+# dispatch below cannot call the scipy integrators positionally
+def _simpson(y: NDArray[np.float64], x: NDArray[np.float64]) -> float:
+    return float(simpson(y, x=x))
 
 
-def _trapezoid(y, x):
-    return trapezoid(y, x=x)
+def _trapezoid(y: NDArray[np.float64], x: NDArray[np.float64]) -> float:
+    return float(trapezoid(y, x=x))
 
 
-INTEGRATORS = {
+INTEGRATORS: dict[str, Callable[..., float]] = {
     "simpson": _simpson,
     "trapezoid": _trapezoid,
     "lobatto": integrate_lobatto,
 }
 
 
-def delta_m_phase_approx(phase, theta, m_max, theta_unit='deg', phase_moments=None,
-                         method='trapezoid', ds_output=True):
+def delta_m_phase_approx(
+    phase: NDArray[np.float64],
+    theta: NDArray[np.float64],
+    m_max: int,
+    theta_unit: str = "deg",
+    phase_moments: NDArray[np.float64] | None = None,
+    method: str = "trapezoid",
+    ds_output: bool = True,
+) -> xr.Dataset | tuple[NDArray[np.float64], float, NDArray[np.float64]]:
     """
-    Caculate the aproximation of the exact phase matrix using the delta-m method
+    Caculate the aproximation of the exact phase matrix using the
+    delta-m method
 
     Parameters
     ----------
@@ -39,25 +55,27 @@ def delta_m_phase_approx(phase, theta, m_max, theta_unit='deg', phase_moments=No
     m_max : int
         The maximum term number
     theta_unit : str, optional
-        The unit for theta angles: 
+        The unit for theta angles:
         - 'deg' (default value)
         - 'rad'
     phase_moments : 1-D ndarray
-        The moments of the phase matrix. the size of phase_moments must be >= m_max+1.  
-        If this parameter is not None circumvent the calculation of phase matrix moments.  
-        This parameter can be useful in case we have the exact moment values like for H-G 
+        The moments of the phase matrix. the size of phase_moments must
+        be >= m_max+1. If this parameter is not None circumvent the
+        calculation of phase matrix moments. This parameter can be
+        useful in case we have the exact moment values like for H-G
         phase function
     method : str, optional
-        The method parameter of function calc_moments. Default use 'trapezoid'.
-        Also the integral method for the dirac normalization.
+        The method parameter of function calc_moments. Default use
+        'trapezoid'. Also the integral method for the dirac
+        normalization.
     ds_output : Bool, optional
             If True the output is a dataset, else return a tuple.
 
     Returns
     -------
     out : xr.Dataset | tuple
-        Look-up table with truncation information if ds_output is True, else return a tuple.  
-        Form of the tuple:
+        Look-up table with truncation information if ds_output is True,
+        else return a tuple. Form of the tuple:
 
         * phase_approx : 1-D ndarray
             -> The approximation of the exact phase matrix
@@ -68,23 +86,31 @@ def delta_m_phase_approx(phase, theta, m_max, theta_unit='deg', phase_moments=No
 
     References
     ----------
-    
-    - [1] Wiscombe, W. J. (1977). The delta-M method: Rapid yet accurate radiative flux calculations 
-          for strongly asymmetric phase functions. Journal of Atmospheric Sciences, 34(9), 1408-1422.
+
+    - [1] Wiscombe, W. J. (1977). The delta-M method: Rapid yet
+          accurate radiative flux calculations for strongly asymmetric
+          phase functions. Journal of Atmospheric Sciences, 34(9),
+          1408-1422.
     """
 
-    if theta_unit == 'deg':
-            theta = (np.deg2rad(theta))
-    elif ( theta_unit != 'rad' ):
-        raise ValueError("The accepted values for parameter theta_unit are: 'deg' or 'rad'")
+    if theta_unit == "deg":
+        theta = np.deg2rad(theta)
+    elif theta_unit != "rad":
+        raise ValueError(
+            "The accepted values for parameter theta_unit are: 'deg' or 'rad'"
+        )
 
     if phase_moments is not None:
         if len(phase_moments) <= m_max:
-            raise ValueError(f"The number of moments must be >= {m_max+1}" + \
-                             f", but only {len(phase_moments)} given")
+            raise ValueError(
+                f"The number of moments must be >= {m_max + 1}"
+                + f", but only {len(phase_moments)} given"
+            )
         chi = phase_moments
     else:
-        chi = calc_moments(phase, theta, m_max=m_max, theta_unit='rad', normalize=True)
+        chi = calc_moments(
+            phase, theta, m_max=m_max, theta_unit="rad", normalize=True
+        )
 
     integrate_m = INTEGRATORS[method]
 
@@ -102,51 +128,92 @@ def delta_m_phase_approx(phase, theta, m_max, theta_unit='deg', phase_moments=No
     # phase_star = (1-f) * Σ [ (2n+1) * chi[n]* * pn(cosθ) ]
     for n in range(m_max):
         pn_costh = legendre_polynomials(n, cos_th)
-        phase_star += (2*n + 1) * chi_star[n] * pn_costh
+        phase_star += (2 * n + 1) * chi_star[n] * pn_costh
 
     phase_approx = phase_star.copy() * (1 - f)
     if f > 0:
         idmu = np.argsort(cos_th)
         delta_part = np.zeros_like(theta)
-        delta_part[0] = 1. 
+        delta_part[0] = 1.0
         if method == "lobatto":
-            delta_part[1] = 1. # because sin(pi) = 0
-            delta_part = delta_part / integrate_m(delta_part*np.sin(theta), theta) # normalize dirac to 1
+            delta_part[1] = 1.0  # because sin(pi) = 0
+            delta_part = delta_part / integrate_m(
+                delta_part * np.sin(theta), theta
+            )  # normalize dirac to 1
         else:
-            delta_part[0] = delta_part[0] / integrate_m(delta_part[idmu], cos_th[idmu]) # normalize dirac to 1
-        delta_part = (2*f) * delta_part
+            delta_part[0] = delta_part[0] / integrate_m(
+                delta_part[idmu], cos_th[idmu]
+            )  # normalize dirac to 1
+        delta_part = (2 * f) * delta_part
         phase_approx += delta_part
-    
+
     if ds_output:
-        ds = xr.Dataset(coords={'theta': np.rad2deg(theta), 'exp_order': np.arange(m_max+1)})
-        ds.coords['theta'].attrs.update({ 'units': 'degrees', 'description': 'scattering angle'})
-        ds['phase_approx'] = xr.DataArray(phase_approx, dims=['theta'])
-        ds['phase_approx'].attrs.update({ 'units': 'none', 'description': 'the approximation of the exact phase matrix'})
-        ds['f'] = xr.DataArray(f)
-        ds['f'].attrs.update({ 'units': 'none', 'description': 'the truncation factor'})
-        ds['phase_tr'] = xr.DataArray(phase_star, dims=['theta'])
-        ds['phase_tr'].attrs.update({ 'units': 'none', 'description': 'the truncated phase matrix'})
-        ds['chi'] = xr.DataArray(chi[0:m_max+1], dims=['exp_order'])
-        ds['chi'].attrs.update({ 'units': 'none', 'description': 'the moments of the exact phase matrix'})
-        ds['chi_star'] = xr.DataArray(np.concatenate((chi_star, np.array([0.]))), dims=['exp_order'])
-        ds['chi_star'].attrs.update({ 'units': 'none', 'description': 'the moments of the truncated phase matrix'})
-        ds.attrs = {'truncation method': 'DM'}
-        date = datetime.now().strftime("%Y-%m-%d")  
-        ds.attrs.update({'date':date})
-        ds.attrs.update({'m_max': m_max})
-        ds.attrs.update({'integration method': method })
-        ds.attrs.update({'pytrunc_version': VERSION })
+        ds = xr.Dataset(
+            coords={
+                "theta": np.rad2deg(theta),
+                "exp_order": np.arange(m_max + 1),
+            }
+        )
+        ds.coords["theta"].attrs.update(
+            {"units": "degrees", "description": "scattering angle"}
+        )
+        ds["phase_approx"] = xr.DataArray(phase_approx, dims=["theta"])
+        ds["phase_approx"].attrs.update(
+            {
+                "units": "none",
+                "description": "the approximation of the exact phase matrix",
+            }
+        )
+        ds["f"] = xr.DataArray(f)
+        ds["f"].attrs.update(
+            {"units": "none", "description": "the truncation factor"}
+        )
+        ds["phase_tr"] = xr.DataArray(phase_star, dims=["theta"])
+        ds["phase_tr"].attrs.update(
+            {"units": "none", "description": "the truncated phase matrix"}
+        )
+        ds["chi"] = xr.DataArray(chi[0 : m_max + 1], dims=["exp_order"])
+        ds["chi"].attrs.update(
+            {
+                "units": "none",
+                "description": "the moments of the exact phase matrix",
+            }
+        )
+        ds["chi_star"] = xr.DataArray(
+            np.concatenate((chi_star, np.array([0.0]))), dims=["exp_order"]
+        )
+        ds["chi_star"].attrs.update(
+            {
+                "units": "none",
+                "description": "the moments of the truncated phase matrix",
+            }
+        )
+        ds.attrs = {"truncation method": "DM"}
+        date = datetime.now().strftime("%Y-%m-%d")
+        ds.attrs.update({"date": date})
+        ds.attrs.update({"m_max": m_max})
+        ds.attrs.update({"integration method": method})
+        ds.attrs.update({"pytrunc_version": VERSION})
         return ds
     else:
         return phase_approx, f, phase_star
 
 
-def gt_phase_approx(phase, theta, trunc_frac, theta_unit='deg',
-                    method='trapezoid', phase_moments_1=None,
-                    th_tol = None, th_f=None, lobatto_optimization=True,
-                    ds_output=True):
+def gt_phase_approx(
+    phase: NDArray[np.float64],
+    theta: NDArray[np.float64],
+    trunc_frac: float,
+    theta_unit: str = "deg",
+    method: str = "trapezoid",
+    phase_moments_1: float | None = None,
+    th_tol: float | None = None,
+    th_f: float | None = None,
+    lobatto_optimization: bool = True,
+    ds_output: bool = True,
+) -> xr.Dataset | tuple[NDArray[np.float64], float, NDArray[np.float64]]:
     """
-    Compute the aproximation of the exact phase matrix using the Iwabuchi GT method
+    Compute the aproximation of the exact phase matrix using the
+    Iwabuchi GT method
 
     Parameters
     ----------
@@ -157,33 +224,36 @@ def gt_phase_approx(phase, theta, trunc_frac, theta_unit='deg',
     trunc_fract : float
         The truncature fraction
     theta_unit : str, optional
-        The unit for theta angles: 
+        The unit for theta angles:
         - 'deg' (default value)
         - 'rad'
     method : str, optional
-        The method parameter of function calc_moments.  
-        Default use 'trapezoid'.
-        Also the integral method for the dirac normalization.
+        The method parameter of function calc_moments. Default use
+        'trapezoid'. Also the integral method for the dirac
+        normalization.
     phase_moments_1 : None | 1-D ndarray, optional
         The value of the first moment of the phase matrix.
     th_tol : None | float, optional
-        While finding matching moments for Pf we look between 0 and th_tol.  
-        The unit is depending on the parameter theta_unit. Default th_tol = π/2
+        While finding matching moments for Pf we look between 0 and
+        th_tol. The unit is depending on the parameter theta_unit.
+        Default th_tol = π/2
     th_f : None | float, optional
-        Impose the truncation angle. The unit is depending on the parameter theta_unit.
+        Impose the truncation angle. The unit is depending on the
+        parameter theta_unit.
     lobatto_optimization : bool, optional
         Whether to use lobatto optimization for integration (reuse the
-        full-grid Lobatto quadrature, affinely rescaled to the truncation
-        sub-interval, instead of solving for a new quadrature at every
-        candidate angle during the truncation angle search). Default is True.
+        full-grid Lobatto quadrature, affinely rescaled to the
+        truncation sub-interval, instead of solving for a new quadrature
+        at every candidate angle during the truncation angle search).
+        Default is True.
     ds_output : Bool, optional
             If True the output is a dataset, else return a tuple.
 
     Returns
     -------
     out : xr.Dataset | tuple
-        Look-up table with truncation information if ds_output is True, else return a tuple.  
-        Form of the tuple:
+        Look-up table with truncation information if ds_output is True,
+        else return a tuple. Form of the tuple:
 
         * phase_approx : 1-D ndarray
             -> The approximation of the exact phase matrix
@@ -192,34 +262,57 @@ def gt_phase_approx(phase, theta, trunc_frac, theta_unit='deg',
         * phase_star : 1-D ndarray
             -> The truncated scattering phase matrix
     """
-    if theta_unit == 'deg':
-            theta = np.deg2rad(theta)
-            if th_tol is not None: th_tol = np.deg2rad(th_tol)
-            if th_f is not None: th_f = np.deg2rad(th_f)
-    elif ( theta_unit != 'rad' ):
-        raise ValueError("The accepted values for parameter theta_unit are: 'deg' or 'rad'")
-    
+    if theta_unit == "deg":
+        theta = np.deg2rad(theta)
+        if th_tol is not None:
+            th_tol = np.deg2rad(th_tol)
+        if th_f is not None:
+            th_f = np.deg2rad(th_f)
+    elif theta_unit != "rad":
+        raise ValueError(
+            "The accepted values for parameter theta_unit are: 'deg' or 'rad'"
+        )
+
     th_tol_bis = th_tol
     th_f_bis = th_f
-    if th_tol is None: th_tol = 0.5*math.pi
+    if th_tol is None:
+        th_tol = 0.5 * math.pi
     mu = np.cos(theta)
     idmu = np.argsort(mu)
 
-    if method == 'lobatto':
+    if method == "lobatto":
         sin_th = np.sin(theta)
-        xk, wk = quadrature_lobatto(abscissa_min=theta[0], abscissa_max=theta[-1], n=len(theta))
+        xk, wk = quadrature_lobatto(
+            abscissa_min=theta[0], abscissa_max=theta[-1], n=len(theta)
+        )
         lp_costh = np.zeros((2, len(theta)))
-        for l in range(2):
-            lp_costh[l] = legendre_polynomials(l, np.cos(theta))
+        for deg in range(2):
+            lp_costh[deg] = legendre_polynomials(deg, np.cos(theta))
 
     if phase_moments_1 is not None:
         chi_1 = phase_moments_1
     else:
-        if method == 'lobatto':
-            chi_1 = calc_moments(phase, theta, m_max=1, theta_unit='rad', 
-                                 method=method, normalize=True, xk=xk, wk=wk, pl_costh=lp_costh)[1]
+        if method == "lobatto":
+            chi_1 = calc_moments(
+                phase,
+                theta,
+                m_max=1,
+                theta_unit="rad",
+                method=method,
+                normalize=True,
+                xk=xk,
+                wk=wk,
+                pl_costh=lp_costh,
+            )[1]
         else:
-            chi_1 = calc_moments(phase, theta, m_max=1, theta_unit='rad', method=method, normalize=True)[1]
+            chi_1 = calc_moments(
+                phase,
+                theta,
+                m_max=1,
+                theta_unit="rad",
+                method=method,
+                normalize=True,
+            )[1]
 
     integrate_m = INTEGRATORS[method]
 
@@ -227,49 +320,80 @@ def gt_phase_approx(phase, theta, trunc_frac, theta_unit='deg',
     chi_star_1 = (chi_1 - f) / (1 - f)
 
     delta_part = np.zeros_like(mu)
-    delta_part[0] = 1.
+    delta_part[0] = 1.0
     if method == "lobatto":
-        delta_part[1] = 1. # because sin(pi) = 0
-        delta_part = delta_part / integrate_m(delta_part*sin_th, theta, xk=xk, wk=wk) # normalize dirac to 1
-        
+        delta_part[1] = 1.0  # because sin(pi) = 0
+        delta_part = delta_part / integrate_m(
+            delta_part * sin_th, theta, xk=xk, wk=wk
+        )  # normalize dirac to 1
+
     else:
-        delta_part[0] = delta_part[0] / integrate_m(delta_part[idmu], mu[idmu]) # normalize dirac to 1
-    delta_part = (2*f) * delta_part
+        delta_part[0] = delta_part[0] / integrate_m(
+            delta_part[idmu], mu[idmu]
+        )  # normalize dirac to 1
+    delta_part = (2 * f) * delta_part
 
     if th_f is not None:
         pha_star = np.zeros_like(phase, dtype=np.float64)
         id_f = np.argmin(np.abs(theta - th_f))
 
-        mu1 = mu[0:id_f+1]
+        mu1 = mu[0 : id_f + 1]
         if method == "lobatto":
             th2 = theta[id_f:]
- 
-            Pf_tmp = (2 - (1./(1-f))*integrate_m(phase[id_f:]*sin_th[id_f:], th2, lp=len(th2), assume_sorted=True) ) / \
-                ((1./(1-f)) * (np.max(mu1) - np.min(mu1)))
-        else:
 
+            Pf_tmp = (
+                2
+                - (1.0 / (1 - f))
+                * integrate_m(
+                    phase[id_f:] * sin_th[id_f:],
+                    th2,
+                    lp=len(th2),
+                    assume_sorted=True,
+                )
+            ) / ((1.0 / (1 - f)) * (np.max(mu1) - np.min(mu1)))
+        else:
             mu2 = mu[id_f:]
             idmu2 = np.argsort(mu2)
-            Pf_tmp = (2 - (1./(1-f))*integrate_m(phase[id_f:][idmu2], mu2[idmu2]) ) / \
-                    ((1./(1-f)) * (np.max(mu1) - np.min(mu1)))#integrate_m(np.ones_like(mu1), mu1[idmu1]))
-        
+            Pf_tmp = (
+                2
+                - (1.0 / (1 - f))
+                * integrate_m(phase[id_f:][idmu2], mu2[idmu2])
+            ) / (
+                (1.0 / (1 - f)) * (np.max(mu1) - np.min(mu1))
+            )  # integrate_m(np.ones_like(mu1), mu1[idmu1]))
+
         pha_star = np.zeros_like(phase, dtype=np.float64)
         pha_star[id_f:] = phase[id_f:]
         pha_star[0:id_f] = Pf_tmp
-        pha_star *= 1./(1-f)
+        pha_star *= 1.0 / (1 - f)
 
         if method == "lobatto":
-            pha_star = (2 * pha_star) / integrate_m(pha_star*sin_th, theta, xk=xk, wk=wk, 
-                                                            assume_sorted=True)
-            chi_star_1_approx = calc_moments(pha_star, theta, m_max=1, theta_unit='rad', 
-                                             method=method, normalize=True, xk=xk, wk=wk, pl_costh=lp_costh)[1]
+            pha_star = (2 * pha_star) / integrate_m(
+                pha_star * sin_th, theta, xk=xk, wk=wk, assume_sorted=True
+            )
+            chi_star_1_approx = calc_moments(
+                pha_star,
+                theta,
+                m_max=1,
+                theta_unit="rad",
+                method=method,
+                normalize=True,
+                xk=xk,
+                wk=wk,
+                pl_costh=lp_costh,
+            )[1]
         else:
             pha_star = (2 * pha_star) / integrate_m(pha_star[idmu], mu[idmu])
-            chi_star_1_approx = calc_moments(pha_star, theta, m_max=1, theta_unit='rad', 
-                                             method=method, normalize=True)[1]
-            
+            chi_star_1_approx = calc_moments(
+                pha_star,
+                theta,
+                m_max=1,
+                theta_unit="rad",
+                method=method,
+                normalize=True,
+            )[1]
 
-        pha_approx = pha_star.copy() * (1-f)
+        pha_approx = pha_star.copy() * (1 - f)
         pha_approx += delta_part
 
     else:
@@ -277,42 +401,58 @@ def gt_phase_approx(phase, theta, trunc_frac, theta_unit='deg',
         pha_star = np.zeros_like(phase, dtype=np.float64)
         mu1 = mu[0:2]
         if method == "lobatto":
-            #th1 = theta[0:2]
+            # th1 = theta[0:2]
             th2 = theta[1:]
-            Pf = (2 - (1./(1-f))*integrate_m(phase[1:]*sin_th[1:], th2) ) / \
-                ((1./(1-f)) * (np.max(mu1) - np.min(mu1))) #integrate_m(sin_th[0:2], th1))
+            Pf = (
+                2 - (1.0 / (1 - f)) * integrate_m(phase[1:] * sin_th[1:], th2)
+            ) / (
+                (1.0 / (1 - f)) * (np.max(mu1) - np.min(mu1))
+            )  # integrate_m(sin_th[0:2], th1))
         else:
-            #idmu1 = np.argsort(mu1)
+            # idmu1 = np.argsort(mu1)
             mu2 = mu[1:]
             idmu2 = np.argsort(mu2)
-            Pf = (2 - (1./(1-f))*integrate_m(phase[1:][idmu2], mu2[idmu2]) ) / \
-                    ((1./(1-f)) *(np.max(mu1) - np.min(mu1))) #integrate_m(np.ones_like(mu1), mu1[idmu1]))
+            Pf = (
+                2 - (1.0 / (1 - f)) * integrate_m(phase[1:][idmu2], mu2[idmu2])
+            ) / (
+                (1.0 / (1 - f)) * (np.max(mu1) - np.min(mu1))
+            )  # integrate_m(np.ones_like(mu1), mu1[idmu1]))
         pha_star[1:] = phase[1:]
         pha_star[0:1] = Pf
-        pha_star *= 1./(1-f)
+        pha_star *= 1.0 / (1 - f)
 
         if method == "lobatto":
-            pha_star = (2 * pha_star) / integrate_m(pha_star*sin_th, theta, xk=xk, wk=wk)
+            pha_star = (2 * pha_star) / integrate_m(
+                pha_star * sin_th, theta, xk=xk, wk=wk
+            )
         else:
             pha_star = (2 * pha_star) / integrate_m(pha_star[idmu], mu[idmu])
 
-        chi_star_1_approx = calc_moments(pha_star, theta, m_max=1, theta_unit='rad', method=method, normalize=True)[1]
+        chi_star_1_approx = calc_moments(
+            pha_star,
+            theta,
+            m_max=1,
+            theta_unit="rad",
+            method=method,
+            normalize=True,
+        )[1]
         err1 = abs(chi_star_1 - chi_star_1_approx)
         id_approx = 1
 
+        xk_min = xk_span = 0.0
         if method == "lobatto":
-            xk_min = np.min(xk)
-            xk_span = np.max(xk) - xk_min
+            xk_min = float(np.min(xk))
+            xk_span = float(np.max(xk)) - xk_min
 
-        for id in range (1, len(phase)-2):     
-            if (theta[id] >= th_tol):
+        for id in range(1, len(phase) - 2):
+            if theta[id] >= th_tol:
                 break
 
-            # Find Pf:
+            # Find Pf:
             # normalization condition between 0 and π ->  ∫ P*(θ) sin(θ) dθ = 2
-            mu1 = mu[0:id+1]
+            mu1 = mu[0 : id + 1]
             if method == "lobatto":
-                #th1 = theta[0:id+1]
+                # th1 = theta[0:id+1]
                 th2 = theta[id:]
 
                 # rescale of xk and wk in the tmp interval
@@ -323,82 +463,163 @@ def gt_phase_approx(phase, theta, trunc_frac, theta_unit='deg',
                     xk_ = abscissa_min + (xk - xk_min) * alpha
                     wk_ = wk * alpha
 
-                    Pf_tmp = (2 - (1./(1-f))*integrate_m(phase[id:]*sin_th[id:], th2, xk=xk_, wk=wk_, assume_sorted=True) ) / \
-                        ((1./(1-f)) * (np.max(mu1) - np.min(mu1)))#integrate_m(sin_th[0:id+1], th1))
+                    Pf_tmp = (
+                        2
+                        - (1.0 / (1 - f))
+                        * integrate_m(
+                            phase[id:] * sin_th[id:],
+                            th2,
+                            xk=xk_,
+                            wk=wk_,
+                            assume_sorted=True,
+                        )
+                    ) / (
+                        (1.0 / (1 - f)) * (np.max(mu1) - np.min(mu1))
+                    )  # integrate_m(sin_th[0:id+1], th1))
                 else:
-                    Pf_tmp = (2 - (1./(1-f))*integrate_m(phase[id:]*sin_th[id:], th2, lp=len(th2), assume_sorted=True) ) / \
-                        ((1./(1-f)) * (np.max(mu1) - np.min(mu1)))#integrate_m(sin_th[0:id+1], th1))
+                    Pf_tmp = (
+                        2
+                        - (1.0 / (1 - f))
+                        * integrate_m(
+                            phase[id:] * sin_th[id:],
+                            th2,
+                            lp=len(th2),
+                            assume_sorted=True,
+                        )
+                    ) / (
+                        (1.0 / (1 - f)) * (np.max(mu1) - np.min(mu1))
+                    )  # integrate_m(sin_th[0:id+1], th1))
             else:
-                #idmu1 = np.argsort(mu1)
+                # idmu1 = np.argsort(mu1)
                 mu2 = mu[id:]
                 idmu2 = np.argsort(mu2)
-                Pf_tmp = (2 - (1./(1-f))*integrate_m(phase[id:][idmu2], mu2[idmu2]) ) / \
-                        ((1./(1-f)) * (np.max(mu1) - np.min(mu1)))#integrate_m(np.ones_like(mu1), mu1[idmu1]))
-            
+                Pf_tmp = (
+                    2
+                    - (1.0 / (1 - f))
+                    * integrate_m(phase[id:][idmu2], mu2[idmu2])
+                ) / (
+                    (1.0 / (1 - f)) * (np.max(mu1) - np.min(mu1))
+                )  # integrate_m(np.ones_like(mu1), mu1[idmu1]))
+
             if np.isnan(Pf_tmp) or np.isinf(Pf_tmp):
                 continue
-            
+
             pha_star_tmp = np.zeros_like(phase, dtype=np.float64)
             pha_star_tmp[id:] = phase[id:]
             pha_star_tmp[0:id] = Pf_tmp
-            pha_star_tmp *= 1./(1-f)
+            pha_star_tmp *= 1.0 / (1 - f)
 
             if method == "lobatto":
-                pha_star_tmp = (2 * pha_star_tmp) / integrate_m(pha_star_tmp*sin_th, theta, xk=xk, wk=wk, 
-                                                                assume_sorted=True)
-                chi_star_1_approx_tmp = calc_moments(pha_star_tmp, theta, m_max=1, theta_unit='rad', 
-                                                     method=method, normalize=True, xk=xk, wk=wk, pl_costh=lp_costh)[1]
+                pha_star_tmp = (2 * pha_star_tmp) / integrate_m(
+                    pha_star_tmp * sin_th,
+                    theta,
+                    xk=xk,
+                    wk=wk,
+                    assume_sorted=True,
+                )
+                chi_star_1_approx_tmp = calc_moments(
+                    pha_star_tmp,
+                    theta,
+                    m_max=1,
+                    theta_unit="rad",
+                    method=method,
+                    normalize=True,
+                    xk=xk,
+                    wk=wk,
+                    pl_costh=lp_costh,
+                )[1]
             else:
-                pha_star_tmp = (2 * pha_star_tmp) / integrate_m(pha_star_tmp[idmu], mu[idmu])
-                chi_star_1_approx_tmp = calc_moments(pha_star_tmp, theta, m_max=1, theta_unit='rad', 
-                                                     method=method, normalize=True)[1]
-                
+                pha_star_tmp = (2 * pha_star_tmp) / integrate_m(
+                    pha_star_tmp[idmu], mu[idmu]
+                )
+                chi_star_1_approx_tmp = calc_moments(
+                    pha_star_tmp,
+                    theta,
+                    m_max=1,
+                    theta_unit="rad",
+                    method=method,
+                    normalize=True,
+                )[1]
+
             err2 = abs(chi_star_1 - chi_star_1_approx_tmp)
 
-            if (err2 < err1 and theta[id] < th_tol):
+            if err2 < err1 and theta[id] < th_tol:
                 id_approx = id
                 pha_star = pha_star_tmp
                 chi_star_1_approx = chi_star_1_approx_tmp
                 err1 = err2
 
-        pha_approx = pha_star * (1-f)
+        pha_approx = pha_star * (1 - f)
         pha_approx += delta_part
 
     if ds_output:
-        ds = xr.Dataset(coords={'theta': np.rad2deg(theta), 'exp_order': np.arange(2)})
-        ds.coords['theta'].attrs.update({ 'units': 'degrees', 'description': 'scattering angle'})
-        ds['phase_approx'] = xr.DataArray(pha_approx, dims=['theta'])
-        ds['phase_approx'].attrs.update({ 'units': 'none', 'description': 'the approximation of the exact phase matrix'})
-        ds['f'] = xr.DataArray(f)
-        ds['f'].attrs.update({ 'units': 'none', 'description': 'the truncation factor'})
-        ds['phase_tr'] = xr.DataArray(pha_star, dims=['theta'])
-        ds['phase_tr'].attrs.update({ 'units': 'none', 'description': 'the truncated phase matrix'})
-        ds['chi_star_ideal'] = xr.DataArray(np.array([1., chi_star_1]))
-        ds['chi_star_ideal'].attrs.update({ 'units': 'none', 'description': 'the truncated phase matrix moments if moment conservation (ideal case)'})
-        ds['chi_star'] = xr.DataArray(np.array([1., chi_star_1_approx]))
-        ds['chi_star'].attrs.update({ 'units': 'none', 'description': 'the actual truncated phase matrix moments'})
+        ds = xr.Dataset(
+            coords={"theta": np.rad2deg(theta), "exp_order": np.arange(2)}
+        )
+        ds.coords["theta"].attrs.update(
+            {"units": "degrees", "description": "scattering angle"}
+        )
+        ds["phase_approx"] = xr.DataArray(pha_approx, dims=["theta"])
+        ds["phase_approx"].attrs.update(
+            {
+                "units": "none",
+                "description": "the approximation of the exact phase matrix",
+            }
+        )
+        ds["f"] = xr.DataArray(f)
+        ds["f"].attrs.update(
+            {"units": "none", "description": "the truncation factor"}
+        )
+        ds["phase_tr"] = xr.DataArray(pha_star, dims=["theta"])
+        ds["phase_tr"].attrs.update(
+            {"units": "none", "description": "the truncated phase matrix"}
+        )
+        ds["chi_star_ideal"] = xr.DataArray(np.array([1.0, chi_star_1]))
+        ds["chi_star_ideal"].attrs.update(
+            {
+                "units": "none",
+                "description": "the truncated phase matrix moments "
+                "if moment conservation (ideal case)",
+            }
+        )
+        ds["chi_star"] = xr.DataArray(np.array([1.0, chi_star_1_approx]))
+        ds["chi_star"].attrs.update(
+            {
+                "units": "none",
+                "description": "the actual truncated phase matrix moments",
+            }
+        )
         if th_f_bis is not None:
-            ds['theta_f'] = xr.DataArray(np.rad2deg(th_f))
-            ds['th_f'] = xr.DataArray(np.rad2deg(th_f))
+            ds["theta_f"] = xr.DataArray(np.rad2deg(th_f_bis))
+            ds["th_f"] = xr.DataArray(np.rad2deg(th_f_bis))
         else:
-            ds['theta_f'] = xr.DataArray(np.rad2deg(theta[id_approx]))
-            ds['th_f'] = xr.DataArray(None)
-        ds['theta_f'].attrs.update({ 'units': 'degrees', 'description': 'the truncation angle'})
-        ds['th_f'].attrs.update({ 'units': 'degrees', 'description': 'the th_f parameter value (to force truncation angle)'})
+            ds["theta_f"] = xr.DataArray(np.rad2deg(theta[id_approx]))
+            ds["th_f"] = xr.DataArray(None)
+        ds["theta_f"].attrs.update(
+            {"units": "degrees", "description": "the truncation angle"}
+        )
+        ds["th_f"].attrs.update(
+            {
+                "units": "degrees",
+                "description": "the th_f parameter value "
+                "(to force truncation angle)",
+            }
+        )
         if th_tol_bis is not None:
-            ds['th_tol'] = xr.DataArray(np.rad2deg(th_tol))
+            ds["th_tol"] = xr.DataArray(np.rad2deg(th_tol))
         else:
-            ds['th_tol'] = xr.DataArray(None)
-        ds['th_tol'].attrs.update({ 'units': 'degrees', 'description': 'the th_tol parameter value'})
-        ds.attrs = {'truncation method': 'GT'}
-        date = datetime.now().strftime("%Y-%m-%d")  
-        ds.attrs.update({'date':date})
-        ds.attrs.update({'phase_moments_1': chi_1})
-        ds.attrs.update({'integration method': method })
-        if method == 'lobatto':
-            ds.attrs.update({'lobatto_optimization': lobatto_optimization})
-        ds.attrs.update({'pytrunc_version': VERSION })
-        return ds        
+            ds["th_tol"] = xr.DataArray(None)
+        ds["th_tol"].attrs.update(
+            {"units": "degrees", "description": "the th_tol parameter value"}
+        )
+        ds.attrs = {"truncation method": "GT"}
+        date = datetime.now().strftime("%Y-%m-%d")
+        ds.attrs.update({"date": date})
+        ds.attrs.update({"phase_moments_1": chi_1})
+        ds.attrs.update({"integration method": method})
+        if method == "lobatto":
+            ds.attrs.update({"lobatto_optimization": lobatto_optimization})
+        ds.attrs.update({"pytrunc_version": VERSION})
+        return ds
     else:
         return pha_approx, f, pha_star
-

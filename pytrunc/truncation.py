@@ -43,24 +43,25 @@ def delta_m_phase_approx(
     ds_output: bool = True,
 ) -> xr.Dataset | tuple[NDArray[np.float64], float, NDArray[np.float64]]:
     """
-    Caculate the aproximation of the exact phase matrix using the
+    Calculate the approximation of the exact phase matrix using the
     delta-m method
 
     Parameters
     ----------
-    phase : 1-D ndarray
-        The exact phase matrix
-    theta : 1-D ndarray
-        The phase matrix angles
+    phase : ndarray
+        The 1-D array with the exact phase matrix
+    theta : ndarray
+        The 1-D array with the phase matrix angles
     m_max : int
         The maximum term number
     theta_unit : str, optional
         The unit for theta angles:
         - 'deg' (default value)
         - 'rad'
-    phase_moments : 1-D ndarray
-        The moments of the phase matrix. the size of phase_moments must
-        be >= m_max+1. If this parameter is not None circumvent the
+    phase_moments : ndarray or None, optional
+        The 1-D array with the moments of the phase matrix. The size of
+        phase_moments must be >= m_max+1. If this parameter is not None
+        circumvent the
         calculation of phase matrix moments. This parameter can be
         useful in case we have the exact moment values like for H-G
         phase function
@@ -68,21 +69,22 @@ def delta_m_phase_approx(
         The method parameter of function calc_moments. Default use
         'trapezoid'. Also the integral method for the dirac
         normalization.
-    ds_output : Bool, optional
-            If True the output is a dataset, else return a tuple.
+    ds_output : bool, optional
+        If True the output is a dataset, else return a tuple.
 
     Returns
     -------
-    out : xr.Dataset | tuple
+    out : Dataset or tuple
         Look-up table with truncation information if ds_output is True,
         else return a tuple. Form of the tuple:
 
-        * phase_approx : 1-D ndarray
-            -> The approximation of the exact phase matrix
+        * phase_approx : ndarray
+            -> The 1-D array with the approximation of the exact phase
+            matrix
         * f : float
             -> The truncation factor
-        * phase_star : 1-D ndarray
-            -> The truncated scattering phase matrix
+        * phase_star : ndarray
+            -> The 1-D array with the truncated scattering phase matrix
 
     References
     ----------
@@ -212,17 +214,17 @@ def gt_phase_approx(
     ds_output: bool = True,
 ) -> xr.Dataset | tuple[NDArray[np.float64], float, NDArray[np.float64]]:
     """
-    Compute the aproximation of the exact phase matrix using the
+    Compute the approximation of the exact phase matrix using the
     Iwabuchi GT method
 
     Parameters
     ----------
-    phase : 1-D ndarray
-        The exact phase matrix
-    theta : 1-D ndarray
-        The phase matrix angles
-    trunc_fract : float
-        The truncature fraction
+    phase : ndarray
+        The 1-D array with the exact phase matrix
+    theta : ndarray
+        The 1-D array with the phase matrix angles
+    trunc_frac : float
+        The truncation fraction
     theta_unit : str, optional
         The unit for theta angles:
         - 'deg' (default value)
@@ -231,13 +233,13 @@ def gt_phase_approx(
         The method parameter of function calc_moments. Default use
         'trapezoid'. Also the integral method for the dirac
         normalization.
-    phase_moments_1 : None | 1-D ndarray, optional
+    phase_moments_1 : float or None, optional
         The value of the first moment of the phase matrix.
-    th_tol : None | float, optional
+    th_tol : float or None, optional
         While finding matching moments for Pf we look between 0 and
         th_tol. The unit is depending on the parameter theta_unit.
         Default th_tol = π/2
-    th_f : None | float, optional
+    th_f : float or None, optional
         Impose the truncation angle. The unit is depending on the
         parameter theta_unit.
     lobatto_optimization : bool, optional
@@ -246,21 +248,22 @@ def gt_phase_approx(
         truncation sub-interval, instead of solving for a new quadrature
         at every candidate angle during the truncation angle search).
         Default is True.
-    ds_output : Bool, optional
-            If True the output is a dataset, else return a tuple.
+    ds_output : bool, optional
+        If True the output is a dataset, else return a tuple.
 
     Returns
     -------
-    out : xr.Dataset | tuple
+    out : Dataset or tuple
         Look-up table with truncation information if ds_output is True,
         else return a tuple. Form of the tuple:
 
-        * phase_approx : 1-D ndarray
-            -> The approximation of the exact phase matrix
+        * phase_approx : ndarray
+            -> The 1-D array with the approximation of the exact phase
+            matrix
         * f : float
             -> The truncation factor
-        * phase_star : 1-D ndarray
-            -> The truncated scattering phase matrix
+        * phase_star : ndarray
+            -> The 1-D array with the truncated scattering phase matrix
     """
     if theta_unit == "deg":
         theta = np.deg2rad(theta)

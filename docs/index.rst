@@ -22,3 +22,9 @@ Pytrunc documentation
 
    pytrunc
 
+.. toctree::
+   :caption: Versions
+   :hidden:
+
+   changelog_link
+

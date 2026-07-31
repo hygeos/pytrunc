@@ -1,7 +1,8 @@
 # PYTRUNC CHANGELOG
 
 
-## Unreleased
+## v1.1.0
+Release date: 31-07-2026
 
 * Major speed-up of the `gt_phase_approx` function with method='lobatto'
   - The Lobatto quadrature abscissas and weights are now cached, avoiding

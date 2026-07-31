@@ -1,8 +1,8 @@
+import functools
 import numpy as np
 import math
 from scipy.special import gammaln
 from scipy.special import j1, jvp, jn_zeros
-from scipy.interpolate import interp1d
 
 
 def legendre_polynomials(n, x):
@@ -427,6 +427,30 @@ def quadrature_lobatto(abscissa_min=-1, abscissa_max=1, n=100):
     if abscissa_max <= abscissa_min:
         raise ValueError("abscissa_max must be > to abscissa_min")
 
+    abscissas, weights = _quadrature_lobatto_standard(n)
+
+    # rescale if min and max values different to -1 and 1
+    if abscissa_min != -1 or abscissa_max != 1:
+        alpha = (abscissa_max - abscissa_min) / 2.
+        abscissas = (abscissas + 1) * alpha + abscissa_min
+        weights = weights * alpha
+    else:
+        abscissas = abscissas.copy()
+        weights = weights.copy()
+
+    return abscissas, weights
+
+
+@functools.lru_cache(maxsize=8)
+def _quadrature_lobatto_standard(n):
+    """
+    Compute the Lobatto abscissas and weights on the standard interval [-1, 1].
+
+    The Newton-Raphson node solve is expensive (~50 ms for n ~ 2000), so the
+    result is cached per n. The returned arrays are read-only; callers must
+    copy before modifying (quadrature_lobatto does).
+    """
+
     # Get lobatto abcissa
     abscissas_int = legendre_polynomials_derivative_roots(n-1)
     abscissas = np.concatenate(([-1.0], abscissas_int, [1.0]))
@@ -436,12 +460,8 @@ def quadrature_lobatto(abscissa_min=-1, abscissa_max=1, n=100):
     Pnm1 = legendre_polynomials(n-1, abscissas[1:-1])
     weights[1:-1] = weights[0] / (Pnm1 ** 2)
 
-    # rescale if min and max values different to -1 and 1
-    if abscissa_min != -1 or abscissa_max != 1:
-        alpha = (abscissa_max - abscissa_min) / 2.
-        abscissas = (abscissas + 1) * alpha + abscissa_min
-        weights *= alpha
-
+    abscissas.flags.writeable = False
+    weights.flags.writeable = False
     return abscissas, weights
 
 
@@ -485,9 +505,7 @@ def integrate_lobatto(f, x, lp=None, xk=None, wk=None,
         xk, wk = quadrature_lobatto(abscissa_min=x_sorted[0], 
                                     abscissa_max=x_sorted[-1], n=lp)
 
-    interp_func = interp1d(x_sorted, f_sorted, kind='linear', 
-                           assume_sorted=assume_sorted)
-    f_ = interp_func(xk)
+    f_ = np.interp(xk, x_sorted, f_sorted)
 
     # return integral
     return np.sum(wk * f_)

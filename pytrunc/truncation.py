@@ -141,9 +141,9 @@ def delta_m_phase_approx(phase, theta, m_max, theta_unit='deg', phase_moments=No
         return phase_approx, f, phase_star
 
 
-def gt_phase_approx(phase, theta, trunc_frac, theta_unit='deg', 
-                    method='trapezoid', phase_moments_1=None, 
-                    th_tol = None, th_f=None, lobatto_optimization=False,
+def gt_phase_approx(phase, theta, trunc_frac, theta_unit='deg',
+                    method='trapezoid', phase_moments_1=None,
+                    th_tol = None, th_f=None, lobatto_optimization=True,
                     ds_output=True):
     """
     Compute the aproximation of the exact phase matrix using the Iwabuchi GT method
@@ -172,7 +172,10 @@ def gt_phase_approx(phase, theta, trunc_frac, theta_unit='deg',
     th_f : None | float, optional
         Impose the truncation angle. The unit is depending on the parameter theta_unit.
     lobatto_optimization : bool, optional
-        Whether to use lobatto optimization for integration. Default is False.
+        Whether to use lobatto optimization for integration (reuse the
+        full-grid Lobatto quadrature, affinely rescaled to the truncation
+        sub-interval, instead of solving for a new quadrature at every
+        candidate angle during the truncation angle search). Default is True.
     ds_output : Bool, optional
             If True the output is a dataset, else return a tuple.
 
@@ -297,6 +300,10 @@ def gt_phase_approx(phase, theta, trunc_frac, theta_unit='deg',
         err1 = abs(chi_star_1 - chi_star_1_approx)
         id_approx = 1
 
+        if method == "lobatto":
+            xk_min = np.min(xk)
+            xk_span = np.max(xk) - xk_min
+
         for id in range (1, len(phase)-2):     
             if (theta[id] >= th_tol):
                 break
@@ -305,7 +312,6 @@ def gt_phase_approx(phase, theta, trunc_frac, theta_unit='deg',
             # normalization condition between 0 and π ->  ∫ P*(θ) sin(θ) dθ = 2
             mu1 = mu[0:id+1]
             if method == "lobatto":
-                sin_th = np.sin(theta)
                 #th1 = theta[0:id+1]
                 th2 = theta[id:]
 
@@ -313,8 +319,8 @@ def gt_phase_approx(phase, theta, trunc_frac, theta_unit='deg',
                 if lobatto_optimization:
                     abscissa_min = np.min(th2)
                     abscissa_max = np.max(th2)
-                    alpha = (abscissa_max - abscissa_min) / (np.max(xk) - np.min(xk))
-                    xk_ = abscissa_min + (xk - np.min(xk)) * alpha 
+                    alpha = (abscissa_max - abscissa_min) / xk_span
+                    xk_ = abscissa_min + (xk - xk_min) * alpha
                     wk_ = wk * alpha
 
                     Pf_tmp = (2 - (1./(1-f))*integrate_m(phase[id:]*sin_th[id:], th2, xk=xk_, wk=wk_, assume_sorted=True) ) / \
@@ -351,12 +357,12 @@ def gt_phase_approx(phase, theta, trunc_frac, theta_unit='deg',
 
             if (err2 < err1 and theta[id] < th_tol):
                 id_approx = id
-                pha_star = pha_star_tmp.copy()
+                pha_star = pha_star_tmp
                 chi_star_1_approx = chi_star_1_approx_tmp
                 err1 = err2
 
-            pha_approx = pha_star.copy() * (1-f)
-            pha_approx += delta_part
+        pha_approx = pha_star * (1-f)
+        pha_approx += delta_part
 
     if ds_output:
         ds = xr.Dataset(coords={'theta': np.rad2deg(theta), 'exp_order': np.arange(2)})

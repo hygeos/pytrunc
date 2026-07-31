@@ -19,6 +19,10 @@
 
 * Add a GitHub workflow for automatic publishing to PyPI on version tags
 
+* Code modernization: type hints in all modules, ruff lint + format
+  (line length 79), pyright clean, docstrings and comments reflowed to
+  72 columns
+
 
 ## v1.0.1
 Release date: 06-02-2026

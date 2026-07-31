@@ -43,6 +43,10 @@ extra = [
     "notebook"
 ]
 
+test = [
+    "pytest",
+]
+
 docs = [
     "sphinx",
     "sphinx-rtd-theme",
@@ -70,5 +74,5 @@ pytrunc = { path = ".", editable = true }
 pandoc = ">=3.9,<4"
 
 [tool.pixi.environments]
-default = { features = ["extra"], solve-group = "default" }
+default = { features = ["extra", "test"], solve-group = "default" }
 docs = { features = ["extra", "docs"], solve-group = "docs" }

@@ -8,6 +8,23 @@ from datetime import datetime
 from pytrunc.constant import VERSION
 
 
+# scipy >= 1.14 made the x argument of simpson keyword-only, so the dispatch
+# below cannot call the scipy integrators positionally
+def _simpson(y, x):
+    return simpson(y, x=x)
+
+
+def _trapezoid(y, x):
+    return trapezoid(y, x=x)
+
+
+INTEGRATORS = {
+    "simpson": _simpson,
+    "trapezoid": _trapezoid,
+    "lobatto": integrate_lobatto,
+}
+
+
 def delta_m_phase_approx(phase, theta, m_max, theta_unit='deg', phase_moments=None,
                          method='trapezoid', ds_output=True):
     """
@@ -69,11 +86,6 @@ def delta_m_phase_approx(phase, theta, m_max, theta_unit='deg', phase_moments=No
     else:
         chi = calc_moments(phase, theta, m_max=m_max, theta_unit='rad', normalize=True)
 
-    INTEGRATORS = {
-    "simpson": simpson,
-    "trapezoid": trapezoid,
-    "lobatto": integrate_lobatto
-    }
     integrate_m = INTEGRATORS[method]
 
     f = chi[m_max]
@@ -205,12 +217,7 @@ def gt_phase_approx(phase, theta, trunc_frac, theta_unit='deg',
                                  method=method, normalize=True, xk=xk, wk=wk, pl_costh=lp_costh)[1]
         else:
             chi_1 = calc_moments(phase, theta, m_max=1, theta_unit='rad', method=method, normalize=True)[1]
-    
-    INTEGRATORS = {
-    "simpson": simpson,
-    "trapezoid": trapezoid,
-    "lobatto": integrate_lobatto
-    }
+
     integrate_m = INTEGRATORS[method]
 
     f = trunc_frac
@@ -288,7 +295,7 @@ def gt_phase_approx(phase, theta, trunc_frac, theta_unit='deg',
 
         chi_star_1_approx = calc_moments(pha_star, theta, m_max=1, theta_unit='rad', method=method, normalize=True)[1]
         err1 = abs(chi_star_1 - chi_star_1_approx)
-        #id_approx = 1
+        id_approx = 1
 
         for id in range (1, len(phase)-2):     
             if (theta[id] >= th_tol):

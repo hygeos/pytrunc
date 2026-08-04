@@ -1,53 +1,13 @@
-name: docs workflow
- 
+name: Docs
+
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
-
   workflow_dispatch:
- 
+
 jobs:
- 
-  build_docs_job:
-    runs-on: ubuntu-latest
-    env:
-      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
- 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: 3.13
-
-      - name: install pandoc 
-        run: sudo apt-get update && sudo apt-get install -y pandoc
- 
-      - name: Install dependencies
-        run: |
-          python -m pip install ghp-import
-          python -m pip install uv
-          python -m uv pip install -r pyproject.toml
-          python -m uv pip install ".[docs,extra]"
-
-      - name: Convert percent script to notebook and execute it
-        run: |
-          jupytext --to notebook docs/_notebooks/01_examples.py
-          jupytext --to notebook docs/_notebooks/02_validation_iwabuchi.py
-          mv docs/_notebooks/01_examples.ipynb docs/01_examples.ipynb
-          mv docs/_notebooks/02_validation_iwabuchi.ipynb docs/02_validation_iwabuchi.ipynb
-          jupyter nbconvert --to notebook --execute --inplace docs/01_examples.ipynb
-          jupyter nbconvert --to notebook --execute --inplace docs/02_validation_iwabuchi.ipynb
-
-      - name: Generate the docs
-        run: |
-          make -C docs clean 
-          make -C docs html
-        
-      - name: Run ghp-import
-        run: |
-          ghp-import -n -p -f docs/_build/html
+  docs:
+    uses: hygeos/reusable-workflows/.github/workflows/docs_github_pages.yml@v1
+    permissions:
+      contents: write

@@ -1,12 +1,14 @@
-"""Generate golden reference values for the gt_phase_approx regression tests.
+"""Generate golden reference values for the gt_phase_approx
+regression tests.
 
 Run from the repository root:
 
     python tests/generate_references.py
 
-Each case is stored as one .npz file in tests/data/. Cases that raise are
-reported and skipped (e.g. method='simpson' before the scipy >= 1.14
-keyword-argument fix), so the generator can be re-run to fill them in later.
+Each case is stored as one .npz file in tests/data/. Cases that
+raise are reported and skipped (e.g. method='simpson' before the
+scipy >= 1.14 keyword-argument fix), so the generator can be
+re-run to fill them in later.
 """
 
 import sys

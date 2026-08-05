@@ -1,4 +1,4 @@
-"""Regression and invariant tests for gt_phase_approx."""
+"""Tests of the truncation module."""
 
 from collections.abc import Callable
 from pathlib import Path
@@ -25,7 +25,8 @@ def phases() -> dict[str, NDArray[np.float64]]:
 def results(
     phases: dict[str, NDArray[np.float64]],
 ) -> Callable[[str], xr.Dataset]:
-    """Lazy per-case computation, memoized across tests of the module."""
+    """Lazy per-case computation, memoized across tests of the
+    module."""
     cache: dict[str, xr.Dataset] = {}
 
     def get(key: str) -> xr.Dataset:
@@ -115,9 +116,10 @@ def test_invariants(
         pha_approx[2:], (1 - f) * pha_star[2:], rtol=1e-12
     )
 
-    # everything finite (note: the plateau P_F may legitimately be negative
-    # when trunc_frac is larger than the energy of the truncated peak, and
-    # the simpson-normalized dirac spike may be negative on non-uniform mu)
+    # everything finite (note: the plateau P_F may legitimately be
+    # negative when trunc_frac is larger than the energy of the
+    # truncated peak, and the simpson-normalized dirac spike may be
+    # negative on non-uniform mu)
     assert np.all(np.isfinite(pha_approx))
 
 

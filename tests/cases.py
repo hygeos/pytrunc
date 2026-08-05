@@ -1,5 +1,5 @@
-"""Shared test case definitions for the gt_phase_approx regression
-tests."""
+"""Shared test case definitions for the gt_phase_approx
+regression tests."""
 
 from typing import Any
 
@@ -11,7 +11,8 @@ from pytrunc.phase import henyey_greenstein, two_term_henyey_greenstein
 THETA_DEG: NDArray[np.float64] = np.linspace(0.0, 180.0, 1801)
 TRUNC_FRAC: float = 0.2
 
-# gt_phase_approx assumes the phase function is normalized as ∫P(θ)sinθ dθ = 2
+# gt_phase_approx assumes the phase function is normalized as
+# ∫P(θ)sinθ dθ = 2
 PHASES = {
     "hg085": lambda theta: henyey_greenstein(theta, g=0.85, normalize=2),
     "tthg": lambda theta: two_term_henyey_greenstein(

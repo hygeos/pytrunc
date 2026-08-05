@@ -1,4 +1,4 @@
-"""Tests for the analytic phase functions."""
+"""Tests of the phase module."""
 
 import numpy as np
 import pytest
@@ -6,7 +6,8 @@ from scipy.integrate import simpson
 
 from pytrunc.phase import fournier_forand
 
-# Real-world (n, mu) pairs from Park & Ruddick (2005), as used in SMART-G
+# Real-world (n, mu) pairs from Park & Ruddick (2005), as used in
+# SMART-G
 FF_PARAMS = [(1.117, 3.695), (1.05, 3.259)]
 
 

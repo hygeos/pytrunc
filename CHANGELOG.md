@@ -1,6 +1,13 @@
 # PYTRUNC CHANGELOG
 
 
+## Unreleased
+
+* Add the `fournier_forand` phase function to the phase module, following
+  the same conventions as `henyey_greenstein` (theta_unit and normalize
+  parameters), with a direct unit test suite (tests/test_phase.py)
+
+
 ## v1.1.0
 Release date: 31-07-2026
 

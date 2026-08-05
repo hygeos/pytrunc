@@ -1,11 +1,12 @@
 [build-system]
 build-backend = "setuptools.build_meta"
-requires = ["setuptools>=42"]
+requires = ["setuptools>=77"]
 
 [project]
 name = "pytrunc"
 version = "1.1.0"
-license = {file = "LICENSE.txt"}
+license = "Apache-2.0"
+license-files = ["LICENSE.txt"]
 description = """
 Scattering phase matrix truncation Python tool for radiative transfer applications.
 """
@@ -15,7 +16,6 @@ authors = [
 readme = "README.md"
 classifiers = [
     'Development Status :: 5 - Production/Stable',
-    'License :: OSI Approved :: Apache Software License',
     'Operating System :: OS Independent',
     'Intended Audience :: Science/Research',
     'Intended Audience :: Developers',

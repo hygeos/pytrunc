@@ -12,6 +12,10 @@
   Examples sections on all public functions, unified References format,
   and module descriptions in every module including the test modules
 
+* Modernize the license metadata: SPDX expression (license = "Apache-2.0")
+  with license-files, rename LICENSE.TXT to LICENSE.txt, remove the
+  deprecated license classifier and require setuptools >= 77
+
 
 ## v1.1.0
 Release date: 31-07-2026

@@ -143,6 +143,98 @@ def two_term_henyey_greenstein(
     return phase
 
 
+def fournier_forand(
+    theta: ArrayLike,
+    n: float,
+    mu: float,
+    theta_unit: str = "deg",
+    normalize: float | None = None,
+) -> NDArray[np.float64]:
+    """
+    Compute the Fournier-Forand phase matrix
+
+    Parameters
+    ----------
+    theta : ndarray
+        The 1-D array with the phase matrix angles. See parameter
+        `theta_unit`
+    n : float
+        The real index of refraction of the particles
+    mu : float
+        The slope parameter of the hyperbolic (Junge) particle size
+        distribution (typically between 3 and 5 for oceanic particles)
+    theta_unit : str, optional
+        The unit for theta angles:
+        - 'deg' (default value)
+        - 'rad'
+    normalize : float or None, optional
+        The normalization value of the integral ∫F_FF(θ)dcosθ, where
+        F_FF(θ) is the phase matrix. The scipy simpson function is used
+        for the normalization.
+
+    Returns
+    -------
+    F_FF : ndarray
+        The 1-D array (same shape as theta) with the phase matrix.
+
+    Notes
+    -----
+    The Fournier-Forand equation:
+
+    - :math:`F_FF(θ) = [1 / (4π*(1-δ)**2*δ**ν)] *
+      [ν*(1-δ) - (1-δ**ν) + (δ*(1-δ**ν) - ν*(1-δ))*sin(θ/2)**(-2)] +
+      [(1-δ_180**ν) / (16π*(δ_180-1)*δ_180**ν)] * (3*cos(θ)**2 - 1)`
+    - with :math:`ν = (3-μ)/2` and
+      :math:`δ = (4 / (3*(n-1)**2))*sin(θ/2)**2`, where δ_180 is δ
+      evaluated at θ = 180°.
+    - By default the integral ∫F_FF(θ)dcosθ = 1/2π.
+      The integral value can be different due to a very low
+      discretization of θ and/or a strong forward peak. The use of the
+      parameter `normalize` can be useful to renormalize the phase
+      function.
+    - F_FF(θ) diverges as θ → 0: at θ = 0 the result is NaN/inf (with
+      numpy invalid-value warnings). Use a grid starting above 0, or
+      overwrite the forward peak values before integrating.
+
+    References
+    ----------
+    Fournier, G. R., & Forand, J. L. (1994). Analytic phase function for
+    ocean water. In Ocean Optics XII (Vol. 2258, pp. 194-201). SPIE.
+
+    `other reference
+    <http://www.oceanopticsbook.info/view/scattering/the-fournier-forand-phase-function>`_
+    """
+
+    if theta_unit == "rad":
+        theta_rad = np.asarray(theta, dtype=np.float64)
+    elif theta_unit == "deg":
+        theta_rad = np.deg2rad(theta)
+    else:
+        raise ValueError(
+            "The accepted values for parameter theta_unit are: 'deg' or 'rad'"
+        )
+
+    nu = (3 - mu) / 2
+    sin_half_sq = np.sin(theta_rad / 2) ** 2
+    delta = (4 / (3 * (n - 1) ** 2)) * sin_half_sq
+    delta_180 = 4 / (3 * (n - 1) ** 2)
+
+    phase = (1 / (4 * math.pi * (1 - delta) ** 2 * delta**nu)) * (
+        nu * (1 - delta)
+        - (1 - delta**nu)
+        + (delta * (1 - delta**nu) - nu * (1 - delta)) / sin_half_sq
+    ) + (
+        (1 - delta_180**nu)
+        / (16 * math.pi * (delta_180 - 1) * delta_180**nu)
+    ) * (3 * np.cos(theta_rad) ** 2 - 1)
+    if normalize is not None:
+        mu_cos = np.cos(theta_rad)
+        idmu = np.argsort(mu_cos)
+        phase = (normalize * phase) / simpson(phase[idmu], x=mu_cos[idmu])
+
+    return phase
+
+
 def calc_moments(
     phase: NDArray[np.float64],
     theta: NDArray[np.float64],

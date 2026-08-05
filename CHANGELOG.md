@@ -7,6 +7,11 @@
   the same conventions as `henyey_greenstein` (theta_unit and normalize
   parameters), with a direct unit test suite (tests/test_phase.py)
 
+* Docstring convention pass aligned with the geoclide package: 72-column
+  docstring limit enforced by ruff (max-doc-length), numpydoc style with
+  Examples sections on all public functions, unified References format,
+  and module descriptions in every module including the test modules
+
 
 ## v1.1.0
 Release date: 31-07-2026

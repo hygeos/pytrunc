@@ -1,3 +1,13 @@
+"""
+Scattering phase function truncation methods.
+
+This module provides the approximation of a scattering phase
+function by truncation of its forward peak, using either the
+delta-m method of Wiscombe (1977) or the geometrical truncation
+(GT) method of Iwabuchi and Suzuki (2009), and returns the
+truncated phase function together with its truncation factor.
+"""
+
 import math
 from collections.abc import Callable
 from datetime import datetime
@@ -49,50 +59,71 @@ def delta_m_phase_approx(
     Parameters
     ----------
     phase : ndarray
-        The 1-D array with the exact phase matrix
+        The exact phase matrix, it must be 1-D
     theta : ndarray
-        The 1-D array with the phase matrix angles
+        The phase matrix angles, it must be 1-D. See the theta_unit
+        parameter for the unit
     m_max : int
         The maximum term number
     theta_unit : str, optional
-        The unit for theta angles:
-        - 'deg' (default value)
-        - 'rad'
+        The unit of the theta angles. Default is 'deg', other
+        choice is 'rad'
     phase_moments : ndarray or None, optional
-        The 1-D array with the moments of the phase matrix. The size of
-        phase_moments must be >= m_max+1. If this parameter is not None
-        circumvent the
-        calculation of phase matrix moments. This parameter can be
-        useful in case we have the exact moment values like for H-G
-        phase function
+        The moments of the phase matrix, it must be 1-D. The size
+        of phase_moments must be >= m_max+1. If this parameter is
+        not None, circumvent the calculation of the phase matrix
+        moments. This parameter can be useful in case we have the
+        exact moment values like for the H-G phase function.
+        Default is None
     method : str, optional
-        The method parameter of function calc_moments. Default use
-        'trapezoid'. Also the integral method for the dirac
-        normalization.
+        The method parameter of the calc_moments function, and
+        also the integral method for the dirac normalization.
+        Default is 'trapezoid'
     ds_output : bool, optional
         If True the output is a dataset, else return a tuple.
+        Default is True
 
     Returns
     -------
-    out : Dataset or tuple
-        Look-up table with truncation information if ds_output is True,
-        else return a tuple. Form of the tuple:
+    Dataset or tuple
+        Xarray dataset containing the truncation information if
+        ds_output is True, else a tuple.
+
+        Key variables included:
+
+        - **phase_approx**: The approximation of the exact phase
+          matrix
+        - **f**: The truncation factor
+        - **phase_tr**: The truncated phase matrix
+        - **chi**: The moments of the exact phase matrix
+        - **chi_star**: The moments of the truncated phase matrix
+
+        Form of the tuple:
 
         * phase_approx : ndarray
-            -> The 1-D array with the approximation of the exact phase
-            matrix
+            -> The approximation of the exact phase matrix, it is
+            1-D
         * f : float
             -> The truncation factor
         * phase_star : ndarray
-            -> The 1-D array with the truncated scattering phase matrix
+            -> The truncated scattering phase matrix, it is 1-D
 
     References
     ----------
+    Wiscombe, W. J. (1977). The delta-M method: Rapid yet accurate
+    radiative flux calculations for strongly asymmetric phase
+    functions. Journal of Atmospheric Sciences, 34(9), 1408-1422.
 
-    - [1] Wiscombe, W. J. (1977). The delta-M method: Rapid yet
-          accurate radiative flux calculations for strongly asymmetric
-          phase functions. Journal of Atmospheric Sciences, 34(9),
-          1408-1422.
+    Examples
+    --------
+    >>> import numpy as np
+    >>> from pytrunc.phase import henyey_greenstein
+    >>> from pytrunc.truncation import delta_m_phase_approx
+    >>> theta = np.linspace(0.0, 180.0, 1801)
+    >>> phase = henyey_greenstein(theta, g=0.85, normalize=2)
+    >>> ds = delta_m_phase_approx(phase, theta, m_max=8)
+    >>> ds['f'].values
+    array(0.27248273)
     """
 
     if theta_unit == "deg":
@@ -220,50 +251,88 @@ def gt_phase_approx(
     Parameters
     ----------
     phase : ndarray
-        The 1-D array with the exact phase matrix
+        The exact phase matrix, it must be 1-D
     theta : ndarray
-        The 1-D array with the phase matrix angles
+        The phase matrix angles, it must be 1-D. See the theta_unit
+        parameter for the unit
     trunc_frac : float
         The truncation fraction
     theta_unit : str, optional
-        The unit for theta angles:
-        - 'deg' (default value)
-        - 'rad'
+        The unit of the theta angles. Default is 'deg', other
+        choice is 'rad'
     method : str, optional
-        The method parameter of function calc_moments. Default use
-        'trapezoid'. Also the integral method for the dirac
-        normalization.
+        The method parameter of the calc_moments function, and
+        also the integral method for the dirac normalization.
+        Default is 'trapezoid'
     phase_moments_1 : float or None, optional
-        The value of the first moment of the phase matrix.
+        The value of the first moment of the phase matrix. Default
+        is None, meaning it is computed with the calc_moments
+        function
     th_tol : float or None, optional
-        While finding matching moments for Pf we look between 0 and
-        th_tol. The unit is depending on the parameter theta_unit.
-        Default th_tol = π/2
+        While finding matching moments for Pf we look between 0
+        and th_tol. The unit depends on the theta_unit parameter.
+        Default is None, meaning th_tol is equal to pi/2
     th_f : float or None, optional
-        Impose the truncation angle. The unit is depending on the
-        parameter theta_unit.
+        Impose the truncation angle. The unit depends on the
+        theta_unit parameter. Default is None, meaning the
+        truncation angle is searched
     lobatto_optimization : bool, optional
-        Whether to use lobatto optimization for integration (reuse the
-        full-grid Lobatto quadrature, affinely rescaled to the
-        truncation sub-interval, instead of solving for a new quadrature
-        at every candidate angle during the truncation angle search).
-        Default is True.
+        Whether to use lobatto optimization for integration (reuse
+        the full-grid Lobatto quadrature, affinely rescaled to the
+        truncation sub-interval, instead of solving for a new
+        quadrature at every candidate angle during the truncation
+        angle search). Default is True
     ds_output : bool, optional
         If True the output is a dataset, else return a tuple.
+        Default is True
 
     Returns
     -------
-    out : Dataset or tuple
-        Look-up table with truncation information if ds_output is True,
-        else return a tuple. Form of the tuple:
+    Dataset or tuple
+        Xarray dataset containing the truncation information if
+        ds_output is True, else a tuple.
+
+        Key variables included:
+
+        - **phase_approx**: The approximation of the exact phase
+          matrix
+        - **f**: The truncation factor
+        - **phase_tr**: The truncated phase matrix
+        - **chi_star_ideal**: The truncated phase matrix moments
+          if moment conservation (ideal case)
+        - **chi_star**: The actual truncated phase matrix moments
+        - **theta_f**: The truncation angle
+        - **th_f**: The th_f parameter value (to force the
+          truncation angle)
+        - **th_tol**: The th_tol parameter value
+
+        Form of the tuple:
 
         * phase_approx : ndarray
-            -> The 1-D array with the approximation of the exact phase
-            matrix
+            -> The approximation of the exact phase matrix, it is
+            1-D
         * f : float
             -> The truncation factor
         * phase_star : ndarray
-            -> The 1-D array with the truncated scattering phase matrix
+            -> The truncated scattering phase matrix, it is 1-D
+
+    References
+    ----------
+    Iwabuchi, H., & Suzuki, T. (2009). Fast and accurate radiance
+    calculations using truncation approximation for anisotropic
+    scattering phase functions. Journal of Quantitative
+    Spectroscopy and Radiative Transfer, 110(17), 1926-1939.
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> from pytrunc.phase import henyey_greenstein
+    >>> from pytrunc.truncation import gt_phase_approx
+    >>> theta = np.linspace(0.0, 180.0, 1801)
+    >>> phase = henyey_greenstein(theta, g=0.85, normalize=2)
+    >>> ds = gt_phase_approx(phase, theta, trunc_frac=0.2)
+    >>> ds['theta_f'].values
+    array(16.8)
     """
     if theta_unit == "deg":
         theta = np.deg2rad(theta)
@@ -452,7 +521,8 @@ def gt_phase_approx(
                 break
 
             # Find Pf:
-            # normalization condition between 0 and π ->  ∫ P*(θ) sin(θ) dθ = 2
+            # normalization condition between 0 and π ->
+            # ∫ P*(θ) sin(θ) dθ = 2
             mu1 = mu[0 : id + 1]
             if method == "lobatto":
                 # th1 = theta[0:id+1]

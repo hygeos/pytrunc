@@ -181,10 +181,10 @@ def fournier_forand(
     -----
     The Fournier-Forand equation:
 
-    - :math:`F_FF(θ) = [1 / (4π*(1-δ)**2*δ**ν)] *
-      [ν*(1-δ) - (1-δ**ν) + (δ*(1-δ**ν) - ν*(1-δ))*sin(θ/2)**(-2)] +
-      [(1-δ_180**ν) / (16π*(δ_180-1)*δ_180**ν)] * (3*cos(θ)**2 - 1)`
-    - with :math:`ν = (3-μ)/2` and
+    - :math:`F_FF(θ) = [1 / (4π*(1-δ)**2*δ**v)] *
+      [v*(1-δ) - (1-δ**v) + (δ*(1-δ**v) - v*(1-δ))*sin(θ/2)**(-2)] +
+      [(1-δ_180**v) / (16π*(δ_180-1)*δ_180**v)] * (3*cos(θ)**2 - 1)`
+    - with :math:`v = (3-μ)/2` and
       :math:`δ = (4 / (3*(n-1)**2))*sin(θ/2)**2`, where δ_180 is δ
       evaluated at θ = 180°.
     - By default the integral ∫F_FF(θ)dcosθ = 1/2π.
@@ -214,18 +214,18 @@ def fournier_forand(
             "The accepted values for parameter theta_unit are: 'deg' or 'rad'"
         )
 
-    nu = (3 - mu) / 2
+    v = (3 - mu) / 2
     sin_half_sq = np.sin(theta_rad / 2) ** 2
     delta = (4 / (3 * (n - 1) ** 2)) * sin_half_sq
     delta_180 = 4 / (3 * (n - 1) ** 2)
 
-    phase = (1 / (4 * math.pi * (1 - delta) ** 2 * delta**nu)) * (
-        nu * (1 - delta)
-        - (1 - delta**nu)
-        + (delta * (1 - delta**nu) - nu * (1 - delta)) / sin_half_sq
+    phase = (1 / (4 * math.pi * (1 - delta) ** 2 * delta**v)) * (
+        v * (1 - delta)
+        - (1 - delta**v)
+        + (delta * (1 - delta**v) - v * (1 - delta)) / sin_half_sq
     ) + (
-        (1 - delta_180**nu)
-        / (16 * math.pi * (delta_180 - 1) * delta_180**nu)
+        (1 - delta_180**v)
+        / (16 * math.pi * (delta_180 - 1) * delta_180**v)
     ) * (3 * np.cos(theta_rad) ** 2 - 1)
     if normalize is not None:
         mu_cos = np.cos(theta_rad)

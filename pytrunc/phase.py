@@ -365,15 +365,10 @@ def calc_moments(
     chi = np.zeros(m_max + 1)
 
     if method == "lobatto":
-        nth = len(phase)
-        if nth < 2:
-            raise ValueError(
-                "The phase size must be >= 2 for Lobatto quadrature"
-            )
-
+        # quadrature_lobatto itself raises for n < 2
         if (xk is None) or (wk is None):
             xk, wk = quadrature_lobatto(
-                abscissa_min=0.0, abscissa_max=math.pi, n=nth
+                abscissa_min=0.0, abscissa_max=math.pi, n=len(phase)
             )
 
         if pl_costh is None:
@@ -475,7 +470,7 @@ def calc_hg_moments(g: float, m_max: int) -> NDArray[np.float64]:
     array([1.      , 0.85    , 0.7225  , 0.614125])
     """
 
-    return np.array([g**n for n in range(m_max + 1)])
+    return g ** np.arange(m_max + 1, dtype=np.float64)
 
 
 def calc_tthg_moments(

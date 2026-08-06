@@ -62,11 +62,8 @@ def legendre_polynomials(n: int, x: ArrayLike) -> NDArray[np.float64]:
     if n == 1:
         return x
 
-    p0 = np.ones_like(x)
-    p1 = x
-
-    pnm1 = p0.copy()
-    pn = p1.copy()
+    pnm1 = np.ones_like(x)
+    pn = x
     for k in range(1, n):
         pnp1 = (1.0 / (k + 1)) * ((2 * k + 1) * x * pn - k * pnm1)
         pnm1, pn = pn, pnp1
@@ -125,11 +122,8 @@ def legendre_polynomials_derivative(
     if n == 1:
         return np.ones_like(x)
 
-    p0_p = np.zeros_like(x)
-    p1_p = np.ones_like(x)
-
-    pnm1_p = p0_p.copy()
-    pn_p = p1_p.copy()
+    pnm1_p = np.zeros_like(x)
+    pn_p = np.ones_like(x)
     for k in range(1, n):
         pnp1_p = (1.0 / k) * ((2 * k + 1) * x * pn_p - (k + 1) * pnm1_p)
         pnm1_p, pn_p = pn_p, pnp1_p
@@ -192,11 +186,8 @@ def legendre_polynomials_second_derivative(
     if n == 2:
         return np.full_like(x, 3)
 
-    p1_pp = np.zeros_like(x)
-    p2_pp = np.full_like(x, 3)
-
-    pnm1_pp = p1_pp.copy()
-    pn_pp = p2_pp.copy()
+    pnm1_pp = np.zeros_like(x)
+    pn_pp = np.full_like(x, 3)
     for k in range(2, n):
         pnp1_pp = (1.0 / (k - 1)) * (
             (2 * k + 1) * x * pn_pp - (k + 2) * pnm1_pp
@@ -330,26 +321,29 @@ def bessel_jn(
     x = np.asarray(x, dtype=np.float64)
 
     if np.any(x < 0):
-        raise ValueError("The values of x must be >= 1")
+        raise ValueError("The values of x must be >= 0")
 
     if n < 0:
         raise ValueError("The order n must be >= 0")
 
     jn = np.zeros_like(x)
+    zero_mask = x == 0
 
     for m in range(max_iter):
-        with np.errstate(divide="ignore"):
+        # divide: log(0) = -inf at x = 0; invalid: 0 * -inf = nan for
+        # m = n = 0 — both samples are overwritten by the mask below
+        with np.errstate(divide="ignore", invalid="ignore"):
             exp_term = -(gammaln(m + 1) + gammaln(m + n + 1)) + (
                 2 * m + n
-            ) * np.log(np.abs(x / 2))
+            ) * np.log(x / 2)
 
         jnm = (-1) ** m * np.exp(exp_term)
 
-        if n == 0:
-            jnm = np.where((x == 0) & (m == 0), 1.0, jnm)
-            jnm = np.where((x == 0) & (m > 0), 0.0, jnm)
+        # the x = 0 samples: Jn(0) = 1 for n = 0 and 0 otherwise
+        if n == 0 and m == 0:
+            jnm = np.where(zero_mask, 1.0, jnm)
         else:
-            jnm = np.where(x == 0, 0.0, jnm)
+            jnm = np.where(zero_mask, 0.0, jnm)
 
         jn += jnm
 
@@ -542,14 +536,13 @@ def legendre_polynomials_derivative_roots(
     array([-0.65465367,  0.        ,  0.65465367])
     """
 
-    x0 = np.sort(
+    x = np.sort(
         np.cos(
             jn_zeros(1, n - 1)
             / ((n + 1 - 0.5) ** 2 + ((math.pi**2 - 4) / (4 * math.pi**2)))
             ** 0.5
         )
     )
-    x = np.asarray(x0)
     for _ in range(max_iter):
         dp, d2p = _legendre_dp_d2p(n, x)
         dx = dp / d2p
@@ -643,7 +636,7 @@ def _quadrature_lobatto_standard(
     abscissas_int = legendre_polynomials_derivative_roots(n - 1)
     abscissas = np.concatenate(([-1.0], abscissas_int, [1.0]))
 
-    weights = np.zeros_like(abscissas)
+    weights = np.empty_like(abscissas)
     weights[0] = weights[-1] = 2.0 / (n * (n - 1.0))
     pnm1 = legendre_polynomials(n - 1, abscissas[1:-1])
     weights[1:-1] = weights[0] / (pnm1**2)

@@ -19,11 +19,7 @@ from scipy.integrate import simpson, trapezoid
 
 from pytrunc.constants import VERSION
 from pytrunc.phase import calc_moments
-from pytrunc.utils import (
-    integrate_lobatto,
-    legendre_polynomials,
-    quadrature_lobatto,
-)
+from pytrunc.utils import integrate_lobatto, quadrature_lobatto
 
 
 # scipy >= 1.14 made the x argument of simpson keyword-only, so the
@@ -188,7 +184,7 @@ def delta_m_phase_approx(
             pnm1, pn = pn, pn_costh
         phase_star += (2 * n + 1) * chi_star[n] * pn_costh
 
-    phase_approx = phase_star.copy() * (1 - f)
+    phase_approx = phase_star * (1 - f)
     if f > 0:
         idmu = np.argsort(cos_th)
         delta_part = np.zeros_like(theta)
@@ -372,16 +368,18 @@ def gt_phase_approx(
     if th_tol is None:
         th_tol = 0.5 * math.pi
     mu = np.cos(theta)
-    idmu = np.argsort(mu)
 
     if method == "lobatto":
         sin_th = np.sin(theta)
         xk, wk = quadrature_lobatto(
             abscissa_min=theta[0], abscissa_max=theta[-1], n=len(theta)
         )
+        # Legendre polynomials of degree 0 and 1: ones and mu itself
         lp_costh = np.zeros((2, len(theta)))
-        for deg in range(2):
-            lp_costh[deg] = legendre_polynomials(deg, np.cos(theta))
+        lp_costh[0] = 1.0
+        lp_costh[1] = mu
+    else:
+        idmu = np.argsort(mu)
 
     if phase_moments_1 is not None:
         chi_1 = phase_moments_1
@@ -428,7 +426,6 @@ def gt_phase_approx(
     delta_part = (2 * f) * delta_part
 
     if th_f is not None:
-        pha_star = np.zeros_like(phase, dtype=np.float64)
         id_f = np.argmin(np.abs(theta - th_f))
 
         mu1 = mu[0 : id_f + 1]
@@ -487,7 +484,7 @@ def gt_phase_approx(
                 normalize=True,
             )[1]
 
-        pha_approx = pha_star.copy() * (1 - f)
+        pha_approx = pha_star * (1 - f)
         pha_approx += delta_part
 
     else:
@@ -666,7 +663,9 @@ def gt_phase_approx(
 
             err2 = abs(chi_star_1 - chi_star_1_approx_tmp)
 
-            if err2 < err1 and theta[id] < th_tol:
+            # theta[id] < th_tol always holds here (the loop breaks
+            # first), so the winner test is on the error alone
+            if err2 < err1:
                 id_approx = id
                 pha_star = pha_star_tmp
                 chi_star_1_approx = chi_star_1_approx_tmp

@@ -17,7 +17,7 @@ import xarray as xr
 from numpy.typing import NDArray
 from scipy.integrate import simpson, trapezoid
 
-from pytrunc.constant import VERSION
+from pytrunc.constants import VERSION
 from pytrunc.phase import calc_moments
 from pytrunc.utils import (
     integrate_lobatto,

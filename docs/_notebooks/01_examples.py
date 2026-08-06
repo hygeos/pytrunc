@@ -25,7 +25,7 @@ import xarray as xr
 from matplotlib.ticker import MaxNLocator
 from scipy.integrate import simpson, trapezoid
 
-from pytrunc.constant import DIR_ROOT
+from pytrunc.constants import DIR_ROOT
 from pytrunc.phase import calc_hg_moments, calc_moments, henyey_greenstein
 from pytrunc.truncation import delta_m_phase_approx, gt_phase_approx
 from pytrunc.utils import integrate_lobatto, quadrature_lobatto

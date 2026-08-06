@@ -8,7 +8,7 @@ import os
 import sys
 
 sys.path.insert(0, os.path.abspath(".."))
-from pytrunc.constant import VERSION
+from pytrunc.constants import VERSION
 
 # -- Project information -----------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
@@ -34,7 +34,7 @@ templates_path = ['_templates']
 
 # introduction.md is pulled into index.rst via an include
 # directive, it must not be built as a standalone document
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', '*constant.rst',
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', '*constants.rst',
                     'modules.rst', 'introduction.md']
 
 autodoc_default_options = {

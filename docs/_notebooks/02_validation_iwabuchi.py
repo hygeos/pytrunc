@@ -29,7 +29,7 @@ import numpy as np
 import xarray as xr
 from scipy.integrate import simpson, trapezoid
 
-from pytrunc.constant import DIR_ROOT
+from pytrunc.constants import DIR_ROOT
 from pytrunc.phase import calc_moments
 from pytrunc.truncation import delta_m_phase_approx, gt_phase_approx
 from pytrunc.utils import integrate_lobatto

@@ -29,10 +29,22 @@ from pytrunc.utils import (
 # scipy >= 1.14 made the x argument of simpson keyword-only, so the
 # dispatch below cannot call the scipy integrators positionally
 def _simpson(y: NDArray[np.float64], x: NDArray[np.float64]) -> float:
+    """
+    Integrate y over x with the scipy simpson function
+
+    :meta private:
+    """
+
     return float(simpson(y, x=x))
 
 
 def _trapezoid(y: NDArray[np.float64], x: NDArray[np.float64]) -> float:
+    """
+    Integrate y over x with the scipy trapezoid function
+
+    :meta private:
+    """
+
     return float(trapezoid(y, x=x))
 
 

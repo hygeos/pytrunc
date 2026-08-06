@@ -246,34 +246,46 @@ def bessel_j1(
 
     x_small = x <= 35
     xs = x[x_small]
-    if np.any(x_small):
+    if xs.size:
         for m in range(max_iter):
             with np.errstate(divide="ignore"):
                 j1m = (
                     (-1) ** m / (math.factorial(m) * math.factorial(m + 1))
                 ) * (xs / 2.0) ** (2 * m + 1.0)
 
-            j1m = np.where(x == 0, 0.0, j1m)
+            j1m = np.where(xs == 0, 0.0, j1m)
             j1[x_small] += j1m
 
             if np.max(np.abs(j1m)) < acc:
                 break
 
+    # For x > 35 the ascending series is unusable in double precision
+    # (the alternating terms peak around 1e15 and cancellation destroys
+    # every significant digit), use Hankel's asymptotic expansion with
+    # the polynomial coefficients of Abramowitz & Stegun (eq. 9.4.6)
     x_large = x > 35
     xl = x[x_large]
-    if np.any(x_large):
-        for m in range(max_iter):
-            with np.errstate(divide="ignore"):
-                exp_term = -(gammaln(m + 1) + gammaln(m + 2)) + (
-                    2 * m + 1
-                ) * np.log(xl / 2)
-            j1m = (-1) ** m * np.exp(exp_term)
-
-            j1m = np.where(x == 0, 0.0, j1m)
-            j1[x_small] += j1m
-
-            if np.max(np.abs(j1m)) < acc:
-                break
+    if xl.size:
+        z = 8.0 / xl
+        y = z * z
+        p1 = 1.0 + y * (
+            0.183105e-2
+            + y * (
+                -0.3516396496e-4
+                + y * (0.2457520174e-5 + y * (-0.240337019e-6))
+            )
+        )
+        q1 = 0.04687499995 + y * (
+            -0.2002690873e-3
+            + y * (
+                0.8449199096e-5
+                + y * (-0.88228987e-6 + y * 0.105787412e-6)
+            )
+        )
+        chi = xl - 2.356194491
+        j1[x_large] = np.sqrt(0.636619772 / xl) * (
+            np.cos(chi) * p1 - z * np.sin(chi) * q1
+        )
 
     return j1
 

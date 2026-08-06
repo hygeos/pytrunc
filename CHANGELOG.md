@@ -3,6 +3,21 @@
 
 ## Unreleased
 
+* Add the pytrunc logo, in a light and a dark variant, at the top of the
+  README and in the documentation sidebar, both following the light/dark
+  theme
+
+* Add a documentation landing page (docs/introduction.md, included in
+  index.rst) presenting the features, a quickstart and the contents of
+  the documentation
+
+* Improve the README: features, installation, quickstart, examples,
+  documentation and license sections, and badges for the tests, the
+  documentation, the license, pixi and ruff
+
+* Add a GitHub workflow running ruff, and lint the documentation
+  configuration and notebook sources accordingly
+
 * Add the `fournier_forand` phase function to the phase module, following
   the same conventions as `henyey_greenstein` (theta_unit and normalize
   parameters), with a direct unit test suite (tests/test_phase.py)

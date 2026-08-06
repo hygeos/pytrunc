@@ -3,6 +3,22 @@
 
 ## Unreleased
 
+* Rename the `constant` module to `constants`, for consistency with the
+  geoclide package. The imports become `from pytrunc.constants import
+  VERSION` and `from pytrunc.constants import DIR_ROOT`
+
+* Use lowercase names for the local mathematical variables, following the
+  PEP 8 naming conventions: `P0`, `P1`, `Pn`, `Pnm1`, `Pnp1` and their
+  derivative variants in the utils module, `Pf` and `Pf_tmp` in the
+  truncation module, and `F_HG1` and `F_HG2` in the phase module. The
+  mathematical notation of the docstrings is unchanged, and the ruff
+  configuration now selects the pep8-naming rules
+
+* Reflow the docstrings and comments of every module, filling the
+  72-column budget instead of only enforcing it, add docstrings to the
+  private integrator wrappers of the truncation module, and shorten the
+  Ocean Optics Web Book references so that they fit in the limit
+
 * Commit the pixi lock file, previously ignored: the tests and docs
   workflows install the environment from it, and failed at the pixi setup
   step without it

@@ -18,7 +18,7 @@ from numpy.typing import NDArray
 from scipy.integrate import simpson, trapezoid
 
 from pytrunc.constants import VERSION
-from pytrunc.phase import calc_moments
+from pytrunc.phase import _theta_to_rad, calc_moments
 from pytrunc.utils import integrate_lobatto, quadrature_lobatto
 
 
@@ -49,6 +49,45 @@ INTEGRATORS: dict[str, Callable[..., float]] = {
     "trapezoid": _trapezoid,
     "lobatto": integrate_lobatto,
 }
+
+
+def _dirac_delta_part(
+    theta: NDArray[np.float64],
+    mu: NDArray[np.float64],
+    f: float,
+    method: str,
+    integrate_m: Callable[..., float],
+    xk: NDArray[np.float64] | None = None,
+    wk: NDArray[np.float64] | None = None,
+    sin_th: NDArray[np.float64] | None = None,
+    idmu: NDArray[np.intp] | None = None,
+) -> NDArray[np.float64]:
+    """
+    The forward Dirac peak, normalized to 1 and scaled by 2f
+
+    :meta private:
+
+    The spike is carried at index 0, and also at index 1 for the
+    lobatto method: sin(0) = 0 gives the first sample a zero weight in
+    the ∫ δ(θ) sin(θ) dθ normalization integral
+    """
+    delta_part = np.zeros_like(theta)
+    delta_part[0] = 1.0
+    if method == "lobatto":
+        delta_part[1] = 1.0
+        if sin_th is None:
+            sin_th = np.sin(theta)
+        delta_part = delta_part / integrate_m(
+            delta_part * sin_th, theta, xk=xk, wk=wk
+        )  # normalize dirac to 1
+    else:
+        if idmu is None:
+            idmu = np.argsort(mu)
+        delta_part[0] = delta_part[0] / integrate_m(
+            delta_part[idmu], mu[idmu]
+        )  # normalize dirac to 1
+
+    return (2 * f) * delta_part
 
 
 def delta_m_phase_approx(
@@ -131,12 +170,10 @@ def delta_m_phase_approx(
     array(0.27250572)
     """
 
-    if theta_unit == "deg":
-        theta = np.deg2rad(theta)
-    elif theta_unit != "rad":
-        raise ValueError(
-            "The accepted values for parameter theta_unit are: 'deg' or 'rad'"
-        )
+    theta = _theta_to_rad(theta, theta_unit)
+
+    if method not in INTEGRATORS:
+        raise ValueError(f"Only available methods are: {list(INTEGRATORS)}")
 
     if phase_moments is not None:
         if len(phase_moments) <= m_max:
@@ -186,20 +223,9 @@ def delta_m_phase_approx(
 
     phase_approx = phase_star * (1 - f)
     if f > 0:
-        idmu = np.argsort(cos_th)
-        delta_part = np.zeros_like(theta)
-        delta_part[0] = 1.0
-        if method == "lobatto":
-            delta_part[1] = 1.0  # because sin(pi) = 0
-            delta_part = delta_part / integrate_m(
-                delta_part * np.sin(theta), theta
-            )  # normalize dirac to 1
-        else:
-            delta_part[0] = delta_part[0] / integrate_m(
-                delta_part[idmu], cos_th[idmu]
-            )  # normalize dirac to 1
-        delta_part = (2 * f) * delta_part
-        phase_approx += delta_part
+        phase_approx += _dirac_delta_part(
+            theta, cos_th, f, method, integrate_m
+        )
 
     if ds_output:
         ds = xr.Dataset(
@@ -301,7 +327,9 @@ def gt_phase_approx(
         full-grid Lobatto quadrature, affinely rescaled to the
         truncation sub-interval, instead of solving for a new quadrature
         at every candidate angle during the truncation angle search).
-        Default is True
+        Default is True. The False value is the slow reference path: the
+        node solve is repeated at every candidate angle, which is about
+        70 times slower on a 1801-point grid
     ds_output : bool, optional
         If True the output is a dataset, else return a tuple. Default is
         True
@@ -352,16 +380,15 @@ def gt_phase_approx(
     >>> ds['theta_f'].values
     array(16.8)
     """
+    theta = _theta_to_rad(theta, theta_unit)
     if theta_unit == "deg":
-        theta = np.deg2rad(theta)
         if th_tol is not None:
             th_tol = np.deg2rad(th_tol)
         if th_f is not None:
             th_f = np.deg2rad(th_f)
-    elif theta_unit != "rad":
-        raise ValueError(
-            "The accepted values for parameter theta_unit are: 'deg' or 'rad'"
-        )
+
+    if method not in INTEGRATORS:
+        raise ValueError(f"Only available methods are: {list(INTEGRATORS)}")
 
     th_tol_bis = th_tol
     th_f_bis = th_f
@@ -411,228 +438,114 @@ def gt_phase_approx(
     f = trunc_frac
     chi_star_1 = (chi_1 - f) / (1 - f)
 
-    delta_part = np.zeros_like(mu)
-    delta_part[0] = 1.0
     if method == "lobatto":
-        delta_part[1] = 1.0  # because sin(pi) = 0
-        delta_part = delta_part / integrate_m(
-            delta_part * sin_th, theta, xk=xk, wk=wk
-        )  # normalize dirac to 1
-
+        delta_part = _dirac_delta_part(
+            theta, mu, f, method, integrate_m, xk=xk, wk=wk, sin_th=sin_th
+        )
     else:
-        delta_part[0] = delta_part[0] / integrate_m(
-            delta_part[idmu], mu[idmu]
-        )  # normalize dirac to 1
-    delta_part = (2 * f) * delta_part
+        delta_part = _dirac_delta_part(
+            theta, mu, f, method, integrate_m, idmu=idmu
+        )
 
-    if th_f is not None:
-        id_f = np.argmin(np.abs(theta - th_f))
+    # invariants of the candidate evaluations
+    inv_1mf = 1.0 / (1 - f)
+    # for a sorted theta in [0, π], mu = cos(theta) is strictly
+    # decreasing: the per-candidate min/max reductions reduce to direct
+    # indexing and the argsorts of the mu slices to simple reversals
+    # (views, no copies)
+    sorted_th = bool(np.all(np.diff(theta) >= 0))
+    descending = bool(np.all(np.diff(mu) < 0))
+    xk_min = xk_span = 0.0
+    if method == "lobatto":
+        phase_sin = phase * sin_th
+        xk_min = float(np.min(xk))
+        xk_span = float(np.max(xk)) - xk_min
+    else:
+        mu_sorted = mu[idmu]
+    # scratch buffer of the candidate phase: the [idx:] tail always
+    # equals phase/(1 - f), only the [0:idx] plateau changes across the
+    # candidates (and each write covers the previous one)
+    pha_star_scratch = phase * inv_1mf
 
-        mu1 = mu[0 : id_f + 1]
+    def _evaluate(
+        idx: int, rescale: bool, own_nodes: bool
+    ) -> tuple[float, NDArray[np.float64], float]:
+        """
+        Evaluate the truncation of the phase function at index idx
+
+        Returns the plateau value pf (the caller checks it for nan or
+        inf), the normalized candidate phase and its normalized first
+        moment. With rescale, the full-grid Lobatto quadrature is
+        affinely rescaled to [theta[idx], theta[-1]] instead of solving
+        new nodes. With own_nodes, calc_moments builds its own [0, π]
+        quadrature instead of reusing the full-grid xk and wk.
+        """
+        # Find pf:
+        # normalization condition between 0 and π ->
+        # ∫ P*(θ) sin(θ) dθ = 2
+        if descending:
+            dmu1 = mu[0] - mu[idx]
+        else:
+            mu1 = mu[0 : idx + 1]
+            dmu1 = np.max(mu1) - np.min(mu1)
         if method == "lobatto":
-            th2 = theta[id_f:]
-
-            pf_tmp = (
-                2
-                - (1.0 / (1 - f))
-                * integrate_m(
-                    phase[id_f:] * sin_th[id_f:],
+            th2 = theta[idx:]
+            if rescale:
+                # rescale of xk and wk in the tmp interval
+                if sorted_th:
+                    abscissa_min = theta[idx]
+                    abscissa_max = theta[-1]
+                else:
+                    abscissa_min = np.min(th2)
+                    abscissa_max = np.max(th2)
+                alpha = (abscissa_max - abscissa_min) / xk_span
+                integral = integrate_m(
+                    phase_sin[idx:],
                     th2,
-                    lp=len(th2),
+                    xk=abscissa_min + (xk - xk_min) * alpha,
+                    wk=wk * alpha,
                     assume_sorted=True,
                 )
-            ) / ((1.0 / (1 - f)) * (np.max(mu1) - np.min(mu1)))
+            else:
+                integral = integrate_m(
+                    phase_sin[idx:], th2, lp=len(th2), assume_sorted=True
+                )
         else:
-            mu2 = mu[id_f:]
-            idmu2 = np.argsort(mu2)
-            pf_tmp = (
-                2
-                - (1.0 / (1 - f))
-                * integrate_m(phase[id_f:][idmu2], mu2[idmu2])
-            ) / (
-                (1.0 / (1 - f)) * (np.max(mu1) - np.min(mu1))
-            )  # integrate_m(np.ones_like(mu1), mu1[idmu1]))
+            if descending:
+                phase2_s = phase[idx:][::-1]
+                mu2_s = mu[idx:][::-1]
+            else:
+                mu2 = mu[idx:]
+                idmu2 = np.argsort(mu2)
+                phase2_s = phase[idx:][idmu2]
+                mu2_s = mu2[idmu2]
+            integral = integrate_m(phase2_s, mu2_s)
+        pf_tmp = (2 - inv_1mf * integral) / (
+            inv_1mf * dmu1
+        )  # dmu1 == integrate_m(np.ones_like(mu1), mu1[idmu1])
 
-        pha_star = np.zeros_like(phase, dtype=np.float64)
-        pha_star[id_f:] = phase[id_f:]
-        pha_star[0:id_f] = pf_tmp
-        pha_star *= 1.0 / (1 - f)
+        pha_star_tmp = pha_star_scratch
+        pha_star_tmp[0:idx] = pf_tmp * inv_1mf
 
         if method == "lobatto":
-            pha_star = (2 * pha_star) / integrate_m(
-                pha_star * sin_th, theta, xk=xk, wk=wk, assume_sorted=True
-            )
-            chi_star_1_approx = calc_moments(
-                pha_star,
+            pha_star_tmp = (2 * pha_star_tmp) / integrate_m(
+                pha_star_tmp * sin_th,
                 theta,
-                m_max=1,
-                theta_unit="rad",
-                method=method,
-                normalize=True,
                 xk=xk,
                 wk=wk,
-                pl_costh=lp_costh,
-            )[1]
-        else:
-            pha_star = (2 * pha_star) / integrate_m(pha_star[idmu], mu[idmu])
-            chi_star_1_approx = calc_moments(
-                pha_star,
-                theta,
-                m_max=1,
-                theta_unit="rad",
-                method=method,
-                normalize=True,
-            )[1]
-
-        pha_approx = pha_star * (1 - f)
-        pha_approx += delta_part
-
-    else:
-        # Find th_f and PF
-        pha_star = np.zeros_like(phase, dtype=np.float64)
-        mu1 = mu[0:2]
-        if method == "lobatto":
-            # th1 = theta[0:2]
-            th2 = theta[1:]
-            pf = (
-                2 - (1.0 / (1 - f)) * integrate_m(phase[1:] * sin_th[1:], th2)
-            ) / (
-                (1.0 / (1 - f)) * (np.max(mu1) - np.min(mu1))
-            )  # integrate_m(sin_th[0:2], th1))
-        else:
-            # idmu1 = np.argsort(mu1)
-            mu2 = mu[1:]
-            idmu2 = np.argsort(mu2)
-            pf = (
-                2 - (1.0 / (1 - f)) * integrate_m(phase[1:][idmu2], mu2[idmu2])
-            ) / (
-                (1.0 / (1 - f)) * (np.max(mu1) - np.min(mu1))
-            )  # integrate_m(np.ones_like(mu1), mu1[idmu1]))
-        pha_star[1:] = phase[1:]
-        pha_star[0:1] = pf
-        pha_star *= 1.0 / (1 - f)
-
-        if method == "lobatto":
-            pha_star = (2 * pha_star) / integrate_m(
-                pha_star * sin_th, theta, xk=xk, wk=wk
+                assume_sorted=True,
             )
-        else:
-            pha_star = (2 * pha_star) / integrate_m(pha_star[idmu], mu[idmu])
-
-        chi_star_1_approx = calc_moments(
-            pha_star,
-            theta,
-            m_max=1,
-            theta_unit="rad",
-            method=method,
-            normalize=True,
-        )[1]
-        err1 = abs(chi_star_1 - chi_star_1_approx)
-        id_approx = 1
-
-        xk_min = xk_span = 0.0
-        if method == "lobatto":
-            xk_min = float(np.min(xk))
-            xk_span = float(np.max(xk)) - xk_min
-
-        # loop invariants, hoisted out of the search loop
-        inv_1mf = 1.0 / (1 - f)
-        # for a sorted theta in [0, π], mu = cos(theta) is strictly
-        # decreasing: the per-iteration min/max reductions reduce to
-        # direct indexing and the argsorts of the mu slices to simple
-        # reversals (views, no copies)
-        sorted_th = bool(np.all(np.diff(theta) >= 0))
-        descending = bool(np.all(np.diff(mu) < 0))
-        if method == "lobatto":
-            phase_sin = phase * sin_th
-        else:
-            mu_sorted = mu[idmu]
-        # scratch buffer of the candidate phase: the [id:] tail always
-        # equals phase/(1 - f), only the [0:id] plateau changes across
-        # the iterations (and each write covers the previous one)
-        pha_star_scratch = phase * inv_1mf
-
-        for id in range(1, len(phase) - 2):
-            if theta[id] >= th_tol:
-                break
-
-            # Find pf:
-            # normalization condition between 0 and π ->
-            # ∫ P*(θ) sin(θ) dθ = 2
-            if descending:
-                dmu1 = mu[0] - mu[id]
-            else:
-                mu1 = mu[0 : id + 1]
-                dmu1 = np.max(mu1) - np.min(mu1)
-            if method == "lobatto":
-                th2 = theta[id:]
-
-                # rescale of xk and wk in the tmp interval
-                if lobatto_optimization:
-                    if sorted_th:
-                        abscissa_min = theta[id]
-                        abscissa_max = theta[-1]
-                    else:
-                        abscissa_min = np.min(th2)
-                        abscissa_max = np.max(th2)
-                    alpha = (abscissa_max - abscissa_min) / xk_span
-                    xk_ = abscissa_min + (xk - xk_min) * alpha
-                    wk_ = wk * alpha
-
-                    pf_tmp = (
-                        2
-                        - inv_1mf
-                        * integrate_m(
-                            phase_sin[id:],
-                            th2,
-                            xk=xk_,
-                            wk=wk_,
-                            assume_sorted=True,
-                        )
-                    ) / (
-                        inv_1mf * dmu1
-                    )  # integrate_m(sin_th[0:id+1], th1))
-                else:
-                    pf_tmp = (
-                        2
-                        - inv_1mf
-                        * integrate_m(
-                            phase_sin[id:],
-                            th2,
-                            lp=len(th2),
-                            assume_sorted=True,
-                        )
-                    ) / (
-                        inv_1mf * dmu1
-                    )  # integrate_m(sin_th[0:id+1], th1))
-            else:
-                if descending:
-                    phase2_s = phase[id:][::-1]
-                    mu2_s = mu[id:][::-1]
-                else:
-                    mu2 = mu[id:]
-                    idmu2 = np.argsort(mu2)
-                    phase2_s = phase[id:][idmu2]
-                    mu2_s = mu2[idmu2]
-                pf_tmp = (2 - inv_1mf * integrate_m(phase2_s, mu2_s)) / (
-                    inv_1mf * dmu1
-                )  # integrate_m(np.ones_like(mu1), mu1[idmu1]))
-
-            if np.isnan(pf_tmp) or np.isinf(pf_tmp):
-                continue
-
-            pha_star_tmp = pha_star_scratch
-            pha_star_tmp[0:id] = pf_tmp * inv_1mf
-
-            if method == "lobatto":
-                pha_star_tmp = (2 * pha_star_tmp) / integrate_m(
-                    pha_star_tmp * sin_th,
+            if own_nodes:
+                chi_tmp = calc_moments(
+                    pha_star_tmp,
                     theta,
-                    xk=xk,
-                    wk=wk,
-                    assume_sorted=True,
-                )
-                chi_star_1_approx_tmp = calc_moments(
+                    m_max=1,
+                    theta_unit="rad",
+                    method=method,
+                    normalize=True,
+                )[1]
+            else:
+                chi_tmp = calc_moments(
                     pha_star_tmp,
                     theta,
                     m_max=1,
@@ -643,36 +556,61 @@ def gt_phase_approx(
                     wk=wk,
                     pl_costh=lp_costh,
                 )[1]
-            else:
-                pha_star_sorted = (
-                    pha_star_tmp[::-1]
-                    if descending
-                    else pha_star_tmp[idmu]
-                )
-                pha_star_tmp = (2 * pha_star_tmp) / integrate_m(
-                    pha_star_sorted, mu_sorted
-                )
-                chi_star_1_approx_tmp = calc_moments(
-                    pha_star_tmp,
-                    theta,
-                    m_max=1,
-                    theta_unit="rad",
-                    method=method,
-                    normalize=True,
-                )[1]
+        else:
+            pha_star_sorted = (
+                pha_star_tmp[::-1] if descending else pha_star_tmp[idmu]
+            )
+            pha_star_tmp = (2 * pha_star_tmp) / integrate_m(
+                pha_star_sorted, mu_sorted
+            )
+            chi_tmp = calc_moments(
+                pha_star_tmp,
+                theta,
+                m_max=1,
+                theta_unit="rad",
+                method=method,
+                normalize=True,
+            )[1]
+
+        return pf_tmp, pha_star_tmp, chi_tmp
+
+    if th_f is not None:
+        id_f = int(np.argmin(np.abs(theta - th_f)))
+        _, pha_star, chi_star_1_approx = _evaluate(
+            id_f, rescale=False, own_nodes=False
+        )
+    else:
+        # Find th_f and PF: seed the search at index 1, kept as the
+        # fallback if no later candidate improves the moment error
+        # (own_nodes reproduces the historical seed quadrature)
+        _, pha_star, chi_star_1_approx = _evaluate(
+            1, rescale=False, own_nodes=True
+        )
+        err1 = abs(chi_star_1 - chi_star_1_approx)
+        id_approx = 1
+
+        for idx in range(1, len(phase) - 2):
+            if theta[idx] >= th_tol:
+                break
+
+            pf_tmp, pha_star_tmp, chi_star_1_approx_tmp = _evaluate(
+                idx, rescale=lobatto_optimization, own_nodes=False
+            )
+            if np.isnan(pf_tmp) or np.isinf(pf_tmp):
+                continue
 
             err2 = abs(chi_star_1 - chi_star_1_approx_tmp)
 
-            # theta[id] < th_tol always holds here (the loop breaks
+            # theta[idx] < th_tol always holds here (the loop breaks
             # first), so the winner test is on the error alone
             if err2 < err1:
-                id_approx = id
+                id_approx = idx
                 pha_star = pha_star_tmp
                 chi_star_1_approx = chi_star_1_approx_tmp
                 err1 = err2
 
-        pha_approx = pha_star * (1 - f)
-        pha_approx += delta_part
+    pha_approx = pha_star * (1 - f)
+    pha_approx += delta_part
 
     if ds_output:
         ds = xr.Dataset(

@@ -18,6 +18,43 @@ from scipy.integrate import simpson, trapezoid
 from pytrunc.utils import integrate_lobatto, quadrature_lobatto
 
 
+def _theta_to_rad(theta: ArrayLike, theta_unit: str) -> NDArray[np.float64]:
+    """
+    Convert the theta angles to radians, validating theta_unit
+
+    :meta private:
+    """
+    if theta_unit == "deg":
+        return np.deg2rad(theta)
+    if theta_unit == "rad":
+        return np.asarray(theta, dtype=np.float64)
+    raise ValueError(
+        "The accepted values for parameter theta_unit are: 'deg' or 'rad'"
+    )
+
+
+def _hg_from_mu(
+    mu: NDArray[np.float64],
+    g: float,
+    normalize: float | None,
+    idmu: NDArray[np.intp] | None = None,
+) -> NDArray[np.float64]:
+    """
+    The Henyey-Greenstein phase matrix from precomputed mu = cos(theta)
+
+    :meta private:
+    """
+    phase = (1.0 / (4 * math.pi)) * (
+        (1 - g * g) / (1 + g * g - (2 * g * mu)) ** (1.5)
+    )
+    if normalize is not None:
+        if idmu is None:
+            idmu = np.argsort(mu)
+        phase = (normalize * phase) / simpson(phase[idmu], x=mu[idmu])
+
+    return phase
+
+
 def henyey_greenstein(
     theta: ArrayLike,
     g: float,
@@ -75,23 +112,9 @@ def henyey_greenstein(
     array([6.54303655e+00, 9.76819403e-03, 3.48769050e-03])
     """
 
-    if theta_unit == "rad":
-        mu = np.cos(theta)
-    elif theta_unit == "deg":
-        mu = np.cos(np.deg2rad(theta))
-    else:
-        raise ValueError(
-            "The accepted values for parameter theta_unit are: 'deg' or 'rad'"
-        )
+    mu = np.cos(_theta_to_rad(theta, theta_unit))
 
-    phase = (1.0 / (4 * math.pi)) * (
-        (1 - g * g) / (1 + g * g - (2 * g * mu)) ** (1.5)
-    )
-    if normalize is not None:
-        idmu = np.argsort(mu)
-        phase = (normalize * phase) / simpson(phase[idmu], x=mu[idmu])
-
-    return phase
+    return _hg_from_mu(mu, g, normalize)
 
 
 def two_term_henyey_greenstein(
@@ -155,12 +178,12 @@ def two_term_henyey_greenstein(
     array([5.88997629, 0.01200253, 0.08271639])
     """
 
-    f_hg1 = henyey_greenstein(
-        theta=theta, g=g1, theta_unit=theta_unit, normalize=normalize
-    )
-    f_hg2 = henyey_greenstein(
-        theta=theta, g=g2, theta_unit=theta_unit, normalize=normalize
-    )
+    # convert theta and sort mu once, for the two terms
+    mu = np.cos(_theta_to_rad(theta, theta_unit))
+    idmu = np.argsort(mu) if normalize is not None else None
+    # each term is normalized separately before mixing
+    f_hg1 = _hg_from_mu(mu, g1, normalize, idmu)
+    f_hg2 = _hg_from_mu(mu, g2, normalize, idmu)
     phase = f * f_hg1 + (1 - f) * f_hg2
 
     return phase
@@ -234,14 +257,7 @@ def fournier_forand(
     array([1.24049454, 0.0065938 , 0.00479607])
     """
 
-    if theta_unit == "rad":
-        theta_rad = np.asarray(theta, dtype=np.float64)
-    elif theta_unit == "deg":
-        theta_rad = np.deg2rad(theta)
-    else:
-        raise ValueError(
-            "The accepted values for parameter theta_unit are: 'deg' or 'rad'"
-        )
+    theta_rad = _theta_to_rad(theta, theta_unit)
 
     v = (3 - mu) / 2
     sin_half_sq = np.sin(theta_rad / 2) ** 2
@@ -346,12 +362,7 @@ def calc_moments(
     if method not in methods_ok:
         raise ValueError(f"Only available methods are: {methods_ok}")
 
-    if theta_unit == "deg":
-        theta = np.deg2rad(theta)
-    elif theta_unit != "rad":
-        raise ValueError(
-            "The accepted values for parameter theta_unit are: 'deg' or 'rad'"
-        )
+    theta = _theta_to_rad(theta, theta_unit)
 
     if theta[0] < 0 or theta[-1] > np.pi:
         warnings.warn(
@@ -511,4 +522,7 @@ def calc_tthg_moments(
     array([1.       , 0.705    , 0.68625  , 0.5311125])
     """
 
-    return np.array([(f * g1**n + (1 - f) * g2**n) for n in range(m_max + 1)])
+    # Eq. 11 is the f-weighted mix of the two Eq. 8 term moments
+    return f * calc_hg_moments(g1, m_max) + (1 - f) * calc_hg_moments(
+        g2, m_max
+    )

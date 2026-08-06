@@ -7,13 +7,15 @@ Pytrunc documentation
 =====================
 
 
+.. include:: introduction.md
+   :parser: myst_parser.sphinx_
+
 .. toctree::
    :maxdepth: 2
    :caption: Notebooks
    :hidden:
 
    notebooks
-   
 
 .. toctree::
    :maxdepth: 2

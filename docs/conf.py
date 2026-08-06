@@ -32,8 +32,10 @@ extensions = ['sphinx.ext.todo',
 
 templates_path = ['_templates']
 
+# introduction.md is pulled into index.rst via an include
+# directive, it must not be built as a standalone document
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', '*constant.rst',
-                    'modules.rst']
+                    'modules.rst', 'introduction.md']
 
 autodoc_default_options = {
     'members': True,

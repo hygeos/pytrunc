@@ -132,7 +132,7 @@ def delta_m_phase_approx(
     >>> phase = henyey_greenstein(theta, g=0.85, normalize=2)
     >>> ds = delta_m_phase_approx(phase, theta, m_max=8)
     >>> ds['f'].values
-    array(0.27248273)
+    array(0.27250572)
     """
 
     if theta_unit == "deg":
@@ -151,7 +151,12 @@ def delta_m_phase_approx(
         chi = phase_moments
     else:
         chi = calc_moments(
-            phase, theta, m_max=m_max, theta_unit="rad", normalize=True
+            phase,
+            theta,
+            m_max=m_max,
+            theta_unit="rad",
+            method=method,
+            normalize=True,
         )
 
     integrate_m = INTEGRATORS[method]

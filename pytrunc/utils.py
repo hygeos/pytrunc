@@ -462,6 +462,41 @@ def bessel_j1_roots(
     return roots
 
 
+def _legendre_dp_d2p(
+    n: int, x: NDArray[np.float64]
+) -> tuple[NDArray[np.float64], NDArray[np.float64]]:
+    """
+    Compute d(Pn(x)) and d²(Pn(x)) with a single fused recurrence loop
+
+    :meta private:
+
+    Advances the recurrences of legendre_polynomials_derivative and
+    legendre_polynomials_second_derivative together, saving one O(n)
+    loop per Newton iteration of the Lobatto node solve. The float
+    sequences are identical to the ones of the two public functions.
+    """
+    if n == 0:
+        return np.zeros_like(x), np.zeros_like(x)
+    if n == 1:
+        return np.ones_like(x), np.zeros_like(x)
+
+    # seeds: d(P0) = 0, d(P1) = 1, d²(P1) = 0, d²(P2) = 3
+    pnm1_p = np.zeros_like(x)
+    pn_p = np.ones_like(x)
+    pnm1_pp = np.zeros_like(x)
+    pn_pp = np.full_like(x, 3)
+    for k in range(1, n):
+        pnp1_p = (1.0 / k) * ((2 * k + 1) * x * pn_p - (k + 1) * pnm1_p)
+        pnm1_p, pn_p = pn_p, pnp1_p
+        if k >= 2:
+            pnp1_pp = (1.0 / (k - 1)) * (
+                (2 * k + 1) * x * pn_pp - (k + 2) * pnm1_pp
+            )
+            pnm1_pp, pn_pp = pn_pp, pnp1_pp
+
+    return pn_p, pn_pp
+
+
 def legendre_polynomials_derivative_roots(
     n: int, acc: float = 1e-8, max_iter: int = 50
 ) -> NDArray[np.float64]:
@@ -516,8 +551,7 @@ def legendre_polynomials_derivative_roots(
     )
     x = np.asarray(x0)
     for _ in range(max_iter):
-        dp = legendre_polynomials_derivative(n, x)
-        d2p = legendre_polynomials_second_derivative(n, x)
+        dp, d2p = _legendre_dp_d2p(n, x)
         dx = dp / d2p
         x -= dx
         if np.max(np.abs(dx)) < acc:

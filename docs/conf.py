@@ -55,4 +55,11 @@ numpydoc_class_members_toctree = False
 html_theme = 'pydata_sphinx_theme'  # or 'sphinx_rtd_theme'
 html_static_path = ['_static']
 
+html_theme_options = {
+    'logo': {
+        'image_light': '_static/pytrunc-logo-horizontal-light-bg.png',
+        'image_dark': '_static/pytrunc-logo-horizontal-dark-bg.png',
+    },
+}
+
 html_context = {"default_mode": "light"}

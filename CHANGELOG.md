@@ -1,18 +1,27 @@
 # PYTRUNC CHANGELOG
 
 
-## Unreleased
+## v2.0.0
+Release date: 06-08-2026
+
+### Breaking changes
+
+* Rename the `constant` module to `constants`, for consistency with the
+  geoclide package. The imports become `from pytrunc.constants import
+  VERSION` and `from pytrunc.constants import DIR_ROOT`
+
+* Fix `delta_m_phase_approx` ignoring its `method` parameter: the
+  moments were always computed with the calc_moments default 'lobatto',
+  whatever the caller asked. The moments now honor `method`, so the
+  results change slightly, including with the default 'trapezoid' (the
+  docstring example f value moves from 0.27248273 to 0.27250572)
+
+### Other changes
 
 * Fix the `bessel_j1` large-x branch: it indexed the wrong mask and
   raised a ValueError for any input containing x > 35. The branch now
   uses Hankel's asymptotic expansion (Abramowitz & Stegun eq. 9.4.6),
   accurate to ~1e-10; the x <= 35 series is unchanged
-
-* Fix `delta_m_phase_approx` ignoring its `method` parameter: the
-  moments were always computed with the calc_moments default 'lobatto',
-  whatever the caller asked. The moments now honor `method`, so the
-  default ('trapezoid') results change slightly (the docstring example
-  f value moves from 0.27248273 to 0.27250572)
 
 * Replace the bare print of `calc_moments` on an out-of-range theta
   with a `warnings.warn` (UserWarning)
@@ -50,10 +59,6 @@
   copies of the truncation candidate evaluation in gt_phase_approx
   (forced th_f mode, search seed and search loop → one local closure).
   An unknown `method` now raises a ValueError instead of a KeyError
-
-* Rename the `constant` module to `constants`, for consistency with the
-  geoclide package. The imports become `from pytrunc.constants import
-  VERSION` and `from pytrunc.constants import DIR_ROOT`
 
 * Use lowercase names for the local mathematical variables, following the
   PEP 8 naming conventions: `P0`, `P1`, `Pn`, `Pnm1`, `Pnp1` and their

@@ -3,6 +3,54 @@
 
 ## Unreleased
 
+* Fix the `bessel_j1` large-x branch: it indexed the wrong mask and
+  raised a ValueError for any input containing x > 35. The branch now
+  uses Hankel's asymptotic expansion (Abramowitz & Stegun eq. 9.4.6),
+  accurate to ~1e-10; the x <= 35 series is unchanged
+
+* Fix `delta_m_phase_approx` ignoring its `method` parameter: the
+  moments were always computed with the calc_moments default 'lobatto',
+  whatever the caller asked. The moments now honor `method`, so the
+  default ('trapezoid') results change slightly (the docstring example
+  f value moves from 0.27248273 to 0.27250572)
+
+* Replace the bare print of `calc_moments` on an out-of-range theta
+  with a `warnings.warn` (UserWarning)
+
+* Performance pass, bit-identical results (verified bitwise against a
+  122-array reference of gt_phase_approx, delta_m_phase_approx,
+  calc_moments and quadrature_lobatto outputs):
+  - Advance the three-term Legendre recurrence incrementally across the
+    moment loops of `calc_moments` and `delta_m_phase_approx` instead
+    of restarting it from degree 0 at each degree (O(m_max²) → O(m_max)
+    recurrence work): calc_moments is ~30x faster at m_max=256 and
+    delta_m_phase_approx ~18x at m_max=128
+  - Hoist the loop invariants out of the `gt_phase_approx` truncation
+    angle search (phase×sinθ product, min/max reductions on monotone
+    slices, argsorts replaced by reversal views, a reused scratch
+    buffer for the candidate phase, sortedness detection so that
+    integrate_lobatto skips its per-call argsort): the search is
+    ~1.2-1.4x faster depending on the method
+  - Fuse the first and second derivative Legendre recurrences of the
+    Lobatto node solve into one loop (`_legendre_dp_d2p`)
+
+* Remove dead code and redundant work: an always-true condition in the
+  gt_phase_approx winner test, a duplicate allocation, defensive copies
+  that protected nothing (`.copy()` on freshly allocated arrays and on
+  multiplication results), a duplicated phase-size check, scalar
+  conditions expressed as np.where, and a wrong error message in
+  bessel_jn ("x must be >= 1" for a x < 0 check)
+
+* Deduplicate repeated blocks: the theta_unit validation (4 copies →
+  `_theta_to_rad`), the Dirac normalization of the two truncation
+  methods (→ `_dirac_delta_part`, with its wrong "sin(pi) = 0" comment
+  corrected to sin(0) = 0), the Henyey-Greenstein kernel of the
+  two-term variant (→ `_hg_from_mu`, converting theta and sorting mu
+  once), `calc_tthg_moments` reusing `calc_hg_moments`, and the three
+  copies of the truncation candidate evaluation in gt_phase_approx
+  (forced th_f mode, search seed and search loop → one local closure).
+  An unknown `method` now raises a ValueError instead of a KeyError
+
 * Rename the `constant` module to `constants`, for consistency with the
   geoclide package. The imports become `from pytrunc.constants import
   VERSION` and `from pytrunc.constants import DIR_ROOT`

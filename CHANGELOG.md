@@ -3,6 +3,10 @@
 
 ## Unreleased
 
+* Commit the pixi lock file, previously ignored: the tests and docs
+  workflows install the environment from it, and failed at the pixi setup
+  step without it
+
 * Add the pytrunc logo, in a light and a dark variant, at the top of the
   README and in the documentation sidebar, both following the light/dark
   theme

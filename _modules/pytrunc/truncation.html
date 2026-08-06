@@ -1,0 +1,1096 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pytrunc.truncation &#8212; Pytrunc 1.1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../_static/documentation_options.js?v=fc837d61"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/pytrunc/truncation';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="light">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+    
+    <img src="../../_static/pytrunc-logo-horizontal-light-bg.png" class="logo__image only-light" alt="Pytrunc 1.1.0 documentation - Home"/>
+    <img src="../../_static/pytrunc-logo-horizontal-dark-bg.png" class="logo__image only-dark pst-js-only" alt="Pytrunc 1.1.0 documentation - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../notebooks.html">
+    Notebooks
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../pytrunc.html">
+    Pytrunc package
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../changelog_link.html">
+    Releases
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../notebooks.html">
+    Notebooks
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../pytrunc.html">
+    Pytrunc package
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../changelog_link.html">
+    Releases
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">pytrunc.truncation</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for pytrunc.truncation</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Scattering phase function truncation methods.</span>
+
+<span class="sd">This module provides the approximation of a scattering phase</span>
+<span class="sd">function by truncation of its forward peak, using either the</span>
+<span class="sd">delta-m method of Wiscombe (1977) or the geometrical truncation</span>
+<span class="sd">(GT) method of Iwabuchi and Suzuki (2009), and returns the</span>
+<span class="sd">truncated phase function together with its truncation factor.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">NDArray</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.integrate</span><span class="w"> </span><span class="kn">import</span> <span class="n">simpson</span><span class="p">,</span> <span class="n">trapezoid</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pytrunc.constant</span><span class="w"> </span><span class="kn">import</span> <span class="n">VERSION</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pytrunc.phase</span><span class="w"> </span><span class="kn">import</span> <span class="n">calc_moments</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pytrunc.utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">integrate_lobatto</span><span class="p">,</span>
+    <span class="n">legendre_polynomials</span><span class="p">,</span>
+    <span class="n">quadrature_lobatto</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="c1"># scipy &gt;= 1.14 made the x argument of simpson keyword-only, so the</span>
+<span class="c1"># dispatch below cannot call the scipy integrators positionally</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_simpson</span><span class="p">(</span><span class="n">y</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">x</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">simpson</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">))</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_trapezoid</span><span class="p">(</span><span class="n">y</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">x</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">trapezoid</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">))</span>
+
+
+<span class="n">INTEGRATORS</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;simpson&quot;</span><span class="p">:</span> <span class="n">_simpson</span><span class="p">,</span>
+    <span class="s2">&quot;trapezoid&quot;</span><span class="p">:</span> <span class="n">_trapezoid</span><span class="p">,</span>
+    <span class="s2">&quot;lobatto&quot;</span><span class="p">:</span> <span class="n">integrate_lobatto</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="delta_m_phase_approx">
+<a class="viewcode-back" href="../../pytrunc.truncation.html#pytrunc.truncation.delta_m_phase_approx">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">delta_m_phase_approx</span><span class="p">(</span>
+    <span class="n">phase</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span>
+    <span class="n">theta</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span>
+    <span class="n">m_max</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">theta_unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;deg&quot;</span><span class="p">,</span>
+    <span class="n">phase_moments</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;trapezoid&quot;</span><span class="p">,</span>
+    <span class="n">ds_output</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="nb">float</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate the approximation of the exact phase matrix using the</span>
+<span class="sd">    delta-m method</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    phase : ndarray</span>
+<span class="sd">        The exact phase matrix, it must be 1-D</span>
+<span class="sd">    theta : ndarray</span>
+<span class="sd">        The phase matrix angles, it must be 1-D. See the theta_unit</span>
+<span class="sd">        parameter for the unit</span>
+<span class="sd">    m_max : int</span>
+<span class="sd">        The maximum term number</span>
+<span class="sd">    theta_unit : str, optional</span>
+<span class="sd">        The unit of the theta angles. Default is &#39;deg&#39;, other</span>
+<span class="sd">        choice is &#39;rad&#39;</span>
+<span class="sd">    phase_moments : ndarray or None, optional</span>
+<span class="sd">        The moments of the phase matrix, it must be 1-D. The size</span>
+<span class="sd">        of phase_moments must be &gt;= m_max+1. If this parameter is</span>
+<span class="sd">        not None, circumvent the calculation of the phase matrix</span>
+<span class="sd">        moments. This parameter can be useful in case we have the</span>
+<span class="sd">        exact moment values like for the H-G phase function.</span>
+<span class="sd">        Default is None</span>
+<span class="sd">    method : str, optional</span>
+<span class="sd">        The method parameter of the calc_moments function, and</span>
+<span class="sd">        also the integral method for the dirac normalization.</span>
+<span class="sd">        Default is &#39;trapezoid&#39;</span>
+<span class="sd">    ds_output : bool, optional</span>
+<span class="sd">        If True the output is a dataset, else return a tuple.</span>
+<span class="sd">        Default is True</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Dataset or tuple</span>
+<span class="sd">        Xarray dataset containing the truncation information if</span>
+<span class="sd">        ds_output is True, else a tuple.</span>
+
+<span class="sd">        Key variables included:</span>
+
+<span class="sd">        - **phase_approx**: The approximation of the exact phase</span>
+<span class="sd">          matrix</span>
+<span class="sd">        - **f**: The truncation factor</span>
+<span class="sd">        - **phase_tr**: The truncated phase matrix</span>
+<span class="sd">        - **chi**: The moments of the exact phase matrix</span>
+<span class="sd">        - **chi_star**: The moments of the truncated phase matrix</span>
+
+<span class="sd">        Form of the tuple:</span>
+
+<span class="sd">        * phase_approx : ndarray</span>
+<span class="sd">            -&gt; The approximation of the exact phase matrix, it is</span>
+<span class="sd">            1-D</span>
+<span class="sd">        * f : float</span>
+<span class="sd">            -&gt; The truncation factor</span>
+<span class="sd">        * phase_star : ndarray</span>
+<span class="sd">            -&gt; The truncated scattering phase matrix, it is 1-D</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Wiscombe, W. J. (1977). The delta-M method: Rapid yet accurate</span>
+<span class="sd">    radiative flux calculations for strongly asymmetric phase</span>
+<span class="sd">    functions. Journal of Atmospheric Sciences, 34(9), 1408-1422.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; from pytrunc.phase import henyey_greenstein</span>
+<span class="sd">    &gt;&gt;&gt; from pytrunc.truncation import delta_m_phase_approx</span>
+<span class="sd">    &gt;&gt;&gt; theta = np.linspace(0.0, 180.0, 1801)</span>
+<span class="sd">    &gt;&gt;&gt; phase = henyey_greenstein(theta, g=0.85, normalize=2)</span>
+<span class="sd">    &gt;&gt;&gt; ds = delta_m_phase_approx(phase, theta, m_max=8)</span>
+<span class="sd">    &gt;&gt;&gt; ds[&#39;f&#39;].values</span>
+<span class="sd">    array(0.27248273)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">theta_unit</span> <span class="o">==</span> <span class="s2">&quot;deg&quot;</span><span class="p">:</span>
+        <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">theta_unit</span> <span class="o">!=</span> <span class="s2">&quot;rad&quot;</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;The accepted values for parameter theta_unit are: &#39;deg&#39; or &#39;rad&#39;&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">phase_moments</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">phase_moments</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">m_max</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;The number of moments must be &gt;= </span><span class="si">{</span><span class="n">m_max</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;, but only </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">phase_moments</span><span class="p">)</span><span class="si">}</span><span class="s2"> given&quot;</span>
+            <span class="p">)</span>
+        <span class="n">chi</span> <span class="o">=</span> <span class="n">phase_moments</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">chi</span> <span class="o">=</span> <span class="n">calc_moments</span><span class="p">(</span>
+            <span class="n">phase</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">m_max</span><span class="o">=</span><span class="n">m_max</span><span class="p">,</span> <span class="n">theta_unit</span><span class="o">=</span><span class="s2">&quot;rad&quot;</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+
+    <span class="n">integrate_m</span> <span class="o">=</span> <span class="n">INTEGRATORS</span><span class="p">[</span><span class="n">method</span><span class="p">]</span>
+
+    <span class="n">f</span> <span class="o">=</span> <span class="n">chi</span><span class="p">[</span><span class="n">m_max</span><span class="p">]</span>
+
+    <span class="c1"># here m_max = 2M (wiscombe 77)</span>
+    <span class="c1"># chi_star[n] = (chi[n] - f)/(1 - f) for n = 0 to n=m_max-1</span>
+    <span class="n">chi_star</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">m_max</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m_max</span><span class="p">):</span>
+        <span class="n">chi_star</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">chi</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">-</span> <span class="n">f</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">f</span><span class="p">)</span>
+
+    <span class="n">cos_th</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+    <span class="n">phase_star</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+
+    <span class="c1"># phase_star = (1-f) * Σ [ (2n+1) * chi[n]* * pn(cosθ) ]</span>
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m_max</span><span class="p">):</span>
+        <span class="n">pn_costh</span> <span class="o">=</span> <span class="n">legendre_polynomials</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">cos_th</span><span class="p">)</span>
+        <span class="n">phase_star</span> <span class="o">+=</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">chi_star</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">*</span> <span class="n">pn_costh</span>
+
+    <span class="n">phase_approx</span> <span class="o">=</span> <span class="n">phase_star</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">f</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">f</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">idmu</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">cos_th</span><span class="p">)</span>
+        <span class="n">delta_part</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+        <span class="n">delta_part</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;lobatto&quot;</span><span class="p">:</span>
+            <span class="n">delta_part</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>  <span class="c1"># because sin(pi) = 0</span>
+            <span class="n">delta_part</span> <span class="o">=</span> <span class="n">delta_part</span> <span class="o">/</span> <span class="n">integrate_m</span><span class="p">(</span>
+                <span class="n">delta_part</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">),</span> <span class="n">theta</span>
+            <span class="p">)</span>  <span class="c1"># normalize dirac to 1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">delta_part</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">delta_part</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">integrate_m</span><span class="p">(</span>
+                <span class="n">delta_part</span><span class="p">[</span><span class="n">idmu</span><span class="p">],</span> <span class="n">cos_th</span><span class="p">[</span><span class="n">idmu</span><span class="p">]</span>
+            <span class="p">)</span>  <span class="c1"># normalize dirac to 1</span>
+        <span class="n">delta_part</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">f</span><span class="p">)</span> <span class="o">*</span> <span class="n">delta_part</span>
+        <span class="n">phase_approx</span> <span class="o">+=</span> <span class="n">delta_part</span>
+
+    <span class="k">if</span> <span class="n">ds_output</span><span class="p">:</span>
+        <span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span>
+            <span class="n">coords</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;theta&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">theta</span><span class="p">),</span>
+                <span class="s2">&quot;exp_order&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">m_max</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+        <span class="n">ds</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="s2">&quot;theta&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+            <span class="p">{</span><span class="s2">&quot;units&quot;</span><span class="p">:</span> <span class="s2">&quot;degrees&quot;</span><span class="p">,</span> <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;scattering angle&quot;</span><span class="p">}</span>
+        <span class="p">)</span>
+        <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;phase_approx&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span><span class="n">phase_approx</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;theta&quot;</span><span class="p">])</span>
+        <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;phase_approx&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;units&quot;</span><span class="p">:</span> <span class="s2">&quot;none&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;the approximation of the exact phase matrix&quot;</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+        <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;f&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;f&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+            <span class="p">{</span><span class="s2">&quot;units&quot;</span><span class="p">:</span> <span class="s2">&quot;none&quot;</span><span class="p">,</span> <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;the truncation factor&quot;</span><span class="p">}</span>
+        <span class="p">)</span>
+        <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;phase_tr&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span><span class="n">phase_star</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;theta&quot;</span><span class="p">])</span>
+        <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;phase_tr&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+            <span class="p">{</span><span class="s2">&quot;units&quot;</span><span class="p">:</span> <span class="s2">&quot;none&quot;</span><span class="p">,</span> <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;the truncated phase matrix&quot;</span><span class="p">}</span>
+        <span class="p">)</span>
+        <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;chi&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span><span class="n">chi</span><span class="p">[</span><span class="mi">0</span> <span class="p">:</span> <span class="n">m_max</span> <span class="o">+</span> <span class="mi">1</span><span class="p">],</span> <span class="n">dims</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;exp_order&quot;</span><span class="p">])</span>
+        <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;chi&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;units&quot;</span><span class="p">:</span> <span class="s2">&quot;none&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;the moments of the exact phase matrix&quot;</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+        <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;chi_star&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">chi_star</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]))),</span> <span class="n">dims</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;exp_order&quot;</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;chi_star&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;units&quot;</span><span class="p">:</span> <span class="s2">&quot;none&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;the moments of the truncated phase matrix&quot;</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+        <span class="n">ds</span><span class="o">.</span><span class="n">attrs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;truncation method&quot;</span><span class="p">:</span> <span class="s2">&quot;DM&quot;</span><span class="p">}</span>
+        <span class="n">date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">ds</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;date&quot;</span><span class="p">:</span> <span class="n">date</span><span class="p">})</span>
+        <span class="n">ds</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;m_max&quot;</span><span class="p">:</span> <span class="n">m_max</span><span class="p">})</span>
+        <span class="n">ds</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;integration method&quot;</span><span class="p">:</span> <span class="n">method</span><span class="p">})</span>
+        <span class="n">ds</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;pytrunc_version&quot;</span><span class="p">:</span> <span class="n">VERSION</span><span class="p">})</span>
+        <span class="k">return</span> <span class="n">ds</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">phase_approx</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">phase_star</span></div>
+
+
+
+<div class="viewcode-block" id="gt_phase_approx">
+<a class="viewcode-back" href="../../pytrunc.truncation.html#pytrunc.truncation.gt_phase_approx">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">gt_phase_approx</span><span class="p">(</span>
+    <span class="n">phase</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span>
+    <span class="n">theta</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span>
+    <span class="n">trunc_frac</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">theta_unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;deg&quot;</span><span class="p">,</span>
+    <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;trapezoid&quot;</span><span class="p">,</span>
+    <span class="n">phase_moments_1</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">th_tol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">th_f</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">lobatto_optimization</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">ds_output</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="nb">float</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the approximation of the exact phase matrix using the</span>
+<span class="sd">    Iwabuchi GT method</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    phase : ndarray</span>
+<span class="sd">        The exact phase matrix, it must be 1-D</span>
+<span class="sd">    theta : ndarray</span>
+<span class="sd">        The phase matrix angles, it must be 1-D. See the theta_unit</span>
+<span class="sd">        parameter for the unit</span>
+<span class="sd">    trunc_frac : float</span>
+<span class="sd">        The truncation fraction</span>
+<span class="sd">    theta_unit : str, optional</span>
+<span class="sd">        The unit of the theta angles. Default is &#39;deg&#39;, other</span>
+<span class="sd">        choice is &#39;rad&#39;</span>
+<span class="sd">    method : str, optional</span>
+<span class="sd">        The method parameter of the calc_moments function, and</span>
+<span class="sd">        also the integral method for the dirac normalization.</span>
+<span class="sd">        Default is &#39;trapezoid&#39;</span>
+<span class="sd">    phase_moments_1 : float or None, optional</span>
+<span class="sd">        The value of the first moment of the phase matrix. Default</span>
+<span class="sd">        is None, meaning it is computed with the calc_moments</span>
+<span class="sd">        function</span>
+<span class="sd">    th_tol : float or None, optional</span>
+<span class="sd">        While finding matching moments for Pf we look between 0</span>
+<span class="sd">        and th_tol. The unit depends on the theta_unit parameter.</span>
+<span class="sd">        Default is None, meaning th_tol is equal to pi/2</span>
+<span class="sd">    th_f : float or None, optional</span>
+<span class="sd">        Impose the truncation angle. The unit depends on the</span>
+<span class="sd">        theta_unit parameter. Default is None, meaning the</span>
+<span class="sd">        truncation angle is searched</span>
+<span class="sd">    lobatto_optimization : bool, optional</span>
+<span class="sd">        Whether to use lobatto optimization for integration (reuse</span>
+<span class="sd">        the full-grid Lobatto quadrature, affinely rescaled to the</span>
+<span class="sd">        truncation sub-interval, instead of solving for a new</span>
+<span class="sd">        quadrature at every candidate angle during the truncation</span>
+<span class="sd">        angle search). Default is True</span>
+<span class="sd">    ds_output : bool, optional</span>
+<span class="sd">        If True the output is a dataset, else return a tuple.</span>
+<span class="sd">        Default is True</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Dataset or tuple</span>
+<span class="sd">        Xarray dataset containing the truncation information if</span>
+<span class="sd">        ds_output is True, else a tuple.</span>
+
+<span class="sd">        Key variables included:</span>
+
+<span class="sd">        - **phase_approx**: The approximation of the exact phase</span>
+<span class="sd">          matrix</span>
+<span class="sd">        - **f**: The truncation factor</span>
+<span class="sd">        - **phase_tr**: The truncated phase matrix</span>
+<span class="sd">        - **chi_star_ideal**: The truncated phase matrix moments</span>
+<span class="sd">          if moment conservation (ideal case)</span>
+<span class="sd">        - **chi_star**: The actual truncated phase matrix moments</span>
+<span class="sd">        - **theta_f**: The truncation angle</span>
+<span class="sd">        - **th_f**: The th_f parameter value (to force the</span>
+<span class="sd">          truncation angle)</span>
+<span class="sd">        - **th_tol**: The th_tol parameter value</span>
+
+<span class="sd">        Form of the tuple:</span>
+
+<span class="sd">        * phase_approx : ndarray</span>
+<span class="sd">            -&gt; The approximation of the exact phase matrix, it is</span>
+<span class="sd">            1-D</span>
+<span class="sd">        * f : float</span>
+<span class="sd">            -&gt; The truncation factor</span>
+<span class="sd">        * phase_star : ndarray</span>
+<span class="sd">            -&gt; The truncated scattering phase matrix, it is 1-D</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Iwabuchi, H., &amp; Suzuki, T. (2009). Fast and accurate radiance</span>
+<span class="sd">    calculations using truncation approximation for anisotropic</span>
+<span class="sd">    scattering phase functions. Journal of Quantitative</span>
+<span class="sd">    Spectroscopy and Radiative Transfer, 110(17), 1926-1939.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; from pytrunc.phase import henyey_greenstein</span>
+<span class="sd">    &gt;&gt;&gt; from pytrunc.truncation import gt_phase_approx</span>
+<span class="sd">    &gt;&gt;&gt; theta = np.linspace(0.0, 180.0, 1801)</span>
+<span class="sd">    &gt;&gt;&gt; phase = henyey_greenstein(theta, g=0.85, normalize=2)</span>
+<span class="sd">    &gt;&gt;&gt; ds = gt_phase_approx(phase, theta, trunc_frac=0.2)</span>
+<span class="sd">    &gt;&gt;&gt; ds[&#39;theta_f&#39;].values</span>
+<span class="sd">    array(16.8)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">theta_unit</span> <span class="o">==</span> <span class="s2">&quot;deg&quot;</span><span class="p">:</span>
+        <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">th_tol</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">th_tol</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">th_tol</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">th_f</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">th_f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">th_f</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">theta_unit</span> <span class="o">!=</span> <span class="s2">&quot;rad&quot;</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;The accepted values for parameter theta_unit are: &#39;deg&#39; or &#39;rad&#39;&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">th_tol_bis</span> <span class="o">=</span> <span class="n">th_tol</span>
+    <span class="n">th_f_bis</span> <span class="o">=</span> <span class="n">th_f</span>
+    <span class="k">if</span> <span class="n">th_tol</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">th_tol</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span>
+    <span class="n">mu</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+    <span class="n">idmu</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">mu</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;lobatto&quot;</span><span class="p">:</span>
+        <span class="n">sin_th</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+        <span class="n">xk</span><span class="p">,</span> <span class="n">wk</span> <span class="o">=</span> <span class="n">quadrature_lobatto</span><span class="p">(</span>
+            <span class="n">abscissa_min</span><span class="o">=</span><span class="n">theta</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">abscissa_max</span><span class="o">=</span><span class="n">theta</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">n</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">lp_costh</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">theta</span><span class="p">)))</span>
+        <span class="k">for</span> <span class="n">deg</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+            <span class="n">lp_costh</span><span class="p">[</span><span class="n">deg</span><span class="p">]</span> <span class="o">=</span> <span class="n">legendre_polynomials</span><span class="p">(</span><span class="n">deg</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">phase_moments_1</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">chi_1</span> <span class="o">=</span> <span class="n">phase_moments_1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;lobatto&quot;</span><span class="p">:</span>
+            <span class="n">chi_1</span> <span class="o">=</span> <span class="n">calc_moments</span><span class="p">(</span>
+                <span class="n">phase</span><span class="p">,</span>
+                <span class="n">theta</span><span class="p">,</span>
+                <span class="n">m_max</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                <span class="n">theta_unit</span><span class="o">=</span><span class="s2">&quot;rad&quot;</span><span class="p">,</span>
+                <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span>
+                <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">xk</span><span class="o">=</span><span class="n">xk</span><span class="p">,</span>
+                <span class="n">wk</span><span class="o">=</span><span class="n">wk</span><span class="p">,</span>
+                <span class="n">pl_costh</span><span class="o">=</span><span class="n">lp_costh</span><span class="p">,</span>
+            <span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">chi_1</span> <span class="o">=</span> <span class="n">calc_moments</span><span class="p">(</span>
+                <span class="n">phase</span><span class="p">,</span>
+                <span class="n">theta</span><span class="p">,</span>
+                <span class="n">m_max</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                <span class="n">theta_unit</span><span class="o">=</span><span class="s2">&quot;rad&quot;</span><span class="p">,</span>
+                <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span>
+                <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="n">integrate_m</span> <span class="o">=</span> <span class="n">INTEGRATORS</span><span class="p">[</span><span class="n">method</span><span class="p">]</span>
+
+    <span class="n">f</span> <span class="o">=</span> <span class="n">trunc_frac</span>
+    <span class="n">chi_star_1</span> <span class="o">=</span> <span class="p">(</span><span class="n">chi_1</span> <span class="o">-</span> <span class="n">f</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">f</span><span class="p">)</span>
+
+    <span class="n">delta_part</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">mu</span><span class="p">)</span>
+    <span class="n">delta_part</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;lobatto&quot;</span><span class="p">:</span>
+        <span class="n">delta_part</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>  <span class="c1"># because sin(pi) = 0</span>
+        <span class="n">delta_part</span> <span class="o">=</span> <span class="n">delta_part</span> <span class="o">/</span> <span class="n">integrate_m</span><span class="p">(</span>
+            <span class="n">delta_part</span> <span class="o">*</span> <span class="n">sin_th</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">xk</span><span class="o">=</span><span class="n">xk</span><span class="p">,</span> <span class="n">wk</span><span class="o">=</span><span class="n">wk</span>
+        <span class="p">)</span>  <span class="c1"># normalize dirac to 1</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">delta_part</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">delta_part</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">integrate_m</span><span class="p">(</span>
+            <span class="n">delta_part</span><span class="p">[</span><span class="n">idmu</span><span class="p">],</span> <span class="n">mu</span><span class="p">[</span><span class="n">idmu</span><span class="p">]</span>
+        <span class="p">)</span>  <span class="c1"># normalize dirac to 1</span>
+    <span class="n">delta_part</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">f</span><span class="p">)</span> <span class="o">*</span> <span class="n">delta_part</span>
+
+    <span class="k">if</span> <span class="n">th_f</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">pha_star</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">phase</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="n">id_f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">theta</span> <span class="o">-</span> <span class="n">th_f</span><span class="p">))</span>
+
+        <span class="n">mu1</span> <span class="o">=</span> <span class="n">mu</span><span class="p">[</span><span class="mi">0</span> <span class="p">:</span> <span class="n">id_f</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;lobatto&quot;</span><span class="p">:</span>
+            <span class="n">th2</span> <span class="o">=</span> <span class="n">theta</span><span class="p">[</span><span class="n">id_f</span><span class="p">:]</span>
+
+            <span class="n">Pf_tmp</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="mi">2</span>
+                <span class="o">-</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">f</span><span class="p">))</span>
+                <span class="o">*</span> <span class="n">integrate_m</span><span class="p">(</span>
+                    <span class="n">phase</span><span class="p">[</span><span class="n">id_f</span><span class="p">:]</span> <span class="o">*</span> <span class="n">sin_th</span><span class="p">[</span><span class="n">id_f</span><span class="p">:],</span>
+                    <span class="n">th2</span><span class="p">,</span>
+                    <span class="n">lp</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">th2</span><span class="p">),</span>
+                    <span class="n">assume_sorted</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span> <span class="o">/</span> <span class="p">((</span><span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">f</span><span class="p">))</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">mu1</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">mu1</span><span class="p">)))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">mu2</span> <span class="o">=</span> <span class="n">mu</span><span class="p">[</span><span class="n">id_f</span><span class="p">:]</span>
+            <span class="n">idmu2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">mu2</span><span class="p">)</span>
+            <span class="n">Pf_tmp</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="mi">2</span>
+                <span class="o">-</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">f</span><span class="p">))</span>
+                <span class="o">*</span> <span class="n">integrate_m</span><span class="p">(</span><span class="n">phase</span><span class="p">[</span><span class="n">id_f</span><span class="p">:][</span><span class="n">idmu2</span><span class="p">],</span> <span class="n">mu2</span><span class="p">[</span><span class="n">idmu2</span><span class="p">])</span>
+            <span class="p">)</span> <span class="o">/</span> <span class="p">(</span>
+                <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">f</span><span class="p">))</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">mu1</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">mu1</span><span class="p">))</span>
+            <span class="p">)</span>  <span class="c1"># integrate_m(np.ones_like(mu1), mu1[idmu1]))</span>
+
+        <span class="n">pha_star</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">phase</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="n">pha_star</span><span class="p">[</span><span class="n">id_f</span><span class="p">:]</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="n">id_f</span><span class="p">:]</span>
+        <span class="n">pha_star</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">id_f</span><span class="p">]</span> <span class="o">=</span> <span class="n">Pf_tmp</span>
+        <span class="n">pha_star</span> <span class="o">*=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">f</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;lobatto&quot;</span><span class="p">:</span>
+            <span class="n">pha_star</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">pha_star</span><span class="p">)</span> <span class="o">/</span> <span class="n">integrate_m</span><span class="p">(</span>
+                <span class="n">pha_star</span> <span class="o">*</span> <span class="n">sin_th</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">xk</span><span class="o">=</span><span class="n">xk</span><span class="p">,</span> <span class="n">wk</span><span class="o">=</span><span class="n">wk</span><span class="p">,</span> <span class="n">assume_sorted</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span>
+            <span class="n">chi_star_1_approx</span> <span class="o">=</span> <span class="n">calc_moments</span><span class="p">(</span>
+                <span class="n">pha_star</span><span class="p">,</span>
+                <span class="n">theta</span><span class="p">,</span>
+                <span class="n">m_max</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                <span class="n">theta_unit</span><span class="o">=</span><span class="s2">&quot;rad&quot;</span><span class="p">,</span>
+                <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span>
+                <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">xk</span><span class="o">=</span><span class="n">xk</span><span class="p">,</span>
+                <span class="n">wk</span><span class="o">=</span><span class="n">wk</span><span class="p">,</span>
+                <span class="n">pl_costh</span><span class="o">=</span><span class="n">lp_costh</span><span class="p">,</span>
+            <span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">pha_star</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">pha_star</span><span class="p">)</span> <span class="o">/</span> <span class="n">integrate_m</span><span class="p">(</span><span class="n">pha_star</span><span class="p">[</span><span class="n">idmu</span><span class="p">],</span> <span class="n">mu</span><span class="p">[</span><span class="n">idmu</span><span class="p">])</span>
+            <span class="n">chi_star_1_approx</span> <span class="o">=</span> <span class="n">calc_moments</span><span class="p">(</span>
+                <span class="n">pha_star</span><span class="p">,</span>
+                <span class="n">theta</span><span class="p">,</span>
+                <span class="n">m_max</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                <span class="n">theta_unit</span><span class="o">=</span><span class="s2">&quot;rad&quot;</span><span class="p">,</span>
+                <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span>
+                <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="n">pha_approx</span> <span class="o">=</span> <span class="n">pha_star</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">f</span><span class="p">)</span>
+        <span class="n">pha_approx</span> <span class="o">+=</span> <span class="n">delta_part</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Find th_f and PF</span>
+        <span class="n">pha_star</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">phase</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="n">mu1</span> <span class="o">=</span> <span class="n">mu</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;lobatto&quot;</span><span class="p">:</span>
+            <span class="c1"># th1 = theta[0:2]</span>
+            <span class="n">th2</span> <span class="o">=</span> <span class="n">theta</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+            <span class="n">Pf</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="mi">2</span> <span class="o">-</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">f</span><span class="p">))</span> <span class="o">*</span> <span class="n">integrate_m</span><span class="p">(</span><span class="n">phase</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">*</span> <span class="n">sin_th</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">th2</span><span class="p">)</span>
+            <span class="p">)</span> <span class="o">/</span> <span class="p">(</span>
+                <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">f</span><span class="p">))</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">mu1</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">mu1</span><span class="p">))</span>
+            <span class="p">)</span>  <span class="c1"># integrate_m(sin_th[0:2], th1))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># idmu1 = np.argsort(mu1)</span>
+            <span class="n">mu2</span> <span class="o">=</span> <span class="n">mu</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+            <span class="n">idmu2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">mu2</span><span class="p">)</span>
+            <span class="n">Pf</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="mi">2</span> <span class="o">-</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">f</span><span class="p">))</span> <span class="o">*</span> <span class="n">integrate_m</span><span class="p">(</span><span class="n">phase</span><span class="p">[</span><span class="mi">1</span><span class="p">:][</span><span class="n">idmu2</span><span class="p">],</span> <span class="n">mu2</span><span class="p">[</span><span class="n">idmu2</span><span class="p">])</span>
+            <span class="p">)</span> <span class="o">/</span> <span class="p">(</span>
+                <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">f</span><span class="p">))</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">mu1</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">mu1</span><span class="p">))</span>
+            <span class="p">)</span>  <span class="c1"># integrate_m(np.ones_like(mu1), mu1[idmu1]))</span>
+        <span class="n">pha_star</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="n">pha_star</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">Pf</span>
+        <span class="n">pha_star</span> <span class="o">*=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">f</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;lobatto&quot;</span><span class="p">:</span>
+            <span class="n">pha_star</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">pha_star</span><span class="p">)</span> <span class="o">/</span> <span class="n">integrate_m</span><span class="p">(</span>
+                <span class="n">pha_star</span> <span class="o">*</span> <span class="n">sin_th</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">xk</span><span class="o">=</span><span class="n">xk</span><span class="p">,</span> <span class="n">wk</span><span class="o">=</span><span class="n">wk</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">pha_star</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">pha_star</span><span class="p">)</span> <span class="o">/</span> <span class="n">integrate_m</span><span class="p">(</span><span class="n">pha_star</span><span class="p">[</span><span class="n">idmu</span><span class="p">],</span> <span class="n">mu</span><span class="p">[</span><span class="n">idmu</span><span class="p">])</span>
+
+        <span class="n">chi_star_1_approx</span> <span class="o">=</span> <span class="n">calc_moments</span><span class="p">(</span>
+            <span class="n">pha_star</span><span class="p">,</span>
+            <span class="n">theta</span><span class="p">,</span>
+            <span class="n">m_max</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">theta_unit</span><span class="o">=</span><span class="s2">&quot;rad&quot;</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span>
+            <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">err1</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">chi_star_1</span> <span class="o">-</span> <span class="n">chi_star_1_approx</span><span class="p">)</span>
+        <span class="n">id_approx</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="n">xk_min</span> <span class="o">=</span> <span class="n">xk_span</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;lobatto&quot;</span><span class="p">:</span>
+            <span class="n">xk_min</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">xk</span><span class="p">))</span>
+            <span class="n">xk_span</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">xk</span><span class="p">))</span> <span class="o">-</span> <span class="n">xk_min</span>
+
+        <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">phase</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">theta</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">th_tol</span><span class="p">:</span>
+                <span class="k">break</span>
+
+            <span class="c1"># Find Pf:</span>
+            <span class="c1"># normalization condition between 0 and π -&gt;</span>
+            <span class="c1"># ∫ P*(θ) sin(θ) dθ = 2</span>
+            <span class="n">mu1</span> <span class="o">=</span> <span class="n">mu</span><span class="p">[</span><span class="mi">0</span> <span class="p">:</span> <span class="nb">id</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;lobatto&quot;</span><span class="p">:</span>
+                <span class="c1"># th1 = theta[0:id+1]</span>
+                <span class="n">th2</span> <span class="o">=</span> <span class="n">theta</span><span class="p">[</span><span class="nb">id</span><span class="p">:]</span>
+
+                <span class="c1"># rescale of xk and wk in the tmp interval</span>
+                <span class="k">if</span> <span class="n">lobatto_optimization</span><span class="p">:</span>
+                    <span class="n">abscissa_min</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">th2</span><span class="p">)</span>
+                    <span class="n">abscissa_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">th2</span><span class="p">)</span>
+                    <span class="n">alpha</span> <span class="o">=</span> <span class="p">(</span><span class="n">abscissa_max</span> <span class="o">-</span> <span class="n">abscissa_min</span><span class="p">)</span> <span class="o">/</span> <span class="n">xk_span</span>
+                    <span class="n">xk_</span> <span class="o">=</span> <span class="n">abscissa_min</span> <span class="o">+</span> <span class="p">(</span><span class="n">xk</span> <span class="o">-</span> <span class="n">xk_min</span><span class="p">)</span> <span class="o">*</span> <span class="n">alpha</span>
+                    <span class="n">wk_</span> <span class="o">=</span> <span class="n">wk</span> <span class="o">*</span> <span class="n">alpha</span>
+
+                    <span class="n">Pf_tmp</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="mi">2</span>
+                        <span class="o">-</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">f</span><span class="p">))</span>
+                        <span class="o">*</span> <span class="n">integrate_m</span><span class="p">(</span>
+                            <span class="n">phase</span><span class="p">[</span><span class="nb">id</span><span class="p">:]</span> <span class="o">*</span> <span class="n">sin_th</span><span class="p">[</span><span class="nb">id</span><span class="p">:],</span>
+                            <span class="n">th2</span><span class="p">,</span>
+                            <span class="n">xk</span><span class="o">=</span><span class="n">xk_</span><span class="p">,</span>
+                            <span class="n">wk</span><span class="o">=</span><span class="n">wk_</span><span class="p">,</span>
+                            <span class="n">assume_sorted</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span> <span class="o">/</span> <span class="p">(</span>
+                        <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">f</span><span class="p">))</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">mu1</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">mu1</span><span class="p">))</span>
+                    <span class="p">)</span>  <span class="c1"># integrate_m(sin_th[0:id+1], th1))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">Pf_tmp</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="mi">2</span>
+                        <span class="o">-</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">f</span><span class="p">))</span>
+                        <span class="o">*</span> <span class="n">integrate_m</span><span class="p">(</span>
+                            <span class="n">phase</span><span class="p">[</span><span class="nb">id</span><span class="p">:]</span> <span class="o">*</span> <span class="n">sin_th</span><span class="p">[</span><span class="nb">id</span><span class="p">:],</span>
+                            <span class="n">th2</span><span class="p">,</span>
+                            <span class="n">lp</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">th2</span><span class="p">),</span>
+                            <span class="n">assume_sorted</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span> <span class="o">/</span> <span class="p">(</span>
+                        <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">f</span><span class="p">))</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">mu1</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">mu1</span><span class="p">))</span>
+                    <span class="p">)</span>  <span class="c1"># integrate_m(sin_th[0:id+1], th1))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># idmu1 = np.argsort(mu1)</span>
+                <span class="n">mu2</span> <span class="o">=</span> <span class="n">mu</span><span class="p">[</span><span class="nb">id</span><span class="p">:]</span>
+                <span class="n">idmu2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">mu2</span><span class="p">)</span>
+                <span class="n">Pf_tmp</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="mi">2</span>
+                    <span class="o">-</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">f</span><span class="p">))</span>
+                    <span class="o">*</span> <span class="n">integrate_m</span><span class="p">(</span><span class="n">phase</span><span class="p">[</span><span class="nb">id</span><span class="p">:][</span><span class="n">idmu2</span><span class="p">],</span> <span class="n">mu2</span><span class="p">[</span><span class="n">idmu2</span><span class="p">])</span>
+                <span class="p">)</span> <span class="o">/</span> <span class="p">(</span>
+                    <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">f</span><span class="p">))</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">mu1</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">mu1</span><span class="p">))</span>
+                <span class="p">)</span>  <span class="c1"># integrate_m(np.ones_like(mu1), mu1[idmu1]))</span>
+
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">Pf_tmp</span><span class="p">)</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">isinf</span><span class="p">(</span><span class="n">Pf_tmp</span><span class="p">):</span>
+                <span class="k">continue</span>
+
+            <span class="n">pha_star_tmp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">phase</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+            <span class="n">pha_star_tmp</span><span class="p">[</span><span class="nb">id</span><span class="p">:]</span> <span class="o">=</span> <span class="n">phase</span><span class="p">[</span><span class="nb">id</span><span class="p">:]</span>
+            <span class="n">pha_star_tmp</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="nb">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">Pf_tmp</span>
+            <span class="n">pha_star_tmp</span> <span class="o">*=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">f</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;lobatto&quot;</span><span class="p">:</span>
+                <span class="n">pha_star_tmp</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">pha_star_tmp</span><span class="p">)</span> <span class="o">/</span> <span class="n">integrate_m</span><span class="p">(</span>
+                    <span class="n">pha_star_tmp</span> <span class="o">*</span> <span class="n">sin_th</span><span class="p">,</span>
+                    <span class="n">theta</span><span class="p">,</span>
+                    <span class="n">xk</span><span class="o">=</span><span class="n">xk</span><span class="p">,</span>
+                    <span class="n">wk</span><span class="o">=</span><span class="n">wk</span><span class="p">,</span>
+                    <span class="n">assume_sorted</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">chi_star_1_approx_tmp</span> <span class="o">=</span> <span class="n">calc_moments</span><span class="p">(</span>
+                    <span class="n">pha_star_tmp</span><span class="p">,</span>
+                    <span class="n">theta</span><span class="p">,</span>
+                    <span class="n">m_max</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                    <span class="n">theta_unit</span><span class="o">=</span><span class="s2">&quot;rad&quot;</span><span class="p">,</span>
+                    <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span>
+                    <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">xk</span><span class="o">=</span><span class="n">xk</span><span class="p">,</span>
+                    <span class="n">wk</span><span class="o">=</span><span class="n">wk</span><span class="p">,</span>
+                    <span class="n">pl_costh</span><span class="o">=</span><span class="n">lp_costh</span><span class="p">,</span>
+                <span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">pha_star_tmp</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">pha_star_tmp</span><span class="p">)</span> <span class="o">/</span> <span class="n">integrate_m</span><span class="p">(</span>
+                    <span class="n">pha_star_tmp</span><span class="p">[</span><span class="n">idmu</span><span class="p">],</span> <span class="n">mu</span><span class="p">[</span><span class="n">idmu</span><span class="p">]</span>
+                <span class="p">)</span>
+                <span class="n">chi_star_1_approx_tmp</span> <span class="o">=</span> <span class="n">calc_moments</span><span class="p">(</span>
+                    <span class="n">pha_star_tmp</span><span class="p">,</span>
+                    <span class="n">theta</span><span class="p">,</span>
+                    <span class="n">m_max</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                    <span class="n">theta_unit</span><span class="o">=</span><span class="s2">&quot;rad&quot;</span><span class="p">,</span>
+                    <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span>
+                    <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+
+            <span class="n">err2</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">chi_star_1</span> <span class="o">-</span> <span class="n">chi_star_1_approx_tmp</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">err2</span> <span class="o">&lt;</span> <span class="n">err1</span> <span class="ow">and</span> <span class="n">theta</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">th_tol</span><span class="p">:</span>
+                <span class="n">id_approx</span> <span class="o">=</span> <span class="nb">id</span>
+                <span class="n">pha_star</span> <span class="o">=</span> <span class="n">pha_star_tmp</span>
+                <span class="n">chi_star_1_approx</span> <span class="o">=</span> <span class="n">chi_star_1_approx_tmp</span>
+                <span class="n">err1</span> <span class="o">=</span> <span class="n">err2</span>
+
+        <span class="n">pha_approx</span> <span class="o">=</span> <span class="n">pha_star</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">f</span><span class="p">)</span>
+        <span class="n">pha_approx</span> <span class="o">+=</span> <span class="n">delta_part</span>
+
+    <span class="k">if</span> <span class="n">ds_output</span><span class="p">:</span>
+        <span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span>
+            <span class="n">coords</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;theta&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">theta</span><span class="p">),</span> <span class="s2">&quot;exp_order&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">2</span><span class="p">)}</span>
+        <span class="p">)</span>
+        <span class="n">ds</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="s2">&quot;theta&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+            <span class="p">{</span><span class="s2">&quot;units&quot;</span><span class="p">:</span> <span class="s2">&quot;degrees&quot;</span><span class="p">,</span> <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;scattering angle&quot;</span><span class="p">}</span>
+        <span class="p">)</span>
+        <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;phase_approx&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span><span class="n">pha_approx</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;theta&quot;</span><span class="p">])</span>
+        <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;phase_approx&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;units&quot;</span><span class="p">:</span> <span class="s2">&quot;none&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;the approximation of the exact phase matrix&quot;</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+        <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;f&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;f&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+            <span class="p">{</span><span class="s2">&quot;units&quot;</span><span class="p">:</span> <span class="s2">&quot;none&quot;</span><span class="p">,</span> <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;the truncation factor&quot;</span><span class="p">}</span>
+        <span class="p">)</span>
+        <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;phase_tr&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span><span class="n">pha_star</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;theta&quot;</span><span class="p">])</span>
+        <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;phase_tr&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+            <span class="p">{</span><span class="s2">&quot;units&quot;</span><span class="p">:</span> <span class="s2">&quot;none&quot;</span><span class="p">,</span> <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;the truncated phase matrix&quot;</span><span class="p">}</span>
+        <span class="p">)</span>
+        <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;chi_star_ideal&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">chi_star_1</span><span class="p">]))</span>
+        <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;chi_star_ideal&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;units&quot;</span><span class="p">:</span> <span class="s2">&quot;none&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;the truncated phase matrix moments &quot;</span>
+                <span class="s2">&quot;if moment conservation (ideal case)&quot;</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+        <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;chi_star&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">chi_star_1_approx</span><span class="p">]))</span>
+        <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;chi_star&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;units&quot;</span><span class="p">:</span> <span class="s2">&quot;none&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;the actual truncated phase matrix moments&quot;</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">th_f_bis</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;theta_f&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">th_f_bis</span><span class="p">))</span>
+            <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;th_f&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">th_f_bis</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;theta_f&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">theta</span><span class="p">[</span><span class="n">id_approx</span><span class="p">]))</span>
+            <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;th_f&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+        <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;theta_f&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+            <span class="p">{</span><span class="s2">&quot;units&quot;</span><span class="p">:</span> <span class="s2">&quot;degrees&quot;</span><span class="p">,</span> <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;the truncation angle&quot;</span><span class="p">}</span>
+        <span class="p">)</span>
+        <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;th_f&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;units&quot;</span><span class="p">:</span> <span class="s2">&quot;degrees&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;the th_f parameter value &quot;</span>
+                <span class="s2">&quot;(to force truncation angle)&quot;</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">th_tol_bis</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;th_tol&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">th_tol</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;th_tol&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+        <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;th_tol&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+            <span class="p">{</span><span class="s2">&quot;units&quot;</span><span class="p">:</span> <span class="s2">&quot;degrees&quot;</span><span class="p">,</span> <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;the th_tol parameter value&quot;</span><span class="p">}</span>
+        <span class="p">)</span>
+        <span class="n">ds</span><span class="o">.</span><span class="n">attrs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;truncation method&quot;</span><span class="p">:</span> <span class="s2">&quot;GT&quot;</span><span class="p">}</span>
+        <span class="n">date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">ds</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;date&quot;</span><span class="p">:</span> <span class="n">date</span><span class="p">})</span>
+        <span class="n">ds</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;phase_moments_1&quot;</span><span class="p">:</span> <span class="n">chi_1</span><span class="p">})</span>
+        <span class="n">ds</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;integration method&quot;</span><span class="p">:</span> <span class="n">method</span><span class="p">})</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;lobatto&quot;</span><span class="p">:</span>
+            <span class="n">ds</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;lobatto_optimization&quot;</span><span class="p">:</span> <span class="n">lobatto_optimization</span><span class="p">})</span>
+        <span class="n">ds</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;pytrunc_version&quot;</span><span class="p">:</span> <span class="n">VERSION</span><span class="p">})</span>
+        <span class="k">return</span> <span class="n">ds</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">pha_approx</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">pha_star</span></div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, Pytrunc team.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

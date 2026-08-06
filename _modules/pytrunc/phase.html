@@ -1,0 +1,914 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pytrunc.phase &#8212; Pytrunc 1.1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../_static/documentation_options.js?v=fc837d61"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/pytrunc/phase';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="light">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+    
+    <img src="../../_static/pytrunc-logo-horizontal-light-bg.png" class="logo__image only-light" alt="Pytrunc 1.1.0 documentation - Home"/>
+    <img src="../../_static/pytrunc-logo-horizontal-dark-bg.png" class="logo__image only-dark pst-js-only" alt="Pytrunc 1.1.0 documentation - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../notebooks.html">
+    Notebooks
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../pytrunc.html">
+    Pytrunc package
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../changelog_link.html">
+    Releases
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../notebooks.html">
+    Notebooks
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../pytrunc.html">
+    Pytrunc package
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../changelog_link.html">
+    Releases
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">pytrunc.phase</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for pytrunc.phase</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Scattering phase functions and Legendre moments.</span>
+
+<span class="sd">This module provides analytic scattering phase functions</span>
+<span class="sd">(Henyey-Greenstein, two-term Henyey-Greenstein and Fournier-Forand)</span>
+<span class="sd">and the calculation of the phase function Legendre moments, either</span>
+<span class="sd">numerically for an arbitrary phase function or analytically for the</span>
+<span class="sd">Henyey-Greenstein family.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArrayLike</span><span class="p">,</span> <span class="n">NDArray</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.integrate</span><span class="w"> </span><span class="kn">import</span> <span class="n">simpson</span><span class="p">,</span> <span class="n">trapezoid</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pytrunc.utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">integrate_lobatto</span><span class="p">,</span>
+    <span class="n">legendre_polynomials</span><span class="p">,</span>
+    <span class="n">quadrature_lobatto</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="henyey_greenstein">
+<a class="viewcode-back" href="../../pytrunc.phase.html#pytrunc.phase.henyey_greenstein">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">henyey_greenstein</span><span class="p">(</span>
+    <span class="n">theta</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span>
+    <span class="n">g</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">theta_unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;deg&quot;</span><span class="p">,</span>
+    <span class="n">normalize</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the Henyey-Greenstein phase matrix</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    theta : ndarray</span>
+<span class="sd">        The phase matrix angles, it must be 1-D. See the theta_unit</span>
+<span class="sd">        parameter for the unit</span>
+<span class="sd">    g : float</span>
+<span class="sd">        The Henyey-Greenstein parameter g (measures the asymmetry</span>
+<span class="sd">        of the phase matrix)</span>
+<span class="sd">    theta_unit : str, optional</span>
+<span class="sd">        The unit of the theta angles. Default is &#39;deg&#39;, other</span>
+<span class="sd">        choice is &#39;rad&#39;</span>
+<span class="sd">    normalize : float or None, optional</span>
+<span class="sd">        The normalization value of the integral of F_HG(θ)dcosθ,</span>
+<span class="sd">        where F_HG(θ) is the phase matrix. The scipy simpson</span>
+<span class="sd">        function is used for the normalization. Default is None,</span>
+<span class="sd">        meaning no normalization</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ndarray</span>
+<span class="sd">        The phase matrix, a 1-D ndarray with the same shape as</span>
+<span class="sd">        theta</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The Henyey-Greenstein equation:</span>
+
+<span class="sd">    - :math:`F_HG(θ) =</span>
+<span class="sd">      (1/(4*pi))*[(1-g**2) / (1+g**2-(2*g*cos(θ)))**(3/2)]`</span>
+<span class="sd">    - By default the integral of F_HG(θ)dcosθ is equal to</span>
+<span class="sd">      1/(2*pi). The integral value can be different due to a very</span>
+<span class="sd">      low discretization of θ and/or a high g value. The use of</span>
+<span class="sd">      the normalize parameter can be useful to renormalize the</span>
+<span class="sd">      phase function</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Henyey, L. G., &amp; Greenstein, J. L. (1941). Diffuse radiation</span>
+<span class="sd">    in the galaxy. Astrophysical Journal, 93, 70-83.</span>
+
+<span class="sd">    `other reference</span>
+<span class="sd">    &lt;http://www.oceanopticsbook.info/view/scattering/level-2/the-henyey-greenstein-phase-function&gt;`_</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; from pytrunc.phase import henyey_greenstein</span>
+<span class="sd">    &gt;&gt;&gt; theta = np.linspace(0.0, 180.0, 3)</span>
+<span class="sd">    &gt;&gt;&gt; henyey_greenstein(theta, g=0.85)</span>
+<span class="sd">    array([6.54303655e+00, 9.76819403e-03, 3.48769050e-03])</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">theta_unit</span> <span class="o">==</span> <span class="s2">&quot;rad&quot;</span><span class="p">:</span>
+        <span class="n">mu</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">theta_unit</span> <span class="o">==</span> <span class="s2">&quot;deg&quot;</span><span class="p">:</span>
+        <span class="n">mu</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">theta</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;The accepted values for parameter theta_unit are: &#39;deg&#39; or &#39;rad&#39;&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">phase</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="p">))</span> <span class="o">*</span> <span class="p">(</span>
+        <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">g</span> <span class="o">*</span> <span class="n">g</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">g</span> <span class="o">*</span> <span class="n">g</span> <span class="o">-</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">g</span> <span class="o">*</span> <span class="n">mu</span><span class="p">))</span> <span class="o">**</span> <span class="p">(</span><span class="mf">1.5</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">normalize</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">idmu</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">mu</span><span class="p">)</span>
+        <span class="n">phase</span> <span class="o">=</span> <span class="p">(</span><span class="n">normalize</span> <span class="o">*</span> <span class="n">phase</span><span class="p">)</span> <span class="o">/</span> <span class="n">simpson</span><span class="p">(</span><span class="n">phase</span><span class="p">[</span><span class="n">idmu</span><span class="p">],</span> <span class="n">x</span><span class="o">=</span><span class="n">mu</span><span class="p">[</span><span class="n">idmu</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">phase</span></div>
+
+
+
+<div class="viewcode-block" id="two_term_henyey_greenstein">
+<a class="viewcode-back" href="../../pytrunc.phase.html#pytrunc.phase.two_term_henyey_greenstein">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">two_term_henyey_greenstein</span><span class="p">(</span>
+    <span class="n">theta</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span>
+    <span class="n">g1</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">g2</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">f</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">theta_unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;deg&quot;</span><span class="p">,</span>
+    <span class="n">normalize</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the two-term Henyey-Greenstein phase matrix</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    theta : ndarray</span>
+<span class="sd">        The phase matrix angles, it must be 1-D. See the theta_unit</span>
+<span class="sd">        parameter for the unit</span>
+<span class="sd">    g1 : float</span>
+<span class="sd">        The first H-G term parameter g (forward part)</span>
+<span class="sd">    g2 : float</span>
+<span class="sd">        The second H-G term parameter g (backward part)</span>
+<span class="sd">    f : float</span>
+<span class="sd">        The fraction parameter between the two H-G terms (see</span>
+<span class="sd">        notes)</span>
+<span class="sd">    theta_unit : str, optional</span>
+<span class="sd">        The unit of the theta angles. Default is &#39;deg&#39;, other</span>
+<span class="sd">        choice is &#39;rad&#39;</span>
+<span class="sd">    normalize : float or None, optional</span>
+<span class="sd">        The normalization value of the integral of F_TTHG(θ)dcosθ,</span>
+<span class="sd">        where F_TTHG(θ) is the phase matrix. The scipy simpson</span>
+<span class="sd">        function is used for the normalization. Default is None,</span>
+<span class="sd">        meaning no normalization</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ndarray</span>
+<span class="sd">        The phase matrix, a 1-D ndarray with the same shape as</span>
+<span class="sd">        theta</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The two term Henyey-Greenstein equation:</span>
+
+<span class="sd">    - :math:`F_TTHG(θ) = f*F_HG1(θ) + (1-f)*F_HG2(θ)`</span>
+<span class="sd">    - By default the integral of F_TTHG(θ)dcosθ is equal to</span>
+<span class="sd">      1/(2*pi). The integral value can be different due to a very</span>
+<span class="sd">      low discretization of θ and/or a high g value. The use of</span>
+<span class="sd">      the normalize parameter can be useful to renormalize the</span>
+<span class="sd">      phase function</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Irvine, W. M. (1965). Multiple scattering by large particles</span>
+<span class="sd">    (No. NASA-CR-64638).</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; from pytrunc.phase import two_term_henyey_greenstein</span>
+<span class="sd">    &gt;&gt;&gt; theta = np.linspace(0.0, 180.0, 3)</span>
+<span class="sd">    &gt;&gt;&gt; two_term_henyey_greenstein(theta, g1=0.85, g2=-0.6, f=0.9)</span>
+<span class="sd">    array([5.88997629, 0.01200253, 0.08271639])</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">F_HG1</span> <span class="o">=</span> <span class="n">henyey_greenstein</span><span class="p">(</span>
+        <span class="n">theta</span><span class="o">=</span><span class="n">theta</span><span class="p">,</span> <span class="n">g</span><span class="o">=</span><span class="n">g1</span><span class="p">,</span> <span class="n">theta_unit</span><span class="o">=</span><span class="n">theta_unit</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="n">normalize</span>
+    <span class="p">)</span>
+    <span class="n">F_HG2</span> <span class="o">=</span> <span class="n">henyey_greenstein</span><span class="p">(</span>
+        <span class="n">theta</span><span class="o">=</span><span class="n">theta</span><span class="p">,</span> <span class="n">g</span><span class="o">=</span><span class="n">g2</span><span class="p">,</span> <span class="n">theta_unit</span><span class="o">=</span><span class="n">theta_unit</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="n">normalize</span>
+    <span class="p">)</span>
+    <span class="n">phase</span> <span class="o">=</span> <span class="n">f</span> <span class="o">*</span> <span class="n">F_HG1</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">f</span><span class="p">)</span> <span class="o">*</span> <span class="n">F_HG2</span>
+
+    <span class="k">return</span> <span class="n">phase</span></div>
+
+
+
+<div class="viewcode-block" id="fournier_forand">
+<a class="viewcode-back" href="../../pytrunc.phase.html#pytrunc.phase.fournier_forand">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">fournier_forand</span><span class="p">(</span>
+    <span class="n">theta</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span>
+    <span class="n">n</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">mu</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">theta_unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;deg&quot;</span><span class="p">,</span>
+    <span class="n">normalize</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the Fournier-Forand phase matrix</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    theta : ndarray</span>
+<span class="sd">        The phase matrix angles, it must be 1-D. See the theta_unit</span>
+<span class="sd">        parameter for the unit</span>
+<span class="sd">    n : float</span>
+<span class="sd">        The real index of refraction of the particles</span>
+<span class="sd">    mu : float</span>
+<span class="sd">        The slope parameter of the hyperbolic (Junge) particle size</span>
+<span class="sd">        distribution (typically between 3 and 5 for oceanic</span>
+<span class="sd">        particles)</span>
+<span class="sd">    theta_unit : str, optional</span>
+<span class="sd">        The unit of the theta angles. Default is &#39;deg&#39;, other</span>
+<span class="sd">        choice is &#39;rad&#39;</span>
+<span class="sd">    normalize : float or None, optional</span>
+<span class="sd">        The normalization value of the integral of F_FF(θ)dcosθ,</span>
+<span class="sd">        where F_FF(θ) is the phase matrix. The scipy simpson</span>
+<span class="sd">        function is used for the normalization. Default is None,</span>
+<span class="sd">        meaning no normalization</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ndarray</span>
+<span class="sd">        The phase matrix, a 1-D ndarray with the same shape as</span>
+<span class="sd">        theta</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The Fournier-Forand equation:</span>
+
+<span class="sd">    - :math:`F_FF(θ) = [1 / (4*pi*(1-δ)**2*δ**v)] *</span>
+<span class="sd">      [v*(1-δ) - (1-δ**v) + (δ*(1-δ**v) - v*(1-δ))*sin(θ/2)**(-2)]</span>
+<span class="sd">      + [(1-δ_180**v) / (16*pi*(δ_180-1)*δ_180**v)] *</span>
+<span class="sd">      (3*cos(θ)**2 - 1)`</span>
+<span class="sd">    - with :math:`v = (3-μ)/2` and</span>
+<span class="sd">      :math:`δ = (4 / (3*(n-1)**2))*sin(θ/2)**2`, where δ_180 is δ</span>
+<span class="sd">      evaluated at θ = 180°</span>
+<span class="sd">    - By default the integral of F_FF(θ)dcosθ is equal to</span>
+<span class="sd">      1/(2*pi). The integral value can be different due to a very</span>
+<span class="sd">      low discretization of θ and/or a strong forward peak. The</span>
+<span class="sd">      use of the normalize parameter can be useful to renormalize</span>
+<span class="sd">      the phase function</span>
+<span class="sd">    - F_FF(θ) diverges as θ → 0: at θ = 0 the result is NaN/inf</span>
+<span class="sd">      (with numpy invalid-value warnings). Use a grid starting</span>
+<span class="sd">      above 0, or overwrite the forward peak values before</span>
+<span class="sd">      integrating</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Fournier, G. R., &amp; Forand, J. L. (1994). Analytic phase</span>
+<span class="sd">    function for ocean water. In Ocean Optics XII (Vol. 2258,</span>
+<span class="sd">    pp. 194-201). SPIE.</span>
+
+<span class="sd">    `other reference</span>
+<span class="sd">    &lt;http://www.oceanopticsbook.info/view/scattering/the-fournier-forand-phase-function&gt;`_</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; from pytrunc.phase import fournier_forand</span>
+<span class="sd">    &gt;&gt;&gt; theta = np.linspace(10.0, 170.0, 3)</span>
+<span class="sd">    &gt;&gt;&gt; fournier_forand(theta, n=1.117, mu=3.695)</span>
+<span class="sd">    array([1.24049454, 0.0065938 , 0.00479607])</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">theta_unit</span> <span class="o">==</span> <span class="s2">&quot;rad&quot;</span><span class="p">:</span>
+        <span class="n">theta_rad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">theta_unit</span> <span class="o">==</span> <span class="s2">&quot;deg&quot;</span><span class="p">:</span>
+        <span class="n">theta_rad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;The accepted values for parameter theta_unit are: &#39;deg&#39; or &#39;rad&#39;&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">v</span> <span class="o">=</span> <span class="p">(</span><span class="mi">3</span> <span class="o">-</span> <span class="n">mu</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+    <span class="n">sin_half_sq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta_rad</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+    <span class="n">delta</span> <span class="o">=</span> <span class="p">(</span><span class="mi">4</span> <span class="o">/</span> <span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span> <span class="o">*</span> <span class="n">sin_half_sq</span>
+    <span class="n">delta_180</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">/</span> <span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">phase</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">delta</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">delta</span><span class="o">**</span><span class="n">v</span><span class="p">))</span> <span class="o">*</span> <span class="p">(</span>
+        <span class="n">v</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">delta</span><span class="p">)</span>
+        <span class="o">-</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">delta</span><span class="o">**</span><span class="n">v</span><span class="p">)</span>
+        <span class="o">+</span> <span class="p">(</span><span class="n">delta</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">delta</span><span class="o">**</span><span class="n">v</span><span class="p">)</span> <span class="o">-</span> <span class="n">v</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">delta</span><span class="p">))</span> <span class="o">/</span> <span class="n">sin_half_sq</span>
+    <span class="p">)</span> <span class="o">+</span> <span class="p">(</span>
+        <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">delta_180</span><span class="o">**</span><span class="n">v</span><span class="p">)</span>
+        <span class="o">/</span> <span class="p">(</span><span class="mi">16</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="p">(</span><span class="n">delta_180</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">delta_180</span><span class="o">**</span><span class="n">v</span><span class="p">)</span>
+    <span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta_rad</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">normalize</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">mu_cos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta_rad</span><span class="p">)</span>
+        <span class="n">idmu</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">mu_cos</span><span class="p">)</span>
+        <span class="n">phase</span> <span class="o">=</span> <span class="p">(</span><span class="n">normalize</span> <span class="o">*</span> <span class="n">phase</span><span class="p">)</span> <span class="o">/</span> <span class="n">simpson</span><span class="p">(</span><span class="n">phase</span><span class="p">[</span><span class="n">idmu</span><span class="p">],</span> <span class="n">x</span><span class="o">=</span><span class="n">mu_cos</span><span class="p">[</span><span class="n">idmu</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">phase</span></div>
+
+
+
+<div class="viewcode-block" id="calc_moments">
+<a class="viewcode-back" href="../../pytrunc.phase.html#pytrunc.phase.calc_moments">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">calc_moments</span><span class="p">(</span>
+    <span class="n">phase</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span>
+    <span class="n">theta</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span>
+    <span class="n">m_max</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;lobatto&quot;</span><span class="p">,</span>
+    <span class="n">theta_unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;deg&quot;</span><span class="p">,</span>
+    <span class="n">normalize</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">xk</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">wk</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">pl_costh</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate the phase matrix moments until m_max moment</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    phase : ndarray</span>
+<span class="sd">        The phase matrix, it must be 1-D</span>
+<span class="sd">    theta : ndarray</span>
+<span class="sd">        The phase matrix angles, it must be 1-D. See the theta_unit</span>
+<span class="sd">        parameter for the unit</span>
+<span class="sd">    m_max : int</span>
+<span class="sd">        The maximum moment number to compute, i.e., compute m[0],</span>
+<span class="sd">        ..., m[m_max]</span>
+<span class="sd">    method : str, optional</span>
+<span class="sd">        The method used to calculate the moments. Default is</span>
+<span class="sd">        &#39;lobatto&#39; (very efficient with a &quot;gauss kind&quot; theta</span>
+<span class="sd">        distribution), other choices are &#39;simpson&#39; and &#39;trapezoid&#39;</span>
+<span class="sd">        (efficient with a regular theta distribution, use the</span>
+<span class="sd">        scipy simpson and trapezoid functions)</span>
+<span class="sd">    theta_unit : str, optional</span>
+<span class="sd">        The unit of the theta angles. Default is &#39;deg&#39;, other</span>
+<span class="sd">        choice is &#39;rad&#39;</span>
+<span class="sd">    normalize : bool, optional</span>
+<span class="sd">        If True, normalize such that the first moment is exactly</span>
+<span class="sd">        equal to 1. Default is False</span>
+<span class="sd">    xk : ndarray or None, optional</span>
+<span class="sd">        Force the Lobatto quadrature abscissas, it must be 1-D.</span>
+<span class="sd">        Considered only if wk is also provided</span>
+<span class="sd">    wk : ndarray or None, optional</span>
+<span class="sd">        Force the Lobatto weights, it must be 1-D. Considered only</span>
+<span class="sd">        if xk is also provided</span>
+<span class="sd">    pl_costh : ndarray or None, optional</span>
+<span class="sd">        Force the Legendre polynomials values of cos(theta). The</span>
+<span class="sd">        2-D ndarray shape must be (m_max+1, len(theta))</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ndarray</span>
+<span class="sd">        The computed phase moments, a 1-D ndarray of size</span>
+<span class="sd">        m_max + 1</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    - See Eq. A2 in Wiscombe (1977) for the moment computation</span>
+<span class="sd">      using the Lobatto quadrature in [0,pi]</span>
+<span class="sd">    - For the Lobatto quadrature abscissas and weights calculation</span>
+<span class="sd">      see Michels (1963)</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Michels, H. (1963). Abscissas and weight coefficients for</span>
+<span class="sd">    Lobatto quadrature. Mathematics of Computation, 17(83),</span>
+<span class="sd">    237-244.</span>
+
+<span class="sd">    Wiscombe, W. J. (1977). The delta-M method: Rapid yet accurate</span>
+<span class="sd">    radiative flux calculations for strongly asymmetric phase</span>
+<span class="sd">    functions. Journal of Atmospheric Sciences, 34(9), 1408-1422.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; from pytrunc.phase import calc_moments, henyey_greenstein</span>
+<span class="sd">    &gt;&gt;&gt; theta = np.linspace(0.0, 180.0, 1801)</span>
+<span class="sd">    &gt;&gt;&gt; phase = henyey_greenstein(theta, g=0.85, normalize=2)</span>
+<span class="sd">    &gt;&gt;&gt; calc_moments(phase, theta, m_max=3)</span>
+<span class="sd">    array([0.99998936, 0.84998937, 0.72248935, 0.61411436])</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">methods_ok</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;lobatto&quot;</span><span class="p">,</span> <span class="s2">&quot;simpson&quot;</span><span class="p">,</span> <span class="s2">&quot;trapezoid&quot;</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">method</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">methods_ok</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Only available methods are: </span><span class="si">{</span><span class="n">methods_ok</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">theta_unit</span> <span class="o">==</span> <span class="s2">&quot;deg&quot;</span><span class="p">:</span>
+        <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">theta_unit</span> <span class="o">!=</span> <span class="s2">&quot;rad&quot;</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;The accepted values for parameter theta_unit are: &#39;deg&#39; or &#39;rad&#39;&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">theta</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">theta</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="s2">&quot;The range of theta must be [0, π] (rad unit) or [0,180] &quot;</span>
+            <span class="s2">&quot;(deg unit)&quot;</span>
+        <span class="p">)</span>
+
+    <span class="c1"># initialize moments</span>
+    <span class="n">chi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">m_max</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;lobatto&quot;</span><span class="p">:</span>
+        <span class="n">nth</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">phase</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">nth</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;The phase size must be &gt;= 2 for Lobatto quadrature&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">xk</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">wk</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="n">xk</span><span class="p">,</span> <span class="n">wk</span> <span class="o">=</span> <span class="n">quadrature_lobatto</span><span class="p">(</span>
+                <span class="n">abscissa_min</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">abscissa_max</span><span class="o">=</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">nth</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">pl_costh</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">mu</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+        <span class="n">sin_th</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">deg</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m_max</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">pl_costh</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">pl_mu</span> <span class="o">=</span> <span class="n">legendre_polynomials</span><span class="p">(</span><span class="n">deg</span><span class="p">,</span> <span class="n">mu</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">pl_mu</span> <span class="o">=</span> <span class="n">pl_costh</span><span class="p">[</span><span class="n">deg</span><span class="p">]</span>
+            <span class="n">chi</span><span class="p">[</span><span class="n">deg</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">integrate_lobatto</span><span class="p">(</span>
+                <span class="n">phase</span> <span class="o">*</span> <span class="n">sin_th</span> <span class="o">*</span> <span class="n">pl_mu</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">xk</span><span class="o">=</span><span class="n">xk</span><span class="p">,</span> <span class="n">wk</span><span class="o">=</span><span class="n">wk</span>
+            <span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">mu</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+        <span class="n">idmu</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">mu</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">deg</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m_max</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">pl_costh</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">pl_mu</span> <span class="o">=</span> <span class="n">legendre_polynomials</span><span class="p">(</span><span class="n">deg</span><span class="p">,</span> <span class="n">mu</span><span class="p">[</span><span class="n">idmu</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">pl_mu</span> <span class="o">=</span> <span class="n">pl_costh</span><span class="p">[</span><span class="n">deg</span><span class="p">][</span><span class="n">idmu</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;simpson&quot;</span><span class="p">:</span>
+                <span class="n">chi</span><span class="p">[</span><span class="n">deg</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">simpson</span><span class="p">(</span><span class="n">phase</span><span class="p">[</span><span class="n">idmu</span><span class="p">]</span> <span class="o">*</span> <span class="n">pl_mu</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">mu</span><span class="p">[</span><span class="n">idmu</span><span class="p">])</span>
+            <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;trapezoid&quot;</span><span class="p">:</span>
+                <span class="n">chi</span><span class="p">[</span><span class="n">deg</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">trapezoid</span><span class="p">(</span><span class="n">phase</span><span class="p">[</span><span class="n">idmu</span><span class="p">]</span> <span class="o">*</span> <span class="n">pl_mu</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">mu</span><span class="p">[</span><span class="n">idmu</span><span class="p">])</span>
+
+    <span class="c1"># normalization</span>
+    <span class="k">if</span> <span class="n">normalize</span><span class="p">:</span>
+        <span class="n">chi</span> <span class="o">/=</span> <span class="n">chi</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">chi</span></div>
+
+
+
+<div class="viewcode-block" id="calc_hg_moments">
+<a class="viewcode-back" href="../../pytrunc.phase.html#pytrunc.phase.calc_hg_moments">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">calc_hg_moments</span><span class="p">(</span><span class="n">g</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">m_max</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute exact Henyey-Greenstein phase moments</span>
+
+<span class="sd">    - see Eq. 8 in Kattawar (1975)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    g : float</span>
+<span class="sd">        The Henyey-Greenstein parameter g (measures the asymmetry</span>
+<span class="sd">        of the phase matrix)</span>
+<span class="sd">    m_max : int</span>
+<span class="sd">        The maximum moment number to compute, i.e., compute m[0],</span>
+<span class="sd">        ..., m[m_max]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ndarray</span>
+<span class="sd">        The phase moments, a 1-D ndarray of size m_max + 1</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Kattawar, G. W. (1975). A three-parameter analytic phase</span>
+<span class="sd">    function for multiple scattering calculations. Journal of</span>
+<span class="sd">    Quantitative Spectroscopy and Radiative Transfer, 15(9),</span>
+<span class="sd">    839-849.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from pytrunc.phase import calc_hg_moments</span>
+<span class="sd">    &gt;&gt;&gt; calc_hg_moments(g=0.85, m_max=3)</span>
+<span class="sd">    array([1.      , 0.85    , 0.7225  , 0.614125])</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">g</span><span class="o">**</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m_max</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)])</span></div>
+
+
+
+<div class="viewcode-block" id="calc_tthg_moments">
+<a class="viewcode-back" href="../../pytrunc.phase.html#pytrunc.phase.calc_tthg_moments">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">calc_tthg_moments</span><span class="p">(</span>
+    <span class="n">g1</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">g2</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">f</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">m_max</span><span class="p">:</span> <span class="nb">int</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute exact Two-term Henyey-Greenstein phase moments</span>
+
+<span class="sd">    - see Eq. 11 in Kattawar (1975)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    g1 : float</span>
+<span class="sd">        The first H-G term parameter g (forward part)</span>
+<span class="sd">    g2 : float</span>
+<span class="sd">        The second H-G term parameter g (backward part)</span>
+<span class="sd">    f : float</span>
+<span class="sd">        The fraction parameter between the two H-G terms</span>
+<span class="sd">    m_max : int</span>
+<span class="sd">        The maximum moment number to compute, i.e., compute m[0],</span>
+<span class="sd">        ..., m[m_max]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ndarray</span>
+<span class="sd">        The phase moments, a 1-D ndarray of size m_max + 1</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Kattawar, G. W. (1975). A three-parameter analytic phase</span>
+<span class="sd">    function for multiple scattering calculations. Journal of</span>
+<span class="sd">    Quantitative Spectroscopy and Radiative Transfer, 15(9),</span>
+<span class="sd">    839-849.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from pytrunc.phase import calc_tthg_moments</span>
+<span class="sd">    &gt;&gt;&gt; calc_tthg_moments(g1=0.85, g2=-0.6, f=0.9, m_max=3)</span>
+<span class="sd">    array([1.       , 0.705    , 0.68625  , 0.5311125])</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([(</span><span class="n">f</span> <span class="o">*</span> <span class="n">g1</span><span class="o">**</span><span class="n">n</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">f</span><span class="p">)</span> <span class="o">*</span> <span class="n">g2</span><span class="o">**</span><span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m_max</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)])</span></div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, Pytrunc team.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

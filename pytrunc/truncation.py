@@ -165,16 +165,27 @@ def delta_m_phase_approx(
 
     # here m_max = 2M (wiscombe 77)
     # chi_star[n] = (chi[n] - f)/(1 - f) for n = 0 to n=m_max-1
-    chi_star = np.zeros(m_max, dtype=np.float64)
-    for n in range(m_max):
-        chi_star[n] = (chi[n] - f) / (1 - f)
+    chi_star = (chi[:m_max] - f) / (1 - f)
 
     cos_th = np.cos(theta)
     phase_star = np.zeros_like(theta)
 
-    # phase_star = (1-f) * Σ [ (2n+1) * chi[n]* * pn(cosθ) ]
+    # phase_star = (1-f) * Σ [ (2n+1) * chi[n]* * pn(cosθ) ], with the
+    # three-term Legendre recurrence advanced incrementally across the
+    # loop instead of being recomputed from degree 0 at each order
+    pnm1 = np.ones_like(cos_th)
+    pn = cos_th
     for n in range(m_max):
-        pn_costh = legendre_polynomials(n, cos_th)
+        if n == 0:
+            pn_costh = pnm1
+        elif n == 1:
+            pn_costh = pn
+        else:
+            k = n - 1
+            pn_costh = (1.0 / (k + 1)) * (
+                (2 * k + 1) * cos_th * pn - k * pnm1
+            )
+            pnm1, pn = pn, pn_costh
         phase_star += (2 * n + 1) * chi_star[n] * pn_costh
 
     phase_approx = phase_star.copy() * (1 - f)

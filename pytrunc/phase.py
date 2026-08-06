@@ -15,11 +15,7 @@ import numpy as np
 from numpy.typing import ArrayLike, NDArray
 from scipy.integrate import simpson, trapezoid
 
-from pytrunc.utils import (
-    integrate_lobatto,
-    legendre_polynomials,
-    quadrature_lobatto,
-)
+from pytrunc.utils import integrate_lobatto, quadrature_lobatto
 
 
 def henyey_greenstein(
@@ -382,11 +378,25 @@ def calc_moments(
 
         if pl_costh is None:
             mu = np.cos(theta)
+            # seeds of the three-term Legendre recurrence, advanced
+            # incrementally across the degree loop instead of being
+            # recomputed from degree 0 at each degree
+            pnm1 = np.ones_like(mu)
+            pn = mu
         sin_th = np.sin(theta)
 
         for deg in range(m_max + 1):
             if pl_costh is None:
-                pl_mu = legendre_polynomials(deg, mu)
+                if deg == 0:
+                    pl_mu = pnm1
+                elif deg == 1:
+                    pl_mu = pn
+                else:
+                    k = deg - 1
+                    pl_mu = (1.0 / (k + 1)) * (
+                        (2 * k + 1) * mu * pn - k * pnm1
+                    )
+                    pnm1, pn = pn, pl_mu
             else:
                 pl_mu = pl_costh[deg]
             chi[deg] = 0.5 * integrate_lobatto(
@@ -396,15 +406,28 @@ def calc_moments(
     else:
         mu = np.cos(theta)
         idmu = np.argsort(mu)
+        mu_s = mu[idmu]
+        # incremental Legendre recurrence, as in the lobatto branch
+        pnm1 = np.ones_like(mu_s)
+        pn = mu_s
         for deg in range(m_max + 1):
             if pl_costh is None:
-                pl_mu = legendre_polynomials(deg, mu[idmu])
+                if deg == 0:
+                    pl_mu = pnm1
+                elif deg == 1:
+                    pl_mu = pn
+                else:
+                    k = deg - 1
+                    pl_mu = (1.0 / (k + 1)) * (
+                        (2 * k + 1) * mu_s * pn - k * pnm1
+                    )
+                    pnm1, pn = pn, pl_mu
             else:
                 pl_mu = pl_costh[deg][idmu]
             if method == "simpson":
-                chi[deg] = 0.5 * simpson(phase[idmu] * pl_mu, x=mu[idmu])
+                chi[deg] = 0.5 * simpson(phase[idmu] * pl_mu, x=mu_s)
             elif method == "trapezoid":
-                chi[deg] = 0.5 * trapezoid(phase[idmu] * pl_mu, x=mu[idmu])
+                chi[deg] = 0.5 * trapezoid(phase[idmu] * pl_mu, x=mu_s)
 
     # normalization
     if normalize:

@@ -70,8 +70,7 @@ def henyey_greenstein(
     Henyey, L. G., & Greenstein, J. L. (1941). Diffuse radiation
     in the galaxy. Astrophysical Journal, 93, 70-83.
 
-    `other reference
-    <http://www.oceanopticsbook.info/view/scattering/level-2/the-henyey-greenstein-phase-function>`_
+    Ocean Optics Web Book: https://www.oceanopticsbook.info
 
     Examples
     --------
@@ -238,8 +237,7 @@ def fournier_forand(
     function for ocean water. In Ocean Optics XII (Vol. 2258,
     pp. 194-201). SPIE.
 
-    `other reference
-    <http://www.oceanopticsbook.info/view/scattering/the-fournier-forand-phase-function>`_
+    Ocean Optics Web Book: https://www.oceanopticsbook.info
 
     Examples
     --------

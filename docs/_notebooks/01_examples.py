@@ -19,40 +19,43 @@
 # %reload_ext autoreload
 # %autoreload 2
 
-import os
-from pathlib import Path
+import matplotlib.pyplot as plt
 import numpy as np
+import xarray as xr
+from matplotlib.ticker import MaxNLocator
 from scipy.integrate import simpson, trapezoid
-from pytrunc.phase import calc_moments, henyey_greenstein, calc_hg_moments
+
+from pytrunc.constant import DIR_ROOT
+from pytrunc.phase import calc_hg_moments, calc_moments, henyey_greenstein
 from pytrunc.truncation import delta_m_phase_approx, gt_phase_approx
 from pytrunc.utils import integrate_lobatto, quadrature_lobatto
-
-import matplotlib.pyplot as plt
-from matplotlib.ticker import MaxNLocator
-import xarray as xr
-from pytrunc.constant import DIR_ROOT
 
 # %% [markdown]
 # ## Compute all truncated phase matrix unique terms
 
 # %% [markdown]
-# ### Water cloud 
+# ### Water cloud
 # - spherical particle
 
 # %% [markdown]
 # #### Get realistic water cloud phase function from mie calculation
 
 # %%
-# in the paper (Iwabuchi et al. 2009) water cloud at wl = 500 nm and reff = 8 um
+# in the paper (Iwabuchi et al. 2009) water cloud at wl = 500 nm and
+# reff = 8 um
 
 # wc available in smartg auxdata: https://github.com/hygeos/smartg
-# Follow smartg README to download auxdata, 
-# then create environemnt variable 'SMARTG_DIR_AUXDATA' where auxdata have been downloaded
-# wc_path = Path(os.environ['SMARTG_DIR_AUXDATA']) / Path('clouds/wc_sol.nc')
+# Follow smartg README to download auxdata, then create the environment
+# variable 'SMARTG_DIR_AUXDATA' where auxdata have been downloaded
+# import os
+# from pathlib import Path
+# wc_path = Path(os.environ['SMARTG_DIR_AUXDATA']) / 'clouds/wc_sol.nc'
 # ds = xr.open_dataset(wc_path)
-# pha_exact = ds['phase'].interp(reff=8, wav=500, method='linear').values[0, :]
+# pha_exact = ds['phase'].interp(reff=8, wav=500,
+#                                method='linear').values[0, :]
 
-# wc at the correct wavelength and effective radius avaible in pytrunc/data
+# wc at the correct wavelength and effective radius available in
+# pytrunc/data
 ds = xr.open_dataset(DIR_ROOT / 'pytrunc' / 'data' / 'wc_wl500_reff8.nc')
 
 theta = ds['theta'].values
@@ -117,7 +120,7 @@ chi = calc_moments(pha_ex[0,:], theta, m_max=m_max, normalize=True)
 f = chi[m_max]
 print('f=', f)
 
-ds_gt = gt_phase_approx(pha_ex[0,:], theta, f, method=method, 
+ds_gt = gt_phase_approx(pha_ex[0,:], theta, f, method=method,
                                         phase_moments_1=chi[1], th_tol=20.)
 
 # Eq.5 in Waquet and Herman, 2019
@@ -202,7 +205,8 @@ plt.tight_layout()
 # %% [markdown]
 # ## Use Lobatto for an accurate phase function with lesser angle points
 # - Interesting for particles with a high forward or backward peak.
-# - A phase function with lesser angle points allows to save memory and computional time in some radiative transfer codes
+# - A phase function with lesser angle points allows to save memory and
+#   computational time in some radiative transfer codes
 
 # %% [markdown]
 # ### Example with the Henyey-Greentein phase function
@@ -214,12 +218,15 @@ theta_reg = np.linspace(0, 180., nb_th)
 hg_phase_lob = henyey_greenstein(theta_lob, g=0.95, normalize=2)
 hg_phase_reg = henyey_greenstein(theta_reg, g=0.95, normalize=2)
 
-hg_phase_ref = henyey_greenstein(np.linspace(0, 180., 18001), g=0.95, normalize=2)
+theta_ref = np.linspace(0, 180., 18001)
+hg_phase_ref = henyey_greenstein(theta_ref, g=0.95, normalize=2)
 
 plt.figure(figsize=(6,4))
-plt.plot(np.linspace(0, 180., 18001), hg_phase_ref, 'k-', lw=3, label='reference')
-plt.plot(theta_reg, hg_phase_reg, 'g-^', lw=2, ms=10, label=f'regular grid, nb_theta={nb_th}')
-plt.plot(theta_lob, hg_phase_lob, 'r-.o', lw=2, ms=6, label=f'Lobatto, nb_theta={nb_th}')
+plt.plot(theta_ref, hg_phase_ref, 'k-', lw=3, label='reference')
+plt.plot(theta_reg, hg_phase_reg, 'g-^', lw=2, ms=10,
+         label=f'regular grid, nb_theta={nb_th}')
+plt.plot(theta_lob, hg_phase_lob, 'r-.o', lw=2, ms=6,
+         label=f'Lobatto, nb_theta={nb_th}')
 plt.ylim(0, 850)
 plt.xlim(0, 8)
 plt.title('Henyey-Greenstein phase forward peak (g=0.95)')
@@ -230,7 +237,7 @@ plt.tight_layout()
 #plt.savefig('hg_phase_forward_peak.png', dpi=200)
 
 # %% [markdown]
-# ### Example with moment calculations 
+# ### Example with moment calculations
 
 # %%
 m_max = 20
@@ -245,14 +252,18 @@ plt.plot(expansion_order, chi_exact, 'k-', lw=3, label='original')
 for ith in range (len(nth)):
     theta_reg = np.linspace(0, 180., nth[ith])
     hg_reg = henyey_greenstein(theta_reg, g=0.95, normalize=2)
-    chi_reg = calc_moments(hg_reg, theta_reg, m_max, method='trapezoid', normalize=True)
-    plt.plot(expansion_order, chi_reg, f'g{marks[ith]}', lw=2, label=f'regular, nb_theta={nth[ith]}')
+    chi_reg = calc_moments(hg_reg, theta_reg, m_max, method='trapezoid',
+                           normalize=True)
+    plt.plot(expansion_order, chi_reg, f'g{marks[ith]}', lw=2,
+             label=f'regular, nb_theta={nth[ith]}')
 
 for ith in range (len(nth)):
     theta_lob, _ = quadrature_lobatto(0., 180., nth[ith])
     hg_lob = henyey_greenstein(theta_lob, g=0.95, normalize=2)
-    chi_lob = calc_moments(hg_lob, theta_lob, m_max, method='lobatto', normalize=True)
-    plt.plot(expansion_order, chi_lob, f'r{marks[ith]}', lw=2, label=f'Lobatto, nb_theta={nth[ith]}')
+    chi_lob = calc_moments(hg_lob, theta_lob, m_max, method='lobatto',
+                           normalize=True)
+    plt.plot(expansion_order, chi_lob, f'r{marks[ith]}', lw=2,
+             label=f'Lobatto, nb_theta={nth[ith]}')
 
 plt.title('Henyey-Greenstein phase moments (g=0.95)')
 plt.xlabel('Expansion order []')

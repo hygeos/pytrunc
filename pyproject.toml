@@ -69,9 +69,16 @@ packages = ["pytrunc"]
 
 [tool.ruff]
 line-length = 79
+extend-exclude = ["docs/_build"]
 
 [tool.ruff.lint]
 select = ["E", "W", "F", "I", "UP", "B", "NPY"]
+
+[tool.ruff.lint.per-file-ignores]
+# E402: sys.path must be set before importing pytrunc
+# B018: bare expressions are notebook display outputs
+"docs/conf.py" = ["E402"]
+"docs/_notebooks/*.py" = ["E402", "B018"]
 
 [tool.ruff.lint.pycodestyle]
 max-doc-length = 72

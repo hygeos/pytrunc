@@ -15,24 +15,24 @@
 # %% [markdown]
 # # 02 Validation Iwabuchi
 #
-# - see: Iwabuchi, H., & Suzuki, T. (2009). Fast and accurate radiance calculations using truncation approximation for anisotropic scattering phase functions. Journal of Quantitative Spectroscopy and Radiative Transfer, 110(17), 1926-1939.
+# - see: Iwabuchi, H., & Suzuki, T. (2009). Fast and accurate radiance
+#   calculations using truncation approximation for anisotropic
+#   scattering phase functions. Journal of Quantitative Spectroscopy
+#   and Radiative Transfer, 110(17), 1926-1939.
 
 # %%
 # %reload_ext autoreload
 # %autoreload 2
 
-import os
-from pathlib import Path
+import matplotlib.pyplot as plt
 import numpy as np
+import xarray as xr
 from scipy.integrate import simpson, trapezoid
+
+from pytrunc.constant import DIR_ROOT
 from pytrunc.phase import calc_moments
 from pytrunc.truncation import delta_m_phase_approx, gt_phase_approx
 from pytrunc.utils import integrate_lobatto
-
-import matplotlib.pyplot as plt
-import xarray as xr
-
-from pytrunc.constant import DIR_ROOT
 
 save_fig = False
 
@@ -43,16 +43,21 @@ save_fig = False
 # ### Get realistic water cloud phase function from mie calculation
 
 # %%
-# in the paper (Iwabuchi et al. 2009) water cloud at wl = 500 nm and reff = 8 um
+# in the paper (Iwabuchi et al. 2009) water cloud at wl = 500 nm and
+# reff = 8 um
 
 # wc available in smartg auxdata: https://github.com/hygeos/smartg
-# Follow smartg README to download auxdata, 
-# then create environemnt variable 'SMARTG_DIR_AUXDATA' where auxdata have been downloaded
-# wc_path = Path(os.environ['SMARTG_DIR_AUXDATA']) / Path('clouds/wc_sol.nc')
+# Follow smartg README to download auxdata, then create the environment
+# variable 'SMARTG_DIR_AUXDATA' where auxdata have been downloaded
+# import os
+# from pathlib import Path
+# wc_path = Path(os.environ['SMARTG_DIR_AUXDATA']) / 'clouds/wc_sol.nc'
 # ds = xr.open_dataset(wc_path)
-# pha_exact = ds['phase'].interp(reff=8, wav=500, method='linear').values[0, :]
+# pha_exact = ds['phase'].interp(reff=8, wav=500,
+#                                method='linear').values[0, :]
 
-# wc at the correct wavelength and effective radius avaible in pytrunc/data
+# wc at the correct wavelength and effective radius available in
+# pytrunc/data
 ds = xr.open_dataset(DIR_ROOT / 'pytrunc' / 'data' / 'wc_wl500_reff8.nc')
 
 theta = ds['theta'].values
@@ -80,7 +85,8 @@ idmu = np.argsort(mu)
 # renormalize depending on the chosen integration method
 if method == 'lobatto':
     sin_th = np.sin(np.deg2rad(theta))
-    pha_exact = (2. * pha_exact) / integrate_m(pha_exact*sin_th, np.deg2rad(theta))
+    pha_exact = (2. * pha_exact) / integrate_m(pha_exact*sin_th,
+                                               np.deg2rad(theta))
 else:
     pha_exact = (2. * pha_exact) / integrate_m(pha_exact[idmu], mu[idmu])
 
@@ -117,14 +123,17 @@ if save_fig:
 
 mu = np.cos(np.deg2rad(theta))
 idmu = np.argsort(mu)
+pha_approx_dm = ds_dm['phase_approx'].values
 if method == 'lobatto':
-    print("integral(P_exact)=", integrate_m(pha_exact*np.sin(np.deg2rad(theta)),
-                                            np.deg2rad(theta)))
-    print("integral(P_approx_dm)=", integrate_m(ds_dm['phase_approx'].values*np.sin(np.deg2rad(theta)), 
-                                             np.deg2rad(theta)))
+    th_rad = np.deg2rad(theta)
+    print("integral(P_exact)=",
+          integrate_m(pha_exact*np.sin(th_rad), th_rad))
+    print("integral(P_approx_dm)=",
+          integrate_m(pha_approx_dm*np.sin(th_rad), th_rad))
 else:
     print("integral(P_exact)=", integrate_m(pha_exact[idmu], mu[idmu]))
-    print("integral(P_approx_dm)=", integrate_m(ds_dm['phase_approx'].values[idmu], mu[idmu]))
+    print("integral(P_approx_dm)=",
+          integrate_m(pha_approx_dm[idmu], mu[idmu]))
 print("f =",f)
 
 # %% [markdown]
@@ -151,9 +160,12 @@ if save_fig:
 
 # %%
 n_expan = 60
-chi_exact = calc_moments(phase=pha_exact, theta=theta, m_max=n_expan, method=method, normalize=True)
-chi_approx_dm = calc_moments(phase=ds_dm['phase_approx'].values, theta=theta, m_max=n_expan, method=method, normalize=True)
-chi_approx_gt = calc_moments(phase=ds_gt['phase_approx'].values, theta=theta, m_max=n_expan, method=method, normalize=True)
+chi_exact = calc_moments(phase=pha_exact, theta=theta, m_max=n_expan,
+                         method=method, normalize=True)
+chi_approx_dm = calc_moments(phase=ds_dm['phase_approx'].values, theta=theta,
+                             m_max=n_expan, method=method, normalize=True)
+chi_approx_gt = calc_moments(phase=ds_gt['phase_approx'].values, theta=theta,
+                             m_max=n_expan, method=method, normalize=True)
 
 exp_order = np.arange(61)
 plt.figure(figsize=(6,5))

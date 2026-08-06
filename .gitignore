@@ -4,5 +4,7 @@ __pycache__/
 .pixi/
 pixi.lock
 docs/_build/
+# notebooks generated from the docs/_notebooks percent scripts
+docs/*.ipynb
 .pytest_cache/
 .ruff_cache/

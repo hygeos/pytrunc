@@ -2,8 +2,8 @@
 Numerical utilities.
 
 This module provides the numerical routines used by the phase and
-truncation modules: the Legendre polynomials and their derivatives,
-the Bessel functions of the first kind, and the Lobatto quadrature
+truncation modules: the Legendre polynomials and their derivatives, the
+Bessel functions of the first kind, and the Lobatto quadrature
 abscissas, weights and integration.
 """
 
@@ -17,8 +17,7 @@ from scipy.special import gammaln, j1, jn_zeros, jvp
 
 def legendre_polynomials(n: int, x: ArrayLike) -> NDArray[np.float64]:
     """
-    Use the recursion formulas to compute the Legendre polynomials
-    Pn(x)
+    Use the recursion formulas to compute the Legendre polynomials Pn(x)
 
     - see Eq. 9 in Michels (1963)
 
@@ -41,13 +40,12 @@ def legendre_polynomials(n: int, x: ArrayLike) -> NDArray[np.float64]:
 
     References
     ----------
-    Michels, H. (1963). Abscissas and weight coefficients for
-    Lobatto quadrature. Mathematics of Computation, 17(83),
-    237-244.
+    Michels, H. (1963). Abscissas and weight coefficients for Lobatto
+    quadrature. Mathematics of Computation, 17(83), 237-244.
 
     Wiscombe, W. J. (1977). The delta-M method: Rapid yet accurate
-    radiative flux calculations for strongly asymmetric phase
-    functions. Journal of Atmospheric Sciences, 34(9), 1408-1422.
+    radiative flux calculations for strongly asymmetric phase functions.
+    Journal of Atmospheric Sciences, 34(9), 1408-1422.
 
     Examples
     --------
@@ -105,13 +103,12 @@ def legendre_polynomials_derivative(
 
     References
     ----------
-    Michels, H. (1963). Abscissas and weight coefficients for
-    Lobatto quadrature. Mathematics of Computation, 17(83),
-    237-244.
+    Michels, H. (1963). Abscissas and weight coefficients for Lobatto
+    quadrature. Mathematics of Computation, 17(83), 237-244.
 
     Wiscombe, W. J. (1977). The delta-M method: Rapid yet accurate
-    radiative flux calculations for strongly asymmetric phase
-    functions. Journal of Atmospheric Sciences, 34(9), 1408-1422.
+    radiative flux calculations for strongly asymmetric phase functions.
+    Journal of Atmospheric Sciences, 34(9), 1408-1422.
 
     Examples
     --------
@@ -144,8 +141,8 @@ def legendre_polynomials_second_derivative(
     n: int, x: ArrayLike
 ) -> NDArray[np.float64]:
     """
-    Use the recursion formulas to compute the second derivative
-    Legendre polynomials d²(Pn(x))
+    Use the recursion formulas to compute the second derivative Legendre
+    polynomials d²(Pn(x))
 
     - see Eq. 11 in Michels (1963)
 
@@ -159,8 +156,8 @@ def legendre_polynomials_second_derivative(
     Returns
     -------
     ndarray
-        The second derivative Legendre series, a 1-D ndarray with
-        the same shape as x
+        The second derivative Legendre series, a 1-D ndarray with the
+        same shape as x
 
     Notes
     -----
@@ -169,13 +166,12 @@ def legendre_polynomials_second_derivative(
 
     References
     ----------
-    Michels, H. (1963). Abscissas and weight coefficients for
-    Lobatto quadrature. Mathematics of Computation, 17(83),
-    237-244.
+    Michels, H. (1963). Abscissas and weight coefficients for Lobatto
+    quadrature. Mathematics of Computation, 17(83), 237-244.
 
     Wiscombe, W. J. (1977). The delta-M method: Rapid yet accurate
-    radiative flux calculations for strongly asymmetric phase
-    functions. Journal of Atmospheric Sciences, 34(9), 1408-1422.
+    radiative flux calculations for strongly asymmetric phase functions.
+    Journal of Atmospheric Sciences, 34(9), 1408-1422.
 
     Examples
     --------
@@ -223,14 +219,14 @@ def bessel_j1(
     acc : float, optional
         The tolerance for numerical errors. Default is 1e-8
     max_iter : int, optional
-        The maximum number of iterations trying to improve the
-        error accuracy. Default is 50
+        The maximum number of iterations trying to improve the error
+        accuracy. Default is 50
 
     Returns
     -------
     ndarray
-        The values of the Bessel function J1(x), a 1-D ndarray with
-        the same shape as x
+        The values of the Bessel function J1(x), a 1-D ndarray with the
+        same shape as x
 
     Notes
     -----
@@ -297,14 +293,14 @@ def bessel_jn(
     acc : float, optional
         The tolerance for numerical errors. Default is 1e-8
     max_iter : int, optional
-        The maximum number of iterations trying to improve the
-        error accuracy. Default is 50
+        The maximum number of iterations trying to improve the error
+        accuracy. Default is 50
 
     Returns
     -------
     ndarray
-        The values of the Bessel function Jn(x), a 1-D ndarray with
-        the same shape as x
+        The values of the Bessel function Jn(x), a 1-D ndarray with the
+        same shape as x
 
     Notes
     -----
@@ -364,14 +360,14 @@ def bessel_j1_derivative(
     acc : float, optional
         The tolerance for numerical errors. Default is 1e-8
     max_iter : int, optional
-        The maximum number of iterations trying to improve the
-        error accuracy. Default is 50
+        The maximum number of iterations trying to improve the error
+        accuracy. Default is 50
 
     Returns
     -------
     ndarray
-        The values of the Bessel function derivative d(J1(x)), a
-        1-D ndarray with the same shape as x
+        The values of the Bessel function derivative d(J1(x)), a 1-D
+        ndarray with the same shape as x
 
     Notes
     -----
@@ -396,11 +392,11 @@ def bessel_j1_roots(
     nb_roots: int, acc: float = 1e-8, max_iter: int = 50
 ) -> NDArray[np.float64]:
     """
-    Find roots of Bessel first kind function j1(x) using
-    Newton-Raphson iteration
+    Find roots of Bessel first kind function j1(x) using Newton-Raphson
+    iteration
 
-    - First k approximations equation j1_roots ~ pi * (k + 1/4).
-      See Baricz et al. (2025)
+    - First k approximations equation j1_roots ~ pi * (k + 1/4). See
+      Baricz et al. (2025)
 
     Parameters
     ----------
@@ -409,8 +405,8 @@ def bessel_j1_roots(
     acc : float, optional
         The tolerance for numerical errors. Default is 1e-8
     max_iter : int, optional
-        The maximum number of iterations trying to improve the
-        error accuracy. Default is 50
+        The maximum number of iterations trying to improve the error
+        accuracy. Default is 50
 
     Returns
     -------
@@ -423,9 +419,9 @@ def bessel_j1_roots(
 
     References
     ----------
-    Baricz, Á., Kumar, P., & Ponnusamy, S. (2025). Asymptotic
-    behavior of zeros of Bessel function derivatives. arXiv
-    preprint arXiv:2510.12353.
+    Baricz, Á., Kumar, P., & Ponnusamy, S. (2025). Asymptotic behavior
+    of zeros of Bessel function derivatives. arXiv preprint
+    arXiv:2510.12353.
 
     Examples
     --------
@@ -458,11 +454,11 @@ def legendre_polynomials_derivative_roots(
     n: int, acc: float = 1e-8, max_iter: int = 50
 ) -> NDArray[np.float64]:
     """
-    Find roots of legendre polynomial derivative d(Pn(x)), for
-    x > -1 and x < 1
+    Find roots of legendre polynomial derivative d(Pn(x)), for x > -1
+    and x < 1
 
-    - Use of the Newton-Raphson iteration as in Michels (1963),
-      see Eq. 7 and 8
+    - Use of the Newton-Raphson iteration as in Michels (1963), see Eq.
+      7 and 8
 
     Parameters
     ----------
@@ -471,14 +467,14 @@ def legendre_polynomials_derivative_roots(
     acc : float, optional
         The tolerance for numerical errors. Default is 1e-8
     max_iter : int, optional
-        The maximum number of iterations trying to improve the
-        error accuracy. Default is 50
+        The maximum number of iterations trying to improve the error
+        accuracy. Default is 50
 
     Returns
     -------
     ndarray
-        The roots of the legendre polynomial derivative d(Pn(x)),
-        a 1-D ndarray of size n-1
+        The roots of the legendre polynomial derivative d(Pn(x)), a 1-D
+        ndarray of size n-1
 
     Notes
     -----
@@ -487,9 +483,8 @@ def legendre_polynomials_derivative_roots(
 
     References
     ----------
-    Michels, H. (1963). Abscissas and weight coefficients for
-    Lobatto quadrature. Mathematics of Computation, 17(83),
-    237-244.
+    Michels, H. (1963). Abscissas and weight coefficients for Lobatto
+    quadrature. Mathematics of Computation, 17(83), 237-244.
 
     Examples
     --------
@@ -544,13 +539,12 @@ def quadrature_lobatto(
 
     References
     ----------
-    Michels, H. (1963). Abscissas and weight coefficients for
-    Lobatto quadrature. Mathematics of Computation, 17(83),
-    237-244.
+    Michels, H. (1963). Abscissas and weight coefficients for Lobatto
+    quadrature. Mathematics of Computation, 17(83), 237-244.
 
     Wiscombe, W. J. (1977). The delta-M method: Rapid yet accurate
-    radiative flux calculations for strongly asymmetric phase
-    functions. Journal of Atmospheric Sciences, 34(9), 1408-1422.
+    radiative flux calculations for strongly asymmetric phase functions.
+    Journal of Atmospheric Sciences, 34(9), 1408-1422.
 
     Examples
     --------
@@ -589,13 +583,12 @@ def _quadrature_lobatto_standard(
     n: int,
 ) -> tuple[NDArray[np.float64], NDArray[np.float64]]:
     """
-    Compute the Lobatto abscissas and weights on the standard
-    interval [-1, 1]
+    Compute the Lobatto abscissas and weights on the standard interval
+    [-1, 1]
 
-    The Newton-Raphson node solve is expensive (~50 ms for
-    n ~ 2000), so the result is cached per n. The returned arrays
-    are read-only; callers must copy before modifying
-    (quadrature_lobatto does).
+    The Newton-Raphson node solve is expensive (~50 ms for n ~ 2000), so
+    the result is cached per n. The returned arrays are read-only;
+    callers must copy before modifying (quadrature_lobatto does).
 
     :meta private:
     """
@@ -628,28 +621,27 @@ def integrate_lobatto(
     Parameters
     ----------
     f : ndarray
-        The ordinates of the function (array to be integrated), it
-        must be 1-D
+        The ordinates of the function (array to be integrated), it must
+        be 1-D
     x : ndarray
         The abscissas, it must be 1-D
     lp : int or None, optional
-        The number of lobatto points for the integration. Default
-        is None, meaning lp is equal to len(x)
+        The number of lobatto points for the integration. Default is
+        None, meaning lp is equal to len(x)
     xk : ndarray or None, optional
-        Force the Lobatto quadrature abscissas, it must be 1-D and
-        of size lp. Considered only if wk is also provided
+        Force the Lobatto quadrature abscissas, it must be 1-D and of
+        size lp. Considered only if wk is also provided
     wk : ndarray or None, optional
         Force the Lobatto weights, it must be 1-D and of size lp.
         Considered only if xk is also provided
     assume_sorted : bool, optional
-        If True, the x array is assumed to be sorted in ascending
-        order. Default is False
+        If True, the x array is assumed to be sorted in ascending order.
+        Default is False
 
     Returns
     -------
     float
-        The estimated integral calculated using the Lobatto
-        quadrature
+        The estimated integral calculated using the Lobatto quadrature
 
     Examples
     --------

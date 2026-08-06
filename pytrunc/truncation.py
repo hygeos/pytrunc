@@ -1,11 +1,11 @@
 """
 Scattering phase function truncation methods.
 
-This module provides the approximation of a scattering phase
-function by truncation of its forward peak, using either the
-delta-m method of Wiscombe (1977) or the geometrical truncation
-(GT) method of Iwabuchi and Suzuki (2009), and returns the
-truncated phase function together with its truncation factor.
+This module provides the approximation of a scattering phase function by
+truncation of its forward peak, using either the delta-m method of
+Wiscombe (1977) or the geometrical truncation (GT) method of Iwabuchi
+and Suzuki (2009), and returns the truncated phase function together
+with its truncation factor.
 """
 
 import math
@@ -78,22 +78,21 @@ def delta_m_phase_approx(
     m_max : int
         The maximum term number
     theta_unit : str, optional
-        The unit of the theta angles. Default is 'deg', other
-        choice is 'rad'
+        The unit of the theta angles. Default is 'deg', other choice is
+        'rad'
     phase_moments : ndarray or None, optional
-        The moments of the phase matrix, it must be 1-D. The size
-        of phase_moments must be >= m_max+1. If this parameter is
-        not None, circumvent the calculation of the phase matrix
-        moments. This parameter can be useful in case we have the
-        exact moment values like for the H-G phase function.
-        Default is None
+        The moments of the phase matrix, it must be 1-D. The size of
+        phase_moments must be >= m_max+1. If this parameter is not None,
+        circumvent the calculation of the phase matrix moments. This
+        parameter can be useful in case we have the exact moment values
+        like for the H-G phase function. Default is None
     method : str, optional
-        The method parameter of the calc_moments function, and
-        also the integral method for the dirac normalization.
-        Default is 'trapezoid'
+        The method parameter of the calc_moments function, and also the
+        integral method for the dirac normalization. Default is
+        'trapezoid'
     ds_output : bool, optional
-        If True the output is a dataset, else return a tuple.
-        Default is True
+        If True the output is a dataset, else return a tuple. Default is
+        True
 
     Returns
     -------
@@ -103,8 +102,7 @@ def delta_m_phase_approx(
 
         Key variables included:
 
-        - **phase_approx**: The approximation of the exact phase
-          matrix
+        - **phase_approx**: The approximation of the exact phase matrix
         - **f**: The truncation factor
         - **phase_tr**: The truncated phase matrix
         - **chi**: The moments of the exact phase matrix
@@ -113,8 +111,7 @@ def delta_m_phase_approx(
         Form of the tuple:
 
         * phase_approx : ndarray
-            -> The approximation of the exact phase matrix, it is
-            1-D
+            -> The approximation of the exact phase matrix, it is 1-D
         * f : float
             -> The truncation factor
         * phase_star : ndarray
@@ -123,8 +120,8 @@ def delta_m_phase_approx(
     References
     ----------
     Wiscombe, W. J. (1977). The delta-M method: Rapid yet accurate
-    radiative flux calculations for strongly asymmetric phase
-    functions. Journal of Atmospheric Sciences, 34(9), 1408-1422.
+    radiative flux calculations for strongly asymmetric phase functions.
+    Journal of Atmospheric Sciences, 34(9), 1408-1422.
 
     Examples
     --------
@@ -270,33 +267,32 @@ def gt_phase_approx(
     trunc_frac : float
         The truncation fraction
     theta_unit : str, optional
-        The unit of the theta angles. Default is 'deg', other
-        choice is 'rad'
+        The unit of the theta angles. Default is 'deg', other choice is
+        'rad'
     method : str, optional
-        The method parameter of the calc_moments function, and
-        also the integral method for the dirac normalization.
-        Default is 'trapezoid'
+        The method parameter of the calc_moments function, and also the
+        integral method for the dirac normalization. Default is
+        'trapezoid'
     phase_moments_1 : float or None, optional
-        The value of the first moment of the phase matrix. Default
-        is None, meaning it is computed with the calc_moments
-        function
+        The value of the first moment of the phase matrix. Default is
+        None, meaning it is computed with the calc_moments function
     th_tol : float or None, optional
-        While finding matching moments for Pf we look between 0
-        and th_tol. The unit depends on the theta_unit parameter.
-        Default is None, meaning th_tol is equal to pi/2
+        While finding matching moments for Pf we look between 0 and
+        th_tol. The unit depends on the theta_unit parameter. Default is
+        None, meaning th_tol is equal to pi/2
     th_f : float or None, optional
-        Impose the truncation angle. The unit depends on the
-        theta_unit parameter. Default is None, meaning the
-        truncation angle is searched
+        Impose the truncation angle. The unit depends on the theta_unit
+        parameter. Default is None, meaning the truncation angle is
+        searched
     lobatto_optimization : bool, optional
-        Whether to use lobatto optimization for integration (reuse
-        the full-grid Lobatto quadrature, affinely rescaled to the
-        truncation sub-interval, instead of solving for a new
-        quadrature at every candidate angle during the truncation
-        angle search). Default is True
-    ds_output : bool, optional
-        If True the output is a dataset, else return a tuple.
+        Whether to use lobatto optimization for integration (reuse the
+        full-grid Lobatto quadrature, affinely rescaled to the
+        truncation sub-interval, instead of solving for a new quadrature
+        at every candidate angle during the truncation angle search).
         Default is True
+    ds_output : bool, optional
+        If True the output is a dataset, else return a tuple. Default is
+        True
 
     Returns
     -------
@@ -306,23 +302,21 @@ def gt_phase_approx(
 
         Key variables included:
 
-        - **phase_approx**: The approximation of the exact phase
-          matrix
+        - **phase_approx**: The approximation of the exact phase matrix
         - **f**: The truncation factor
         - **phase_tr**: The truncated phase matrix
-        - **chi_star_ideal**: The truncated phase matrix moments
-          if moment conservation (ideal case)
+        - **chi_star_ideal**: The truncated phase matrix moments if
+          moment conservation (ideal case)
         - **chi_star**: The actual truncated phase matrix moments
         - **theta_f**: The truncation angle
-        - **th_f**: The th_f parameter value (to force the
-          truncation angle)
+        - **th_f**: The th_f parameter value (to force the truncation
+          angle)
         - **th_tol**: The th_tol parameter value
 
         Form of the tuple:
 
         * phase_approx : ndarray
-            -> The approximation of the exact phase matrix, it is
-            1-D
+            -> The approximation of the exact phase matrix, it is 1-D
         * f : float
             -> The truncation factor
         * phase_star : ndarray
@@ -332,8 +326,8 @@ def gt_phase_approx(
     ----------
     Iwabuchi, H., & Suzuki, T. (2009). Fast and accurate radiance
     calculations using truncation approximation for anisotropic
-    scattering phase functions. Journal of Quantitative
-    Spectroscopy and Radiative Transfer, 110(17), 1926-1939.
+    scattering phase functions. Journal of Quantitative Spectroscopy and
+    Radiative Transfer, 110(17), 1926-1939.
 
     Examples
     --------

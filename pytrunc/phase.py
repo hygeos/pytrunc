@@ -2,8 +2,8 @@
 Scattering phase functions and Legendre moments.
 
 This module provides analytic scattering phase functions
-(Henyey-Greenstein, two-term Henyey-Greenstein and Fournier-Forand)
-and the calculation of the phase function Legendre moments, either
+(Henyey-Greenstein, two-term Henyey-Greenstein and Fournier-Forand) and
+the calculation of the phase function Legendre moments, either
 numerically for an arbitrary phase function or analytically for the
 Henyey-Greenstein family.
 """
@@ -36,22 +36,20 @@ def henyey_greenstein(
         The phase matrix angles, it must be 1-D. See the theta_unit
         parameter for the unit
     g : float
-        The Henyey-Greenstein parameter g (measures the asymmetry
-        of the phase matrix)
+        The Henyey-Greenstein parameter g (measures the asymmetry of the
+        phase matrix)
     theta_unit : str, optional
-        The unit of the theta angles. Default is 'deg', other
-        choice is 'rad'
+        The unit of the theta angles. Default is 'deg', other choice is
+        'rad'
     normalize : float or None, optional
-        The normalization value of the integral of F_HG(θ)dcosθ,
-        where F_HG(θ) is the phase matrix. The scipy simpson
-        function is used for the normalization. Default is None,
-        meaning no normalization
+        The normalization value of the integral of F_HG(θ)dcosθ, where
+        F_HG(θ) is the phase matrix. The scipy simpson function is used
+        for the normalization. Default is None, meaning no normalization
 
     Returns
     -------
     ndarray
-        The phase matrix, a 1-D ndarray with the same shape as
-        theta
+        The phase matrix, a 1-D ndarray with the same shape as theta
 
     Notes
     -----
@@ -59,16 +57,15 @@ def henyey_greenstein(
 
     - :math:`F_HG(θ) =
       (1/(4*pi))*[(1-g**2) / (1+g**2-(2*g*cos(θ)))**(3/2)]`
-    - By default the integral of F_HG(θ)dcosθ is equal to
-      1/(2*pi). The integral value can be different due to a very
-      low discretization of θ and/or a high g value. The use of
-      the normalize parameter can be useful to renormalize the
-      phase function
+    - By default the integral of F_HG(θ)dcosθ is equal to 1/(2*pi). The
+      integral value can be different due to a very low discretization
+      of θ and/or a high g value. The use of the normalize parameter can
+      be useful to renormalize the phase function
 
     References
     ----------
-    Henyey, L. G., & Greenstein, J. L. (1941). Diffuse radiation
-    in the galaxy. Astrophysical Journal, 93, 70-83.
+    Henyey, L. G., & Greenstein, J. L. (1941). Diffuse radiation in the
+    galaxy. Astrophysical Journal, 93, 70-83.
 
     Ocean Optics Web Book: https://www.oceanopticsbook.info
 
@@ -121,38 +118,36 @@ def two_term_henyey_greenstein(
     g2 : float
         The second H-G term parameter g (backward part)
     f : float
-        The fraction parameter between the two H-G terms (see
-        notes)
+        The fraction parameter between the two H-G terms (see notes)
     theta_unit : str, optional
-        The unit of the theta angles. Default is 'deg', other
-        choice is 'rad'
+        The unit of the theta angles. Default is 'deg', other choice is
+        'rad'
     normalize : float or None, optional
-        The normalization value of the integral of F_TTHG(θ)dcosθ,
-        where F_TTHG(θ) is the phase matrix. The scipy simpson
-        function is used for the normalization. Default is None,
-        meaning no normalization
+        The normalization value of the integral of F_TTHG(θ)dcosθ, where
+        F_TTHG(θ) is the phase matrix. The scipy simpson function is
+        used for the normalization. Default is None, meaning no
+        normalization
 
     Returns
     -------
     ndarray
-        The phase matrix, a 1-D ndarray with the same shape as
-        theta
+        The phase matrix, a 1-D ndarray with the same shape as theta
 
     Notes
     -----
     The two term Henyey-Greenstein equation:
 
     - :math:`F_TTHG(θ) = f*F_HG1(θ) + (1-f)*F_HG2(θ)`
-    - By default the integral of F_TTHG(θ)dcosθ is equal to
-      1/(2*pi). The integral value can be different due to a very
-      low discretization of θ and/or a high g value. The use of
-      the normalize parameter can be useful to renormalize the
-      phase function
+    - By default the integral of F_TTHG(θ)dcosθ is equal to 1/(2*pi).
+      The integral value can be different due to a very low
+      discretization of θ and/or a high g value. The use of the
+      normalize parameter can be useful to renormalize the phase
+      function
 
     References
     ----------
-    Irvine, W. M. (1965). Multiple scattering by large particles
-    (No. NASA-CR-64638).
+    Irvine, W. M. (1965). Multiple scattering by large particles (No.
+    NASA-CR-64638).
 
     Examples
     --------
@@ -193,22 +188,19 @@ def fournier_forand(
         The real index of refraction of the particles
     mu : float
         The slope parameter of the hyperbolic (Junge) particle size
-        distribution (typically between 3 and 5 for oceanic
-        particles)
+        distribution (typically between 3 and 5 for oceanic particles)
     theta_unit : str, optional
-        The unit of the theta angles. Default is 'deg', other
-        choice is 'rad'
+        The unit of the theta angles. Default is 'deg', other choice is
+        'rad'
     normalize : float or None, optional
-        The normalization value of the integral of F_FF(θ)dcosθ,
-        where F_FF(θ) is the phase matrix. The scipy simpson
-        function is used for the normalization. Default is None,
-        meaning no normalization
+        The normalization value of the integral of F_FF(θ)dcosθ, where
+        F_FF(θ) is the phase matrix. The scipy simpson function is used
+        for the normalization. Default is None, meaning no normalization
 
     Returns
     -------
     ndarray
-        The phase matrix, a 1-D ndarray with the same shape as
-        theta
+        The phase matrix, a 1-D ndarray with the same shape as theta
 
     Notes
     -----
@@ -221,21 +213,18 @@ def fournier_forand(
     - with :math:`v = (3-μ)/2` and
       :math:`δ = (4 / (3*(n-1)**2))*sin(θ/2)**2`, where δ_180 is δ
       evaluated at θ = 180°
-    - By default the integral of F_FF(θ)dcosθ is equal to
-      1/(2*pi). The integral value can be different due to a very
-      low discretization of θ and/or a strong forward peak. The
-      use of the normalize parameter can be useful to renormalize
-      the phase function
-    - F_FF(θ) diverges as θ → 0: at θ = 0 the result is NaN/inf
-      (with numpy invalid-value warnings). Use a grid starting
-      above 0, or overwrite the forward peak values before
-      integrating
+    - By default the integral of F_FF(θ)dcosθ is equal to 1/(2*pi). The
+      integral value can be different due to a very low discretization
+      of θ and/or a strong forward peak. The use of the normalize
+      parameter can be useful to renormalize the phase function
+    - F_FF(θ) diverges as θ → 0: at θ = 0 the result is NaN/inf (with
+      numpy invalid-value warnings). Use a grid starting above 0, or
+      overwrite the forward peak values before integrating
 
     References
     ----------
-    Fournier, G. R., & Forand, J. L. (1994). Analytic phase
-    function for ocean water. In Ocean Optics XII (Vol. 2258,
-    pp. 194-201). SPIE.
+    Fournier, G. R., & Forand, J. L. (1994). Analytic phase function for
+    ocean water. In Ocean Optics XII (Vol. 2258, pp. 194-201). SPIE.
 
     Ocean Optics Web Book: https://www.oceanopticsbook.info
 
@@ -300,52 +289,50 @@ def calc_moments(
         The phase matrix angles, it must be 1-D. See the theta_unit
         parameter for the unit
     m_max : int
-        The maximum moment number to compute, i.e., compute m[0],
-        ..., m[m_max]
+        The maximum moment number to compute, i.e., compute m[0], ...,
+        m[m_max]
     method : str, optional
-        The method used to calculate the moments. Default is
-        'lobatto' (very efficient with a "gauss kind" theta
-        distribution), other choices are 'simpson' and 'trapezoid'
-        (efficient with a regular theta distribution, use the
-        scipy simpson and trapezoid functions)
+        The method used to calculate the moments. Default is 'lobatto'
+        (very efficient with a "gauss kind" theta distribution), other
+        choices are 'simpson' and 'trapezoid' (efficient with a regular
+        theta distribution, use the scipy simpson and trapezoid
+        functions)
     theta_unit : str, optional
-        The unit of the theta angles. Default is 'deg', other
-        choice is 'rad'
+        The unit of the theta angles. Default is 'deg', other choice is
+        'rad'
     normalize : bool, optional
-        If True, normalize such that the first moment is exactly
-        equal to 1. Default is False
+        If True, normalize such that the first moment is exactly equal
+        to 1. Default is False
     xk : ndarray or None, optional
         Force the Lobatto quadrature abscissas, it must be 1-D.
         Considered only if wk is also provided
     wk : ndarray or None, optional
-        Force the Lobatto weights, it must be 1-D. Considered only
-        if xk is also provided
+        Force the Lobatto weights, it must be 1-D. Considered only if xk
+        is also provided
     pl_costh : ndarray or None, optional
-        Force the Legendre polynomials values of cos(theta). The
-        2-D ndarray shape must be (m_max+1, len(theta))
+        Force the Legendre polynomials values of cos(theta). The 2-D
+        ndarray shape must be (m_max+1, len(theta))
 
     Returns
     -------
     ndarray
-        The computed phase moments, a 1-D ndarray of size
-        m_max + 1
+        The computed phase moments, a 1-D ndarray of size m_max + 1
 
     Notes
     -----
-    - See Eq. A2 in Wiscombe (1977) for the moment computation
-      using the Lobatto quadrature in [0,pi]
-    - For the Lobatto quadrature abscissas and weights calculation
-      see Michels (1963)
+    - See Eq. A2 in Wiscombe (1977) for the moment computation using the
+      Lobatto quadrature in [0,pi]
+    - For the Lobatto quadrature abscissas and weights calculation see
+      Michels (1963)
 
     References
     ----------
-    Michels, H. (1963). Abscissas and weight coefficients for
-    Lobatto quadrature. Mathematics of Computation, 17(83),
-    237-244.
+    Michels, H. (1963). Abscissas and weight coefficients for Lobatto
+    quadrature. Mathematics of Computation, 17(83), 237-244.
 
     Wiscombe, W. J. (1977). The delta-M method: Rapid yet accurate
-    radiative flux calculations for strongly asymmetric phase
-    functions. Journal of Atmospheric Sciences, 34(9), 1408-1422.
+    radiative flux calculations for strongly asymmetric phase functions.
+    Journal of Atmospheric Sciences, 34(9), 1408-1422.
 
     Examples
     --------
@@ -432,11 +419,11 @@ def calc_hg_moments(g: float, m_max: int) -> NDArray[np.float64]:
     Parameters
     ----------
     g : float
-        The Henyey-Greenstein parameter g (measures the asymmetry
-        of the phase matrix)
+        The Henyey-Greenstein parameter g (measures the asymmetry of the
+        phase matrix)
     m_max : int
-        The maximum moment number to compute, i.e., compute m[0],
-        ..., m[m_max]
+        The maximum moment number to compute, i.e., compute m[0], ...,
+        m[m_max]
 
     Returns
     -------
@@ -445,10 +432,9 @@ def calc_hg_moments(g: float, m_max: int) -> NDArray[np.float64]:
 
     References
     ----------
-    Kattawar, G. W. (1975). A three-parameter analytic phase
-    function for multiple scattering calculations. Journal of
-    Quantitative Spectroscopy and Radiative Transfer, 15(9),
-    839-849.
+    Kattawar, G. W. (1975). A three-parameter analytic phase function
+    for multiple scattering calculations. Journal of Quantitative
+    Spectroscopy and Radiative Transfer, 15(9), 839-849.
 
     Examples
     --------
@@ -477,8 +463,8 @@ def calc_tthg_moments(
     f : float
         The fraction parameter between the two H-G terms
     m_max : int
-        The maximum moment number to compute, i.e., compute m[0],
-        ..., m[m_max]
+        The maximum moment number to compute, i.e., compute m[0], ...,
+        m[m_max]
 
     Returns
     -------
@@ -487,10 +473,9 @@ def calc_tthg_moments(
 
     References
     ----------
-    Kattawar, G. W. (1975). A three-parameter analytic phase
-    function for multiple scattering calculations. Journal of
-    Quantitative Spectroscopy and Radiative Transfer, 15(9),
-    839-849.
+    Kattawar, G. W. (1975). A three-parameter analytic phase function
+    for multiple scattering calculations. Journal of Quantitative
+    Spectroscopy and Radiative Transfer, 15(9), 839-849.
 
     Examples
     --------

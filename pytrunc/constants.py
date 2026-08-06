@@ -1,8 +1,8 @@
 """
 Package-level constants.
 
-This module defines the pytrunc root directory and the pytrunc
-version, automatically read from the pyproject toml file.
+This module defines the pytrunc root directory and the pytrunc version,
+automatically read from the pyproject toml file.
 """
 
 import tomllib

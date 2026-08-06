@@ -2,7 +2,6 @@ __pycache__/
 *.py[cod]
 *.egg-info/
 .pixi/
-pixi.lock
 docs/_build/
 # notebooks generated from the docs/_notebooks percent scripts
 docs/*.ipynb

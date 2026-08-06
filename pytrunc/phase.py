@@ -164,13 +164,13 @@ def two_term_henyey_greenstein(
     array([5.88997629, 0.01200253, 0.08271639])
     """
 
-    F_HG1 = henyey_greenstein(
+    f_hg1 = henyey_greenstein(
         theta=theta, g=g1, theta_unit=theta_unit, normalize=normalize
     )
-    F_HG2 = henyey_greenstein(
+    f_hg2 = henyey_greenstein(
         theta=theta, g=g2, theta_unit=theta_unit, normalize=normalize
     )
-    phase = f * F_HG1 + (1 - f) * F_HG2
+    phase = f * f_hg1 + (1 - f) * f_hg2
 
     return phase
 

@@ -64,16 +64,16 @@ def legendre_polynomials(n: int, x: ArrayLike) -> NDArray[np.float64]:
     if n == 1:
         return x
 
-    P0 = np.ones_like(x)
-    P1 = x
+    p0 = np.ones_like(x)
+    p1 = x
 
-    Pnm1 = P0.copy()
-    Pn = P1.copy()
+    pnm1 = p0.copy()
+    pn = p1.copy()
     for k in range(1, n):
-        Pnp1 = (1.0 / (k + 1)) * ((2 * k + 1) * x * Pn - k * Pnm1)
-        Pnm1, Pn = Pn, Pnp1
+        pnp1 = (1.0 / (k + 1)) * ((2 * k + 1) * x * pn - k * pnm1)
+        pnm1, pn = pn, pnp1
 
-    return Pnp1
+    return pnp1
 
 
 def legendre_polynomials_derivative(
@@ -128,16 +128,16 @@ def legendre_polynomials_derivative(
     if n == 1:
         return np.ones_like(x)
 
-    P0_p = np.zeros_like(x)
-    P1_p = np.ones_like(x)
+    p0_p = np.zeros_like(x)
+    p1_p = np.ones_like(x)
 
-    Pnm1_p = P0_p.copy()
-    Pn_p = P1_p.copy()
+    pnm1_p = p0_p.copy()
+    pn_p = p1_p.copy()
     for k in range(1, n):
-        Pnp1_p = (1.0 / k) * ((2 * k + 1) * x * Pn_p - (k + 1) * Pnm1_p)
-        Pnm1_p, Pn_p = Pn_p, Pnp1_p
+        pnp1_p = (1.0 / k) * ((2 * k + 1) * x * pn_p - (k + 1) * pnm1_p)
+        pnm1_p, pn_p = pn_p, pnp1_p
 
-    return Pnp1_p
+    return pnp1_p
 
 
 def legendre_polynomials_second_derivative(
@@ -196,18 +196,18 @@ def legendre_polynomials_second_derivative(
     if n == 2:
         return np.full_like(x, 3)
 
-    P1_pp = np.zeros_like(x)
-    P2_pp = np.full_like(x, 3)
+    p1_pp = np.zeros_like(x)
+    p2_pp = np.full_like(x, 3)
 
-    Pnm1_pp = P1_pp.copy()
-    Pn_pp = P2_pp.copy()
+    pnm1_pp = p1_pp.copy()
+    pn_pp = p2_pp.copy()
     for k in range(2, n):
-        Pnp1_pp = (1.0 / (k - 1)) * (
-            (2 * k + 1) * x * Pn_pp - (k + 2) * Pnm1_pp
+        pnp1_pp = (1.0 / (k - 1)) * (
+            (2 * k + 1) * x * pn_pp - (k + 2) * pnm1_pp
         )
-        Pnm1_pp, Pn_pp = Pn_pp, Pnp1_pp
+        pnm1_pp, pn_pp = pn_pp, pnp1_pp
 
-    return Pnp1_pp
+    return pnp1_pp
 
 
 def bessel_j1(
@@ -606,8 +606,8 @@ def _quadrature_lobatto_standard(
 
     weights = np.zeros_like(abscissas)
     weights[0] = weights[-1] = 2.0 / (n * (n - 1.0))
-    Pnm1 = legendre_polynomials(n - 1, abscissas[1:-1])
-    weights[1:-1] = weights[0] / (Pnm1**2)
+    pnm1 = legendre_polynomials(n - 1, abscissas[1:-1])
+    weights[1:-1] = weights[0] / (pnm1**2)
 
     abscissas.flags.writeable = False
     weights.flags.writeable = False

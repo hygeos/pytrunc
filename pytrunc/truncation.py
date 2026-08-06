@@ -413,7 +413,7 @@ def gt_phase_approx(
         if method == "lobatto":
             th2 = theta[id_f:]
 
-            Pf_tmp = (
+            pf_tmp = (
                 2
                 - (1.0 / (1 - f))
                 * integrate_m(
@@ -426,7 +426,7 @@ def gt_phase_approx(
         else:
             mu2 = mu[id_f:]
             idmu2 = np.argsort(mu2)
-            Pf_tmp = (
+            pf_tmp = (
                 2
                 - (1.0 / (1 - f))
                 * integrate_m(phase[id_f:][idmu2], mu2[idmu2])
@@ -436,7 +436,7 @@ def gt_phase_approx(
 
         pha_star = np.zeros_like(phase, dtype=np.float64)
         pha_star[id_f:] = phase[id_f:]
-        pha_star[0:id_f] = Pf_tmp
+        pha_star[0:id_f] = pf_tmp
         pha_star *= 1.0 / (1 - f)
 
         if method == "lobatto":
@@ -475,7 +475,7 @@ def gt_phase_approx(
         if method == "lobatto":
             # th1 = theta[0:2]
             th2 = theta[1:]
-            Pf = (
+            pf = (
                 2 - (1.0 / (1 - f)) * integrate_m(phase[1:] * sin_th[1:], th2)
             ) / (
                 (1.0 / (1 - f)) * (np.max(mu1) - np.min(mu1))
@@ -484,13 +484,13 @@ def gt_phase_approx(
             # idmu1 = np.argsort(mu1)
             mu2 = mu[1:]
             idmu2 = np.argsort(mu2)
-            Pf = (
+            pf = (
                 2 - (1.0 / (1 - f)) * integrate_m(phase[1:][idmu2], mu2[idmu2])
             ) / (
                 (1.0 / (1 - f)) * (np.max(mu1) - np.min(mu1))
             )  # integrate_m(np.ones_like(mu1), mu1[idmu1]))
         pha_star[1:] = phase[1:]
-        pha_star[0:1] = Pf
+        pha_star[0:1] = pf
         pha_star *= 1.0 / (1 - f)
 
         if method == "lobatto":
@@ -520,7 +520,7 @@ def gt_phase_approx(
             if theta[id] >= th_tol:
                 break
 
-            # Find Pf:
+            # Find pf:
             # normalization condition between 0 and π ->
             # ∫ P*(θ) sin(θ) dθ = 2
             mu1 = mu[0 : id + 1]
@@ -536,7 +536,7 @@ def gt_phase_approx(
                     xk_ = abscissa_min + (xk - xk_min) * alpha
                     wk_ = wk * alpha
 
-                    Pf_tmp = (
+                    pf_tmp = (
                         2
                         - (1.0 / (1 - f))
                         * integrate_m(
@@ -550,7 +550,7 @@ def gt_phase_approx(
                         (1.0 / (1 - f)) * (np.max(mu1) - np.min(mu1))
                     )  # integrate_m(sin_th[0:id+1], th1))
                 else:
-                    Pf_tmp = (
+                    pf_tmp = (
                         2
                         - (1.0 / (1 - f))
                         * integrate_m(
@@ -566,7 +566,7 @@ def gt_phase_approx(
                 # idmu1 = np.argsort(mu1)
                 mu2 = mu[id:]
                 idmu2 = np.argsort(mu2)
-                Pf_tmp = (
+                pf_tmp = (
                     2
                     - (1.0 / (1 - f))
                     * integrate_m(phase[id:][idmu2], mu2[idmu2])
@@ -574,12 +574,12 @@ def gt_phase_approx(
                     (1.0 / (1 - f)) * (np.max(mu1) - np.min(mu1))
                 )  # integrate_m(np.ones_like(mu1), mu1[idmu1]))
 
-            if np.isnan(Pf_tmp) or np.isinf(Pf_tmp):
+            if np.isnan(pf_tmp) or np.isinf(pf_tmp):
                 continue
 
             pha_star_tmp = np.zeros_like(phase, dtype=np.float64)
             pha_star_tmp[id:] = phase[id:]
-            pha_star_tmp[0:id] = Pf_tmp
+            pha_star_tmp[0:id] = pf_tmp
             pha_star_tmp *= 1.0 / (1 - f)
 
             if method == "lobatto":

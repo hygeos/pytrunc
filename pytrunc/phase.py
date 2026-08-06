@@ -9,6 +9,7 @@ Henyey-Greenstein family.
 """
 
 import math
+import warnings
 
 import numpy as np
 from numpy.typing import ArrayLike, NDArray
@@ -357,9 +358,11 @@ def calc_moments(
         )
 
     if theta[0] < 0 or theta[-1] > np.pi:
-        print(
+        warnings.warn(
             "The range of theta must be [0, π] (rad unit) or [0,180] "
-            "(deg unit)"
+            "(deg unit)",
+            UserWarning,
+            stacklevel=2,
         )
 
     # initialize moments

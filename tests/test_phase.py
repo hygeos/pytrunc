@@ -24,8 +24,8 @@ def backscatter_fraction(n: float, mu: float) -> float:
 @pytest.mark.parametrize("n,mu", FF_PARAMS)
 def test_backscatter_fraction(n: float, mu: float) -> None:
     # The bare formula integrates to 1 over the sphere by construction,
-    # so the integral over the backward hemisphere equals B directly
-    # (no need to integrate the divergent forward peak).
+    # so the integral over the backward hemisphere equals B directly (no
+    # need to integrate the divergent forward peak).
     theta = np.linspace(np.pi / 2, np.pi, 20001)
     phase = fournier_forand(theta, n, mu, theta_unit="rad")
     b_num = 2 * np.pi * simpson(phase * np.sin(theta), x=theta)

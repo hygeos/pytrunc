@@ -1,5 +1,5 @@
-"""Shared test case definitions for the gt_phase_approx
-regression tests."""
+"""Shared test case definitions for the gt_phase_approx regression
+tests."""
 
 from typing import Any
 

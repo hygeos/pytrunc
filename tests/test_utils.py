@@ -64,8 +64,8 @@ def test_rescaled_interval() -> None:
 
 
 def test_returned_arrays_are_writable_and_independent() -> None:
-    # Mutating a result must not corrupt later calls (guards the
-    # node cache)
+    # Mutating a result must not corrupt later calls (guards the node
+    # cache)
     xk1, wk1 = quadrature_lobatto(n=20)
     xk1[:] = 0.0
     wk1[:] = 0.0

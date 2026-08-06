@@ -538,6 +538,23 @@ def gt_phase_approx(
             xk_min = float(np.min(xk))
             xk_span = float(np.max(xk)) - xk_min
 
+        # loop invariants, hoisted out of the search loop
+        inv_1mf = 1.0 / (1 - f)
+        # for a sorted theta in [0, π], mu = cos(theta) is strictly
+        # decreasing: the per-iteration min/max reductions reduce to
+        # direct indexing and the argsorts of the mu slices to simple
+        # reversals (views, no copies)
+        sorted_th = bool(np.all(np.diff(theta) >= 0))
+        descending = bool(np.all(np.diff(mu) < 0))
+        if method == "lobatto":
+            phase_sin = phase * sin_th
+        else:
+            mu_sorted = mu[idmu]
+        # scratch buffer of the candidate phase: the [id:] tail always
+        # equals phase/(1 - f), only the [0:id] plateau changes across
+        # the iterations (and each write covers the previous one)
+        pha_star_scratch = phase * inv_1mf
+
         for id in range(1, len(phase) - 2):
             if theta[id] >= th_tol:
                 break
@@ -545,64 +562,70 @@ def gt_phase_approx(
             # Find pf:
             # normalization condition between 0 and π ->
             # ∫ P*(θ) sin(θ) dθ = 2
-            mu1 = mu[0 : id + 1]
+            if descending:
+                dmu1 = mu[0] - mu[id]
+            else:
+                mu1 = mu[0 : id + 1]
+                dmu1 = np.max(mu1) - np.min(mu1)
             if method == "lobatto":
-                # th1 = theta[0:id+1]
                 th2 = theta[id:]
 
                 # rescale of xk and wk in the tmp interval
                 if lobatto_optimization:
-                    abscissa_min = np.min(th2)
-                    abscissa_max = np.max(th2)
+                    if sorted_th:
+                        abscissa_min = theta[id]
+                        abscissa_max = theta[-1]
+                    else:
+                        abscissa_min = np.min(th2)
+                        abscissa_max = np.max(th2)
                     alpha = (abscissa_max - abscissa_min) / xk_span
                     xk_ = abscissa_min + (xk - xk_min) * alpha
                     wk_ = wk * alpha
 
                     pf_tmp = (
                         2
-                        - (1.0 / (1 - f))
+                        - inv_1mf
                         * integrate_m(
-                            phase[id:] * sin_th[id:],
+                            phase_sin[id:],
                             th2,
                             xk=xk_,
                             wk=wk_,
                             assume_sorted=True,
                         )
                     ) / (
-                        (1.0 / (1 - f)) * (np.max(mu1) - np.min(mu1))
+                        inv_1mf * dmu1
                     )  # integrate_m(sin_th[0:id+1], th1))
                 else:
                     pf_tmp = (
                         2
-                        - (1.0 / (1 - f))
+                        - inv_1mf
                         * integrate_m(
-                            phase[id:] * sin_th[id:],
+                            phase_sin[id:],
                             th2,
                             lp=len(th2),
                             assume_sorted=True,
                         )
                     ) / (
-                        (1.0 / (1 - f)) * (np.max(mu1) - np.min(mu1))
+                        inv_1mf * dmu1
                     )  # integrate_m(sin_th[0:id+1], th1))
             else:
-                # idmu1 = np.argsort(mu1)
-                mu2 = mu[id:]
-                idmu2 = np.argsort(mu2)
-                pf_tmp = (
-                    2
-                    - (1.0 / (1 - f))
-                    * integrate_m(phase[id:][idmu2], mu2[idmu2])
-                ) / (
-                    (1.0 / (1 - f)) * (np.max(mu1) - np.min(mu1))
+                if descending:
+                    phase2_s = phase[id:][::-1]
+                    mu2_s = mu[id:][::-1]
+                else:
+                    mu2 = mu[id:]
+                    idmu2 = np.argsort(mu2)
+                    phase2_s = phase[id:][idmu2]
+                    mu2_s = mu2[idmu2]
+                pf_tmp = (2 - inv_1mf * integrate_m(phase2_s, mu2_s)) / (
+                    inv_1mf * dmu1
                 )  # integrate_m(np.ones_like(mu1), mu1[idmu1]))
 
             if np.isnan(pf_tmp) or np.isinf(pf_tmp):
                 continue
 
-            pha_star_tmp = np.zeros_like(phase, dtype=np.float64)
-            pha_star_tmp[id:] = phase[id:]
-            pha_star_tmp[0:id] = pf_tmp
-            pha_star_tmp *= 1.0 / (1 - f)
+            pha_star_tmp = pha_star_scratch
+            pha_star_tmp[0:id] = pf_tmp * inv_1mf
 
             if method == "lobatto":
                 pha_star_tmp = (2 * pha_star_tmp) / integrate_m(
@@ -624,8 +647,13 @@ def gt_phase_approx(
                     pl_costh=lp_costh,
                 )[1]
             else:
+                pha_star_sorted = (
+                    pha_star_tmp[::-1]
+                    if descending
+                    else pha_star_tmp[idmu]
+                )
                 pha_star_tmp = (2 * pha_star_tmp) / integrate_m(
-                    pha_star_tmp[idmu], mu[idmu]
+                    pha_star_sorted, mu_sorted
                 )
                 chi_star_1_approx_tmp = calc_moments(
                     pha_star_tmp,

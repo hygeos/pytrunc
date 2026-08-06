@@ -383,7 +383,10 @@ def calc_moments(
             # recomputed from degree 0 at each degree
             pnm1 = np.ones_like(mu)
             pn = mu
-        sin_th = np.sin(theta)
+        phase_sin = phase * np.sin(theta)
+        # detect the sortedness once, so that integrate_lobatto skips
+        # its per-degree argsort and index copies
+        sorted_th = bool(np.all(np.diff(theta) >= 0))
 
         for deg in range(m_max + 1):
             if pl_costh is None:
@@ -400,13 +403,19 @@ def calc_moments(
             else:
                 pl_mu = pl_costh[deg]
             chi[deg] = 0.5 * integrate_lobatto(
-                phase * sin_th * pl_mu, theta, xk=xk, wk=wk
+                phase_sin * pl_mu,
+                theta,
+                xk=xk,
+                wk=wk,
+                assume_sorted=sorted_th,
             )
 
     else:
         mu = np.cos(theta)
         idmu = np.argsort(mu)
         mu_s = mu[idmu]
+        phase_s = phase[idmu]
+        integ = simpson if method == "simpson" else trapezoid
         # incremental Legendre recurrence, as in the lobatto branch
         pnm1 = np.ones_like(mu_s)
         pn = mu_s
@@ -424,10 +433,7 @@ def calc_moments(
                     pnm1, pn = pn, pl_mu
             else:
                 pl_mu = pl_costh[deg][idmu]
-            if method == "simpson":
-                chi[deg] = 0.5 * simpson(phase[idmu] * pl_mu, x=mu_s)
-            elif method == "trapezoid":
-                chi[deg] = 0.5 * trapezoid(phase[idmu] * pl_mu, x=mu_s)
+            chi[deg] = 0.5 * integ(phase_s * pl_mu, x=mu_s)
 
     # normalization
     if normalize:

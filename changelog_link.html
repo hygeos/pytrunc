@@ -1,0 +1,626 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Releases &#8212; Pytrunc 2.1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="_static/documentation_options.js?v=20623aea"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'changelog_link';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="pytrunc.utils module" href="pytrunc.utils.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="light">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+    
+    
+    
+    <img src="_static/pytrunc-logo-horizontal-light-bg.png" class="logo__image only-light" alt="Pytrunc 2.1.0 documentation - Home"/>
+    <img src="_static/pytrunc-logo-horizontal-dark-bg.png" class="logo__image only-dark pst-js-only" alt="Pytrunc 2.1.0 documentation - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks.html">
+    Notebooks
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="pytrunc.html">
+    Pytrunc package
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="#">
+    Releases
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks.html">
+    Notebooks
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="pytrunc.html">
+    Pytrunc package
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="#">
+    Releases
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"></div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Releases</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="releases">
+<h1>Releases<a class="headerlink" href="#releases" title="Link to this heading">#</a></h1>
+<section id="pytrunc-changelog">
+<h2>PYTRUNC CHANGELOG<a class="headerlink" href="#pytrunc-changelog" title="Link to this heading">#</a></h2>
+<section id="v2-1-0">
+<h3>v2.1.0<a class="headerlink" href="#v2-1-0" title="Link to this heading">#</a></h3>
+<p>Release date: 30-09-2026</p>
+<section id="new-features">
+<h4>New features<a class="headerlink" href="#new-features" title="Link to this heading">#</a></h4>
+<ul class="simple">
+<li><p>Add the continuous plateau to <code class="docutils literal notranslate"><span class="pre">gt_phase_approx</span></code>: with
+<code class="docutils literal notranslate"><span class="pre">trunc_frac=None</span></code> and an imposed angle <code class="docutils literal notranslate"><span class="pre">th_f</span></code>, the phase matrix is cut
+flat at its value at <code class="docutils literal notranslate"><span class="pre">th_f</span></code> and the truncation fraction follows from
+that continuity (returned in <code class="docutils literal notranslate"><span class="pre">f</span></code>; the new output variable <code class="docutils literal notranslate"><span class="pre">trunc_frac</span></code>
+echoes the parameter, None in that case). Imposing both <code class="docutils literal notranslate"><span class="pre">trunc_frac</span></code>
+and <code class="docutils literal notranslate"><span class="pre">th_f</span></code> sets the plateau by the normalization instead, in general
+not continuous: 2.5 times the truncated phase matrix at 5 degrees for
+Fournier-Forand (n = 1.10, mu = 3.5) and <code class="docutils literal notranslate"><span class="pre">trunc_frac=0.3</span></code>, where the
+continuous plateau takes f = 0.467. The docstring Notes describe the
+three ways the angle, the fraction and the plateau set each other</p></li>
+</ul>
+</section>
+<section id="other-changes">
+<h4>Other changes<a class="headerlink" href="#other-changes" title="Link to this heading">#</a></h4>
+<ul class="simple">
+<li><p>Fix the truncation angle search of <code class="docutils literal notranslate"><span class="pre">gt_phase_approx</span></code>, which could
+return a truncated phase matrix with a negative plateau: for a peak as
+sharp as Fournier-Forand’s, the first moment matches best at angles
+within which the peak holds less than the fraction <code class="docutils literal notranslate"><span class="pre">trunc_frac</span></code> of the
+scattering, where the plateau is negative (-445 at 1.1 degree for
+n = 1.10, mu = 3.5, <code class="docutils literal notranslate"><span class="pre">trunc_frac=0.3</span></code> and the trapezoid rule). The
+search now skips them, and raises a ValueError when no angle below
+<code class="docutils literal notranslate"><span class="pre">th_tol</span></code> leaves a non-negative plateau. An imposed angle (<code class="docutils literal notranslate"><span class="pre">th_f</span></code>) is
+unchanged. The searched references of the two-term Henyey-Greenstein
+test case, whose plateaus were negative, are regenerated</p></li>
+</ul>
+</section>
+</section>
+<section id="v2-0-0">
+<h3>v2.0.0<a class="headerlink" href="#v2-0-0" title="Link to this heading">#</a></h3>
+<p>Release date: 06-08-2026</p>
+<section id="breaking-changes">
+<h4>Breaking changes<a class="headerlink" href="#breaking-changes" title="Link to this heading">#</a></h4>
+<ul class="simple">
+<li><p>Rename the <code class="docutils literal notranslate"><span class="pre">constant</span></code> module to <code class="docutils literal notranslate"><span class="pre">constants</span></code>, for consistency with the
+geoclide package. The imports become <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">pytrunc.constants</span> <span class="pre">import</span> <span class="pre">VERSION</span></code> and <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">pytrunc.constants</span> <span class="pre">import</span> <span class="pre">DIR_ROOT</span></code></p></li>
+<li><p>Fix <code class="docutils literal notranslate"><span class="pre">delta_m_phase_approx</span></code> ignoring its <code class="docutils literal notranslate"><span class="pre">method</span></code> parameter: the
+moments were always computed with the calc_moments default ‘lobatto’,
+whatever the caller asked. The moments now honor <code class="docutils literal notranslate"><span class="pre">method</span></code>, so the
+results change slightly, including with the default ‘trapezoid’ (the
+docstring example f value moves from 0.27248273 to 0.27250572)</p></li>
+</ul>
+</section>
+<section id="id1">
+<h4>Other changes<a class="headerlink" href="#id1" title="Link to this heading">#</a></h4>
+<ul class="simple">
+<li><p>Fix the <code class="docutils literal notranslate"><span class="pre">bessel_j1</span></code> large-x branch: it indexed the wrong mask and
+raised a ValueError for any input containing x &gt; 35. The branch now
+uses Hankel’s asymptotic expansion (Abramowitz &amp; Stegun eq. 9.4.6),
+accurate to ~1e-10; the x &lt;= 35 series is unchanged</p></li>
+<li><p>Replace the bare print of <code class="docutils literal notranslate"><span class="pre">calc_moments</span></code> on an out-of-range theta
+with a <code class="docutils literal notranslate"><span class="pre">warnings.warn</span></code> (UserWarning)</p></li>
+<li><p>Performance pass, bit-identical results (verified bitwise against a
+122-array reference of gt_phase_approx, delta_m_phase_approx,
+calc_moments and quadrature_lobatto outputs):</p>
+<ul>
+<li><p>Advance the three-term Legendre recurrence incrementally across the
+moment loops of <code class="docutils literal notranslate"><span class="pre">calc_moments</span></code> and <code class="docutils literal notranslate"><span class="pre">delta_m_phase_approx</span></code> instead
+of restarting it from degree 0 at each degree (O(m_max²) → O(m_max)
+recurrence work): calc_moments is ~30x faster at m_max=256 and
+delta_m_phase_approx ~18x at m_max=128</p></li>
+<li><p>Hoist the loop invariants out of the <code class="docutils literal notranslate"><span class="pre">gt_phase_approx</span></code> truncation
+angle search (phase×sinθ product, min/max reductions on monotone
+slices, argsorts replaced by reversal views, a reused scratch
+buffer for the candidate phase, sortedness detection so that
+integrate_lobatto skips its per-call argsort): the search is
+~1.2-1.4x faster depending on the method</p></li>
+<li><p>Fuse the first and second derivative Legendre recurrences of the
+Lobatto node solve into one loop (<code class="docutils literal notranslate"><span class="pre">_legendre_dp_d2p</span></code>)</p></li>
+</ul>
+</li>
+<li><p>Remove dead code and redundant work: an always-true condition in the
+gt_phase_approx winner test, a duplicate allocation, defensive copies
+that protected nothing (<code class="docutils literal notranslate"><span class="pre">.copy()</span></code> on freshly allocated arrays and on
+multiplication results), a duplicated phase-size check, scalar
+conditions expressed as np.where, and a wrong error message in
+bessel_jn (“x must be &gt;= 1” for a x &lt; 0 check)</p></li>
+<li><p>Deduplicate repeated blocks: the theta_unit validation (4 copies →
+<code class="docutils literal notranslate"><span class="pre">_theta_to_rad</span></code>), the Dirac normalization of the two truncation
+methods (→ <code class="docutils literal notranslate"><span class="pre">_dirac_delta_part</span></code>, with its wrong “sin(pi) = 0” comment
+corrected to sin(0) = 0), the Henyey-Greenstein kernel of the
+two-term variant (→ <code class="docutils literal notranslate"><span class="pre">_hg_from_mu</span></code>, converting theta and sorting mu
+once), <code class="docutils literal notranslate"><span class="pre">calc_tthg_moments</span></code> reusing <code class="docutils literal notranslate"><span class="pre">calc_hg_moments</span></code>, and the three
+copies of the truncation candidate evaluation in gt_phase_approx
+(forced th_f mode, search seed and search loop → one local closure).
+An unknown <code class="docutils literal notranslate"><span class="pre">method</span></code> now raises a ValueError instead of a KeyError</p></li>
+<li><p>Use lowercase names for the local mathematical variables, following the
+PEP 8 naming conventions: <code class="docutils literal notranslate"><span class="pre">P0</span></code>, <code class="docutils literal notranslate"><span class="pre">P1</span></code>, <code class="docutils literal notranslate"><span class="pre">Pn</span></code>, <code class="docutils literal notranslate"><span class="pre">Pnm1</span></code>, <code class="docutils literal notranslate"><span class="pre">Pnp1</span></code> and their
+derivative variants in the utils module, <code class="docutils literal notranslate"><span class="pre">Pf</span></code> and <code class="docutils literal notranslate"><span class="pre">Pf_tmp</span></code> in the
+truncation module, and <code class="docutils literal notranslate"><span class="pre">F_HG1</span></code> and <code class="docutils literal notranslate"><span class="pre">F_HG2</span></code> in the phase module. The
+mathematical notation of the docstrings is unchanged, and the ruff
+configuration now selects the pep8-naming rules</p></li>
+<li><p>Reflow the docstrings and comments of every module, filling the
+72-column budget instead of only enforcing it, add docstrings to the
+private integrator wrappers of the truncation module, and shorten the
+Ocean Optics Web Book references so that they fit in the limit</p></li>
+<li><p>Commit the pixi lock file, previously ignored: the tests and docs
+workflows install the environment from it, and failed at the pixi setup
+step without it</p></li>
+<li><p>Add the pytrunc logo, in a light and a dark variant, at the top of the
+README and in the documentation sidebar, both following the light/dark
+theme</p></li>
+<li><p>Add a documentation landing page (docs/introduction.md, included in
+index.rst) presenting the features, a quickstart and the contents of
+the documentation</p></li>
+<li><p>Improve the README: features, installation, quickstart, examples,
+documentation and license sections, and badges for the tests, the
+documentation, the license, pixi and ruff</p></li>
+<li><p>Add a GitHub workflow running ruff, and lint the documentation
+configuration and notebook sources accordingly</p></li>
+<li><p>Add the <code class="docutils literal notranslate"><span class="pre">fournier_forand</span></code> phase function to the phase module, following
+the same conventions as <code class="docutils literal notranslate"><span class="pre">henyey_greenstein</span></code> (theta_unit and normalize
+parameters), with a direct unit test suite (tests/test_phase.py)</p></li>
+<li><p>Docstring convention pass aligned with the geoclide package: 72-column
+docstring limit enforced by ruff (max-doc-length), numpydoc style with
+Examples sections on all public functions, unified References format,
+and module descriptions in every module including the test modules</p></li>
+<li><p>Modernize the license metadata: SPDX expression (license = “Apache-2.0”)
+with license-files, rename LICENSE.TXT to LICENSE.txt, remove the
+deprecated license classifier and require setuptools &gt;= 77</p></li>
+</ul>
+</section>
+</section>
+<section id="v1-1-0">
+<h3>v1.1.0<a class="headerlink" href="#v1-1-0" title="Link to this heading">#</a></h3>
+<p>Release date: 31-07-2026</p>
+<ul class="simple">
+<li><p>Major speed-up of the <code class="docutils literal notranslate"><span class="pre">gt_phase_approx</span></code> function with method=’lobatto’</p>
+<ul>
+<li><p>The Lobatto quadrature abscissas and weights are now cached, avoiding
+the expensive node computation at each call</p></li>
+<li><p>Faster interpolation in <code class="docutils literal notranslate"><span class="pre">integrate_lobatto</span></code></p></li>
+<li><p>The parameter lobatto_optimization is now True by default</p></li>
+</ul>
+</li>
+<li><p>Fix scipy &gt;= 1.14 compatibility (the x argument of the scipy simpson
+function became keyword-only)</p></li>
+<li><p>Fix an UnboundLocalError in <code class="docutils literal notranslate"><span class="pre">gt_phase_approx</span></code> when the truncation angle
+search does not improve on its starting point</p></li>
+<li><p>Add a pytest regression test suite (tests directory)</p></li>
+<li><p>Add a GitHub workflow for automatic publishing to PyPI on version tags</p></li>
+<li><p>Code modernization: type hints in all modules, ruff lint + format
+(line length 79), pyright clean, docstrings and comments reflowed to
+72 columns</p></li>
+</ul>
+</section>
+<section id="v1-0-1">
+<h3>v1.0.1<a class="headerlink" href="#v1-0-1" title="Link to this heading">#</a></h3>
+<p>Release date: 06-02-2026</p>
+<ul class="simple">
+<li><p>Modify python minimum version to 3.11</p></li>
+<li><p>VERSION constant automatically read from pyproject toml file</p></li>
+<li><p>Add missing information to pyproject toml file</p></li>
+</ul>
+</section>
+<section id="v1-0-0">
+<h3>v1.0.0<a class="headerlink" href="#v1-0-0" title="Link to this heading">#</a></h3>
+<p>Release date: 06-02-2026</p>
+<ul class="simple">
+<li><p>First release</p></li>
+</ul>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="pytrunc.utils.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">pytrunc.utils module</p>
+      </div>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pytrunc-changelog">PYTRUNC CHANGELOG</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#v2-1-0">v2.1.0</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#new-features">New features</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#other-changes">Other changes</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#v2-0-0">v2.0.0</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#breaking-changes">Breaking changes</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Other changes</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#v1-1-0">v1.1.0</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#v1-0-1">v1.0.1</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#v1-0-0">v1.0.0</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/changelog_link.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, Pytrunc team.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

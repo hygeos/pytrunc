@@ -10,6 +10,7 @@ from cases import CASES, PHASES, THETA_DEG, TRUNC_FRAC
 from numpy.typing import NDArray
 from scipy.integrate import simpson, trapezoid
 
+from pytrunc.phase import fournier_forand
 from pytrunc.truncation import gt_phase_approx
 from pytrunc.utils import integrate_lobatto
 
@@ -116,11 +117,15 @@ def test_invariants(
         pha_approx[2:], (1 - f) * pha_star[2:], rtol=1e-12
     )
 
-    # everything finite (note: the plateau P_F may legitimately be
-    # negative when trunc_frac is larger than the energy of the
-    # truncated peak, and the simpson-normalized dirac spike may be
-    # negative on non-uniform mu)
+    # everything finite (note: with an imposed angle, the plateau P_F
+    # may legitimately be negative when trunc_frac is larger than the
+    # energy of the truncated peak, and the simpson-normalized dirac
+    # spike may be negative on non-uniform mu)
     assert np.all(np.isfinite(pha_approx))
+
+    # a searched angle leaves a non-negative plateau
+    if "th_f" not in kwargs:
+        assert pha_star[0] >= 0.0
 
 
 def test_forced_angle_is_respected(
@@ -141,3 +146,44 @@ def test_searched_angle_below_tolerance(
     )
     assert isinstance(ds, xr.Dataset)
     assert 0.0 < float(ds["theta_f"]) < 20.0
+
+
+
+def _fournier_forand(n: float, mu: float) -> NDArray[np.float64]:
+    """Fournier-Forand on THETA_DEG, normalized to 2.
+
+    Its value at 0 degree, 0/0, is replaced by the one at the next
+    angle; the normalization is the trapezoid rule in theta.
+    """
+    with np.errstate(divide="ignore", invalid="ignore"):
+        phase = fournier_forand(THETA_DEG, n=n, mu=mu)
+    phase[0] = phase[1]
+    theta = np.deg2rad(THETA_DEG)
+    return 2.0 * phase / trapezoid(phase * np.sin(theta), x=theta)
+
+
+@pytest.mark.parametrize("method", ["trapezoid", "simpson", "lobatto"])
+def test_search_skips_negative_plateaus(method: str) -> None:
+    """The searched angle leaves a non-negative plateau.
+
+    Within the sharp peak of Fournier-Forand, the first moment matches
+    best at angles within which the peak holds less than trunc_frac of
+    the scattering, where the plateau is negative: pytrunc 2.0.0
+    returned a plateau of -445 at 1.1 degree with the trapezoid rule.
+    """
+    ds = gt_phase_approx(
+        _fournier_forand(1.10, 3.5), THETA_DEG, 0.3, method=method
+    )
+    assert isinstance(ds, xr.Dataset)
+    assert np.all(ds["phase_tr"].values >= 0.0)
+
+
+def test_search_without_valid_angle_raises(
+    phases: dict[str, NDArray[np.float64]],
+) -> None:
+    """Within 5 degrees the tthg peak holds less than 10 % of the
+    scattering: no angle leaves a non-negative plateau for 0.5."""
+    with pytest.raises(ValueError, match="non-negative plateau"):
+        gt_phase_approx(
+            phases["tthg"], THETA_DEG, 0.5, method="trapezoid", th_tol=5.0
+        )

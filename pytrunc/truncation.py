@@ -317,11 +317,16 @@ def gt_phase_approx(
     th_tol : float or None, optional
         While finding matching moments for Pf we look between 0 and
         th_tol. The unit depends on the theta_unit parameter. Default is
-        None, meaning th_tol is equal to pi/2
+        None, meaning th_tol is equal to pi/2. Only the angles within
+        which the forward peak holds at least the fraction trunc_frac
+        of the scattering are candidates, the others leaving a negative
+        plateau: a ValueError is raised if there is none below th_tol
     th_f : float or None, optional
         Impose the truncation angle. The unit depends on the theta_unit
         parameter. Default is None, meaning the truncation angle is
-        searched
+        searched. The plateau is then the one the normalization gives,
+        negative if the forward peak within th_f holds less than the
+        fraction trunc_frac of the scattering
     lobatto_optimization : bool, optional
         Whether to use lobatto optimization for integration (reuse the
         full-grid Lobatto quadrature, affinely rescaled to the
@@ -582,12 +587,20 @@ def gt_phase_approx(
     else:
         # Find th_f and PF: seed the search at index 1, kept as the
         # fallback if no later candidate improves the moment error
-        # (own_nodes reproduces the historical seed quadrature)
-        _, pha_star, chi_star_1_approx = _evaluate(
+        # (own_nodes reproduces the historical seed quadrature). A
+        # candidate whose plateau is negative is no phase function,
+        # however well its moment matches: it is skipped, the seed
+        # included. For a peak as sharp as Fournier-Forand's, the
+        # first moment matches best at such angles, below the one
+        # where the peak holds the fraction f of the scattering.
+        pf_seed, pha_star, chi_star_1_approx = _evaluate(
             1, rescale=False, own_nodes=True
         )
+        id_approx: int | None = 1
         err1 = abs(chi_star_1 - chi_star_1_approx)
-        id_approx = 1
+        if not (math.isfinite(pf_seed) and pf_seed >= 0.0):
+            id_approx = None
+            err1 = math.inf
 
         for idx in range(1, len(phase) - 2):
             if theta[idx] >= th_tol:
@@ -596,7 +609,7 @@ def gt_phase_approx(
             pf_tmp, pha_star_tmp, chi_star_1_approx_tmp = _evaluate(
                 idx, rescale=lobatto_optimization, own_nodes=False
             )
-            if np.isnan(pf_tmp) or np.isinf(pf_tmp):
+            if np.isnan(pf_tmp) or np.isinf(pf_tmp) or pf_tmp < 0.0:
                 continue
 
             err2 = abs(chi_star_1 - chi_star_1_approx_tmp)
@@ -608,6 +621,15 @@ def gt_phase_approx(
                 pha_star = pha_star_tmp
                 chi_star_1_approx = chi_star_1_approx_tmp
                 err1 = err2
+
+        if id_approx is None:
+            raise ValueError(
+                "No truncation angle below th_tol = "
+                f"{np.rad2deg(th_tol):g} degrees leaves a non-negative "
+                f"plateau with trunc_frac = {f:g}: the forward peak holds "
+                "less than that fraction of the scattering there. Lower "
+                "trunc_frac, raise th_tol, or impose the angle with th_f."
+            )
 
     pha_approx = pha_star * (1 - f)
     pha_approx += delta_part

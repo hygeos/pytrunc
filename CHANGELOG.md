@@ -1,6 +1,20 @@
 # PYTRUNC CHANGELOG
 
 
+## Unreleased
+
+* Fix the truncation angle search of `gt_phase_approx`, which could
+  return a truncated phase matrix with a negative plateau: for a peak as
+  sharp as Fournier-Forand's, the first moment matches best at angles
+  within which the peak holds less than the fraction `trunc_frac` of the
+  scattering, where the plateau is negative (-445 at 1.1 degree for
+  n = 1.10, mu = 3.5, `trunc_frac=0.3` and the trapezoid rule). The
+  search now skips them, and raises a ValueError when no angle below
+  `th_tol` leaves a non-negative plateau. An imposed angle (`th_f`) is
+  unchanged. The searched references of the two-term Henyey-Greenstein
+  test case, whose plateaus were negative, are regenerated
+
+
 ## v2.0.0
 Release date: 06-08-2026
 

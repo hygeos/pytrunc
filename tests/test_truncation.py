@@ -10,7 +10,7 @@ from cases import CASES, PHASES, THETA_DEG, TRUNC_FRAC
 from numpy.typing import NDArray
 from scipy.integrate import simpson, trapezoid
 
-from pytrunc.phase import fournier_forand
+from pytrunc.phase import fournier_forand, henyey_greenstein
 from pytrunc.truncation import gt_phase_approx
 from pytrunc.utils import integrate_lobatto
 
@@ -187,3 +187,61 @@ def test_search_without_valid_angle_raises(
         gt_phase_approx(
             phases["tthg"], THETA_DEG, 0.5, method="trapezoid", th_tol=5.0
         )
+
+
+@pytest.mark.parametrize("method", ["lobatto", "trapezoid", "simpson"])
+@pytest.mark.parametrize("pname", sorted(PHASES))
+def test_continuous_plateau(
+    pname: str, method: str, phases: dict[str, NDArray[np.float64]]
+) -> None:
+    """With trunc_frac=None, the plateau meets the phase at th_f.
+
+    Its f is the fraction that imposing the angle takes to give that
+    plateau: both give the same matrix.
+    """
+    phase = phases[pname]
+    ds = gt_phase_approx(phase, THETA_DEG, None, method=method, th_f=8.0)
+    assert isinstance(ds, xr.Dataset)
+    pha_star = ds["phase_tr"].values
+    id_f = int(np.argmin(np.abs(THETA_DEG - 8.0)))
+    np.testing.assert_allclose(pha_star[:id_f], pha_star[id_f], rtol=1e-12)
+    f = float(ds["f"])
+    assert 0.0 < f < 1.0
+    assert ds["trunc_frac"].values.item() is None
+    imposed = gt_phase_approx(phase, THETA_DEG, f, method=method, th_f=8.0)
+    assert isinstance(imposed, xr.Dataset)
+    np.testing.assert_array_equal(imposed["phase_tr"].values, pha_star)
+    assert float(imposed["trunc_frac"]) == f
+
+
+def test_continuous_plateau_cuts_the_phase_flat() -> None:
+    """Fournier-Forand cut flat at its value at 5 degrees.
+
+    (1 - f) P* is the phase matrix with its forward peak replaced by
+    that value, but for the normalization of P* by the integrator: the
+    truncation of the ocean phase matrices of SMART-G up to 1.2.
+    """
+    phase = _fournier_forand(1.10, 3.5)
+    ds = gt_phase_approx(phase, THETA_DEG, None, th_f=5.0)
+    assert isinstance(ds, xr.Dataset)
+    id_f = int(np.argmin(np.abs(THETA_DEG - 5.0)))
+    flat = phase.copy()
+    flat[:id_f] = phase[id_f]
+    ratio = (1.0 - float(ds["f"])) * ds["phase_tr"].values / flat
+    np.testing.assert_allclose(ratio, ratio[0], rtol=1e-12)
+    np.testing.assert_allclose(ratio[0], 1.0, rtol=1e-3)
+
+
+def test_continuous_plateau_needs_the_angle(
+    phases: dict[str, NDArray[np.float64]],
+) -> None:
+    with pytest.raises(ValueError, match="needs th_f"):
+        gt_phase_approx(phases["hg085"], THETA_DEG, None)
+
+
+def test_continuous_plateau_needs_a_forward_peak() -> None:
+    """A backward-peaked phase matrix has no forward peak above its
+    value at th_f: f would be negative."""
+    phase = henyey_greenstein(THETA_DEG, g=-0.5, normalize=2)
+    with pytest.raises(ValueError, match="no forward peak"):
+        gt_phase_approx(phase, THETA_DEG, None, th_f=8.0)

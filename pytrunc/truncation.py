@@ -282,7 +282,7 @@ def delta_m_phase_approx(
 def gt_phase_approx(
     phase: NDArray[np.float64],
     theta: NDArray[np.float64],
-    trunc_frac: float,
+    trunc_frac: float | None,
     theta_unit: str = "deg",
     method: str = "trapezoid",
     phase_moments_1: float | None = None,
@@ -302,8 +302,11 @@ def gt_phase_approx(
     theta : ndarray
         The phase matrix angles, it must be 1-D. See the theta_unit
         parameter for the unit
-    trunc_frac : float
-        The truncation fraction
+    trunc_frac : float or None
+        The truncation fraction f, the part of the scattering the
+        forward peak takes away. None requires th_f: f is then the one
+        that makes the plateau continuous with the phase matrix at th_f,
+        see Notes
     theta_unit : str, optional
         The unit of the theta angles. Default is 'deg', other choice is
         'rad'
@@ -324,9 +327,9 @@ def gt_phase_approx(
     th_f : float or None, optional
         Impose the truncation angle. The unit depends on the theta_unit
         parameter. Default is None, meaning the truncation angle is
-        searched. The plateau is then the one the normalization gives,
-        negative if the forward peak within th_f holds less than the
-        fraction trunc_frac of the scattering
+        searched. With a trunc_frac, the plateau is then the one the
+        normalization gives, negative if the forward peak within th_f
+        holds less than the fraction trunc_frac of the scattering
     lobatto_optimization : bool, optional
         Whether to use lobatto optimization for integration (reuse the
         full-grid Lobatto quadrature, affinely rescaled to the
@@ -349,6 +352,8 @@ def gt_phase_approx(
 
         - **phase_approx**: The approximation of the exact phase matrix
         - **f**: The truncation factor
+        - **trunc_frac**: The trunc_frac parameter value (None when f
+          comes from the continuity of the plateau)
         - **phase_tr**: The truncated phase matrix
         - **chi_star_ideal**: The truncated phase matrix moments if
           moment conservation (ideal case)
@@ -367,6 +372,25 @@ def gt_phase_approx(
         * phase_star : ndarray
             -> The truncated scattering phase matrix, it is 1-D
 
+    Notes
+    -----
+    The truncated phase matrix is flat below the truncation angle θf
+    and proportional to the exact one above it, P*(θ) = P(θ)/(1 - f),
+    the forward peak being replaced by a Dirac of weight f. Two of the
+    angle, the fraction f and the level of the plateau set the third
+    (the normalization of P*):
+
+    - trunc_frac alone: f is imposed and θf is searched, the angle whose
+      truncated matrix best keeps the first moment, (χ1 - f)/(1 - f),
+      among those leaving a non-negative plateau (Iwabuchi and Suzuki,
+      2009);
+    - trunc_frac and th_f: both are imposed, the plateau follows, and
+      is in general not continuous with the phase matrix at θf;
+    - th_f alone (trunc_frac=None): the plateau is the value of the
+      phase matrix at θf, which is cut flat below that angle, and f
+      follows. It is the fraction of the scattering above that level
+      within θf.
+
     References
     ----------
     Iwabuchi, H., & Suzuki, T. (2009). Fast and accurate radiance
@@ -384,6 +408,12 @@ def gt_phase_approx(
     >>> ds = gt_phase_approx(phase, theta, trunc_frac=0.2)
     >>> ds['theta_f'].values
     array(16.8)
+
+    Cut the phase matrix flat below 8 degrees, the fraction following:
+
+    >>> ds = gt_phase_approx(phase, theta, trunc_frac=None, th_f=8.0)
+    >>> round(float(ds['f']), 4)
+    0.0871
     """
     theta = _theta_to_rad(theta, theta_unit)
     if theta_unit == "deg":
@@ -394,6 +424,11 @@ def gt_phase_approx(
 
     if method not in INTEGRATORS:
         raise ValueError(f"Only available methods are: {list(INTEGRATORS)}")
+    if trunc_frac is None and th_f is None:
+        raise ValueError(
+            "trunc_frac=None needs th_f: f is then the fraction that makes "
+            "the plateau continuous with the phase matrix at th_f."
+        )
 
     th_tol_bis = th_tol
     th_f_bis = th_f
@@ -440,20 +475,7 @@ def gt_phase_approx(
 
     integrate_m = INTEGRATORS[method]
 
-    f = trunc_frac
-    chi_star_1 = (chi_1 - f) / (1 - f)
-
-    if method == "lobatto":
-        delta_part = _dirac_delta_part(
-            theta, mu, f, method, integrate_m, xk=xk, wk=wk, sin_th=sin_th
-        )
-    else:
-        delta_part = _dirac_delta_part(
-            theta, mu, f, method, integrate_m, idmu=idmu
-        )
-
     # invariants of the candidate evaluations
-    inv_1mf = 1.0 / (1 - f)
     # for a sorted theta in [0, π], mu = cos(theta) is strictly
     # decreasing: the per-candidate min/max reductions reduce to direct
     # indexing and the argsorts of the mu slices to simple reversals
@@ -467,6 +489,89 @@ def gt_phase_approx(
         xk_span = float(np.max(xk)) - xk_min
     else:
         mu_sorted = mu[idmu]
+
+    def _plateau_width(idx: int) -> float:
+        """
+        The extent in mu of a plateau below theta[idx]
+
+        Equal to integrate_m(np.ones_like(mu1), mu1[idmu1]), with mu1
+        the mu of the plateau
+        """
+        if descending:
+            return mu[0] - mu[idx]
+        mu1 = mu[0 : idx + 1]
+        return np.max(mu1) - np.min(mu1)
+
+    def _tail_integral(idx: int, rescale: bool) -> float:
+        """
+        The integral of the phase function from theta[idx] to π
+
+        ∫ P(θ) sin(θ) dθ with the integrator of the method. With
+        rescale, the full-grid Lobatto quadrature is affinely rescaled
+        to [theta[idx], theta[-1]] instead of solving new nodes.
+        """
+        if method == "lobatto":
+            th2 = theta[idx:]
+            if rescale:
+                # rescale of xk and wk in the tmp interval
+                if sorted_th:
+                    abscissa_min = theta[idx]
+                    abscissa_max = theta[-1]
+                else:
+                    abscissa_min = np.min(th2)
+                    abscissa_max = np.max(th2)
+                alpha = (abscissa_max - abscissa_min) / xk_span
+                return integrate_m(
+                    phase_sin[idx:],
+                    th2,
+                    xk=abscissa_min + (xk - xk_min) * alpha,
+                    wk=wk * alpha,
+                    assume_sorted=True,
+                )
+            return integrate_m(
+                phase_sin[idx:], th2, lp=len(th2), assume_sorted=True
+            )
+        if descending:
+            phase2_s = phase[idx:][::-1]
+            mu2_s = mu[idx:][::-1]
+        else:
+            mu2 = mu[idx:]
+            idmu2 = np.argsort(mu2)
+            phase2_s = phase[idx:][idmu2]
+            mu2_s = mu2[idmu2]
+        return integrate_m(phase2_s, mu2_s)
+
+    if trunc_frac is None:
+        # the plateau continuous with the phase at the imposed angle:
+        # the pf of _evaluate equal to phase[id_f], that is
+        # 2 (1 - f) = tail integral + phase[id_f] * plateau width
+        assert th_f is not None  # checked on entry
+        id_f = int(np.argmin(np.abs(theta - th_f)))
+        f = 1.0 - 0.5 * (
+            _tail_integral(id_f, rescale=False)
+            + phase[id_f] * _plateau_width(id_f)
+        )
+        if not 0.0 < f < 1.0:
+            raise ValueError(
+                "The plateau continuous with the phase matrix at th_f = "
+                f"{np.rad2deg(theta[id_f]):g} degrees gives f = {f:.3g}, "
+                "outside ]0; 1[: the phase matrix has no forward peak "
+                "above its value there to truncate."
+            )
+    else:
+        f = trunc_frac
+    chi_star_1 = (chi_1 - f) / (1 - f)
+
+    if method == "lobatto":
+        delta_part = _dirac_delta_part(
+            theta, mu, f, method, integrate_m, xk=xk, wk=wk, sin_th=sin_th
+        )
+    else:
+        delta_part = _dirac_delta_part(
+            theta, mu, f, method, integrate_m, idmu=idmu
+        )
+
+    inv_1mf = 1.0 / (1 - f)
     # scratch buffer of the candidate phase: the [idx:] tail always
     # equals phase/(1 - f), only the [0:idx] plateau changes across the
     # candidates (and each write covers the previous one)
@@ -488,46 +593,9 @@ def gt_phase_approx(
         # Find pf:
         # normalization condition between 0 and π ->
         # ∫ P*(θ) sin(θ) dθ = 2
-        if descending:
-            dmu1 = mu[0] - mu[idx]
-        else:
-            mu1 = mu[0 : idx + 1]
-            dmu1 = np.max(mu1) - np.min(mu1)
-        if method == "lobatto":
-            th2 = theta[idx:]
-            if rescale:
-                # rescale of xk and wk in the tmp interval
-                if sorted_th:
-                    abscissa_min = theta[idx]
-                    abscissa_max = theta[-1]
-                else:
-                    abscissa_min = np.min(th2)
-                    abscissa_max = np.max(th2)
-                alpha = (abscissa_max - abscissa_min) / xk_span
-                integral = integrate_m(
-                    phase_sin[idx:],
-                    th2,
-                    xk=abscissa_min + (xk - xk_min) * alpha,
-                    wk=wk * alpha,
-                    assume_sorted=True,
-                )
-            else:
-                integral = integrate_m(
-                    phase_sin[idx:], th2, lp=len(th2), assume_sorted=True
-                )
-        else:
-            if descending:
-                phase2_s = phase[idx:][::-1]
-                mu2_s = mu[idx:][::-1]
-            else:
-                mu2 = mu[idx:]
-                idmu2 = np.argsort(mu2)
-                phase2_s = phase[idx:][idmu2]
-                mu2_s = mu2[idmu2]
-            integral = integrate_m(phase2_s, mu2_s)
-        pf_tmp = (2 - inv_1mf * integral) / (
-            inv_1mf * dmu1
-        )  # dmu1 == integrate_m(np.ones_like(mu1), mu1[idmu1])
+        dmu1 = _plateau_width(idx)
+        integral = _tail_integral(idx, rescale)
+        pf_tmp = (2 - inv_1mf * integral) / (inv_1mf * dmu1)
 
         pha_star_tmp = pha_star_scratch
         pha_star_tmp[0:idx] = pf_tmp * inv_1mf
@@ -651,6 +719,14 @@ def gt_phase_approx(
         ds["f"] = xr.DataArray(f)
         ds["f"].attrs.update(
             {"units": "none", "description": "the truncation factor"}
+        )
+        ds["trunc_frac"] = xr.DataArray(trunc_frac)
+        ds["trunc_frac"].attrs.update(
+            {
+                "units": "none",
+                "description": "the trunc_frac parameter value (None: "
+                "f makes the plateau continuous at the truncation angle)",
+            }
         )
         ds["phase_tr"] = xr.DataArray(pha_star, dims=["theta"])
         ds["phase_tr"].attrs.update(

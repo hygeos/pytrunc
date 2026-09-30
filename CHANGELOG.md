@@ -14,6 +14,17 @@
   unchanged. The searched references of the two-term Henyey-Greenstein
   test case, whose plateaus were negative, are regenerated
 
+* Add the continuous plateau to `gt_phase_approx`: with
+  `trunc_frac=None` and an imposed angle `th_f`, the phase matrix is cut
+  flat at its value at `th_f` and the truncation fraction follows from
+  that continuity (returned in `f`; the new output variable `trunc_frac`
+  echoes the parameter, None in that case). Imposing both `trunc_frac`
+  and `th_f` sets the plateau by the normalization instead, in general
+  not continuous: 2.5 times the truncated phase matrix at 5 degrees for
+  Fournier-Forand (n = 1.10, mu = 3.5) and `trunc_frac=0.3`, where the
+  continuous plateau takes f = 0.467. The docstring Notes describe the
+  three ways the angle, the fraction and the plateau set each other
+
 
 ## v2.0.0
 Release date: 06-08-2026

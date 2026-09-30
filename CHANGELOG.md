@@ -1,18 +1,10 @@
 # PYTRUNC CHANGELOG
 
 
-## Unreleased
+## v2.1.0
+Release date: 30-09-2026
 
-* Fix the truncation angle search of `gt_phase_approx`, which could
-  return a truncated phase matrix with a negative plateau: for a peak as
-  sharp as Fournier-Forand's, the first moment matches best at angles
-  within which the peak holds less than the fraction `trunc_frac` of the
-  scattering, where the plateau is negative (-445 at 1.1 degree for
-  n = 1.10, mu = 3.5, `trunc_frac=0.3` and the trapezoid rule). The
-  search now skips them, and raises a ValueError when no angle below
-  `th_tol` leaves a non-negative plateau. An imposed angle (`th_f`) is
-  unchanged. The searched references of the two-term Henyey-Greenstein
-  test case, whose plateaus were negative, are regenerated
+### New features
 
 * Add the continuous plateau to `gt_phase_approx`: with
   `trunc_frac=None` and an imposed angle `th_f`, the phase matrix is cut
@@ -24,6 +16,19 @@
   Fournier-Forand (n = 1.10, mu = 3.5) and `trunc_frac=0.3`, where the
   continuous plateau takes f = 0.467. The docstring Notes describe the
   three ways the angle, the fraction and the plateau set each other
+
+### Other changes
+
+* Fix the truncation angle search of `gt_phase_approx`, which could
+  return a truncated phase matrix with a negative plateau: for a peak as
+  sharp as Fournier-Forand's, the first moment matches best at angles
+  within which the peak holds less than the fraction `trunc_frac` of the
+  scattering, where the plateau is negative (-445 at 1.1 degree for
+  n = 1.10, mu = 3.5, `trunc_frac=0.3` and the trapezoid rule). The
+  search now skips them, and raises a ValueError when no angle below
+  `th_tol` leaves a non-negative plateau. An imposed angle (`th_f`) is
+  unchanged. The searched references of the two-term Henyey-Greenstein
+  test case, whose plateaus were negative, are regenerated
 
 
 ## v2.0.0
